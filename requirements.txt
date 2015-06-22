@@ -1,1 +1,6 @@
 flask==0.10.1
+gevent==1.0.2
+gevent-websocket==0.9.5
+numpy==1.9.1
+ujson==1.33
+cython==0.22.1
