@@ -1,17 +1,23 @@
 import random
-import ujson as json
+import struct
+import ujson
 from geventwebsocket import WebSocketError
+import logbook
+from mathx import Vector2
+import packet_types
 
+packet_header = struct.Struct('>H')
+move_to = struct.Struct('>ff')
 
 class PlayerSocket(object):
     def __init__(self, ws):
-        self.ws = ws
         self.player = None
+        self.ws = ws
 
     def on_connect(self):
         self.handle_login()
 
-        while self.handle(self.recv()):
+        while self.recv():
             pass
 
         self.handle_logout()
@@ -21,8 +27,15 @@ class PlayerSocket(object):
         if data is None:
             return None
 
-        # TODO : this is no longer json..
-        return ujson.loads(data)
+        packet_type,  = packet_header.unpack_from(data, 0)
+
+        if packet_type == packet_types.MOVE_TO:
+            x, y = move_to.unpack_from(data, 2)
+            self.player.move_to(x, y)
+            return True
+
+        logbook.warn('Unknown packet type: {0}', packet_type)
+        return False
 
     def send(self, data):
         try:
@@ -37,19 +50,8 @@ class PlayerSocket(object):
     def handle_logout(self):
         pass
 
-    def handle(self, data):
-        if data is None:
-            return False
-
-        # players can set their own bearing
-
-        if 'bear' in data:
-            self.player.bearing = data['bear']
-        if 'move' in data:
-            self.player.move_target = data['move']
-
-        return True
-
     def on_disconnect(self):
-        # TODO : ugh, we need to pop the player out of here.. but they belong to island atm and it's dumb.
-        print 'bang'
+        if self.player and self.player.island:
+            self.player.island.remove_entity(self.player)
+
+        print '{} disconnected'.format(self)

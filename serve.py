@@ -4,6 +4,8 @@ import gevent
 from gevent.monkey import patch_all
 from geventwebsocket.handler import WebSocketHandler
 from geventwebsocket.server import WebSocketServer
+import logbook
+logbook.default_handler.level = logbook.DEBUG
 from entity.player.player import Player
 from entity.player.socket import PlayerSocket
 
@@ -28,9 +30,9 @@ def ws_app(env, start):
         ps.player.position.y = random.random() * 50
         ps.player.bearing = random.random() * 360 - 180
         ps.player.socket = ps
+        ps.player.set_dirty()
 
-        island.players.append(ps.player)
-        island.entities.append(ps.player)
+        island.add_entity(ps.player)
 
         return ps.on_connect()
 
@@ -45,15 +47,14 @@ web_server = pywsgi.WSGIServer(
     create_flask_app()
 )
 
-
-print 'starting webserver'
+logbook.info('starting webserver on :{0}', web_server.server_port)
 web_server.start()
 
-print 'starting websocket'
+logbook.info('starting websocket on :{0}', ws_server.server_port)
 ws_server.start()
 
-print 'starting island'
+logbook.info('starting dev island')
 island.start()
 
-print 'waiting'
+logbook.info('waiting')
 gevent.wait()

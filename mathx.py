@@ -46,3 +46,6 @@ class Vector2(object):
     @property
     def sqr_magnitude(self):
         return self.dot(self)
+
+    def __repr__(self):
+        return '<Vec2({s.x}, {s.y})>'.format(s=self)
