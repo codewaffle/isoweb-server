@@ -17,9 +17,9 @@ class Island(Greenlet):
     def __init__(self, seed):
         super(Island, self).__init__()
         self.id = self.seed = seed
-        self._entities = []
-        self._players = []
-        self._dirty = set()
+        self._entities = set()
+        self._players = set()
+        self._dirty_entities = set()
 
         self.log = Logger('Island {}'.format(self.id))
 
@@ -37,15 +37,15 @@ class Island(Greenlet):
                 ent.set_dirty()
 
     def update_players(self):
-        packet = [struct.pack('>HIH', packet_types.ISLAND_UPDATE, self.id, len(self._dirty))]
+        packet = [struct.pack('>HIH', packet_types.ISLAND_UPDATE, self.id, len(self._dirty_entities))]
 
-        for e in self._dirty:
+        for e in self._dirty_entities:
             packet.append(struct.pack('>I', e.id))
             packet.append(e.packed_transform)
 
             e._dirty = False
 
-        self._dirty.clear()
+        self._dirty_entities.clear()
 
         packet = ''.join(packet)
 
@@ -53,17 +53,23 @@ class Island(Greenlet):
             pl.socket.send(packet)
 
     def add_entity(self, ent):
-        self._entities.append(ent)
+        self._entities.add(ent)
         self.log.debug('Added entity {0}', ent)
         ent.island = self
+        self._dirty_entities.add(ent)
 
         if isinstance(ent, Player):
-            self._players.append(ent)
+            self._players.add(ent)
 
     def remove_entity(self, ent):
         ent.island = None
         self.log.debug('Removed entity {0}', ent)
         self._entities.remove(ent)
+
+        try:
+            self._dirty_entities.remove(ent)
+        except KeyError:
+            pass
 
         if isinstance(ent, Player):
             self._players.remove(ent)
@@ -81,4 +87,4 @@ class Island(Greenlet):
             gevent.sleep(max(self.update_rate-delta, 0))
 
     def add_dirty(self, ent):
-        self._dirty.add(ent)
+        self._dirty_entities.add(ent)
