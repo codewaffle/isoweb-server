@@ -1,7 +1,9 @@
+from gevent.monkey import patch_all
+patch_all(ssl=False)
+
 import random
 import gevent
-
-from gevent.monkey import patch_all
+import socket
 from geventwebsocket.handler import WebSocketHandler
 from geventwebsocket.server import WebSocketServer
 import logbook
@@ -11,7 +13,6 @@ from entity.player.socket import PlayerSocket
 
 from world.island import Island
 
-patch_all(ssl=False)
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -52,6 +53,8 @@ web_server.start()
 
 logbook.info('starting websocket on :{0}', ws_server.server_port)
 ws_server.start()
+# disable nagle's
+ws_server.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
 logbook.info('starting dev island')
 island.start()
