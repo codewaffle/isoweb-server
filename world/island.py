@@ -19,7 +19,11 @@ class Island(Greenlet):
         super(Island, self).__init__()
         self.id = self.seed = seed
         self._entities = set()
+        self._pending_add = set()
+        self._pending_remove = set()
         self._players = set()
+        self._pending_players = set()
+        self._pending_disconnects = set()
         self._dirty_entities = set()
 
         self.log = Logger('Island {}'.format(self.id))
@@ -53,27 +57,39 @@ class Island(Greenlet):
         for pl in self._players:
             pl.socket.send(packet)
 
-    def add_entity(self, ent):
-        self._entities.add(ent)
-        self.log.debug('Added entity {0}', ent)
-        ent.island = self
-        self._dirty_entities.add(ent)
+        # perform our list changes after an update.
 
+        self._entities |= self._pending_add
+        self._dirty_entities |= self._pending_add
+        self._pending_add.clear()
+
+        self._players |= self._pending_players
+        self._pending_players.clear()
+
+        self._entities -= self._pending_remove
+        self._dirty_entities -= self._pending_remove
+        self._pending_remove.clear()
+
+        self._players -= self._pending_disconnects
+        self._pending_disconnects.clear()
+
+    def add_entity(self, ent):
+        ent.island = self
+
+        self._pending_add.add(ent)
         if isinstance(ent, Player):
-            self._players.add(ent)
+            self._pending_players.add(ent)
+
+        self.log.debug('Added entity {0}', ent)
 
     def remove_entity(self, ent):
         ent.island = None
-        self.log.debug('Removed entity {0}', ent)
-        self._entities.remove(ent)
 
-        try:
-            self._dirty_entities.remove(ent)
-        except KeyError:
-            pass
-
+        self._pending_remove.add(ent)
         if isinstance(ent, Player):
-            self._players.remove(ent)
+            self._pending_disconnects.add(ent)
+
+        self.log.debug('Removed entity {0}', ent)
 
     def run(self):
         while True:

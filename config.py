@@ -1,0 +1,1 @@
+ENTITY_DIR = 'data/entities'

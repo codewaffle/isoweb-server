@@ -15,8 +15,8 @@ def logout():
 
 @route('/')
 def play():
-    if not session.get('player_id'):
-        return redirect(url_for('.login'))
+    #if not session.get('player_id'):
+    #    return redirect(url_for('.login'))
 
     return render_template('index.html')
 

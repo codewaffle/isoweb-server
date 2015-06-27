@@ -3,6 +3,7 @@ import struct
 import ujson
 from geventwebsocket import WebSocketError
 import logbook
+from entity.player import Player
 from mathx import Vector2
 import packet_types
 
@@ -13,8 +14,10 @@ class PlayerSocket(object):
     def __init__(self, ws):
         self.player = None
         self.ws = ws
+        self.island = None
 
-    def on_connect(self):
+    def on_connect(self, island):
+        self.island = island
         self.handle_login()
 
         while self.recv():
@@ -45,7 +48,17 @@ class PlayerSocket(object):
 
     def handle_login(self):
         # assign player to island, send initial bla bla bla
+
+        self.player = Player()
         self.player.id = random.randint(1, 1234)
+        self.player.position.x = random.random() * 50
+        self.player.position.y = random.random() * 50
+        self.player.bearing = random.random() * 360 - 180
+        self.player.socket = self
+        self.player.set_dirty()
+        self.island.add_entity(self.player)
+
+        self.player.spawn([self.player])
 
     def handle_logout(self):
         pass

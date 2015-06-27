@@ -1,18 +1,17 @@
 from uuid import uuid4
 from logbook import Logger
-from entity import Entity
+from entity import Entity, EntityAttribute
 from mathx import Vector2
 
 
 class Player(Entity):
-    socket = None
-    move_target = None
-    vel = 5
+    sprite = EntityAttribute('sprites/player.png')
 
     def __init__(self):
-        self.id = uuid4()
+        self.socket = None
+        self.move_target = None
+        self.vel = 5
         super(Player, self).__init__()
-        self.log = Logger('Player {}'.format(self.id))
 
     def update(self, dt):
         if self.move_target:
@@ -25,11 +24,8 @@ class Player(Entity):
             else:
                 self.position = self.move_target
                 self.move_target = None
-                self.log.debug('{0} arrived at {1}', self, self.position)
+                self.log.debug('Arrived at {0}', self.position)
 
     def move_to(self, x, y):
         self.move_target = Vector2(x, y)
         self.log.debug('move_to({0})', self.move_target)
-
-    def __repr__(self):
-        return '<Player({self.id})>'.format(self=self)

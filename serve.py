@@ -25,20 +25,7 @@ island = Island(42)
 def ws_app(env, start):
     if env['PATH_INFO'] == '/player':
         ps = PlayerSocket(env['wsgi.websocket'])
-
-        # handshake, find player in world, attach them...
-
-        # attach to player
-        ps.player = Player()
-        ps.player.position.x = random.random() * 50
-        ps.player.position.y = random.random() * 50
-        ps.player.bearing = random.random() * 360 - 180
-        ps.player.socket = ps
-        ps.player.set_dirty()
-
-        island.add_entity(ps.player)
-
-        return ps.on_connect()
+        return ps.on_connect(island)
 
 ws_server = WebSocketServer(
     ('', 10000),
