@@ -1,11 +1,10 @@
-from uuid import uuid4
-from logbook import Logger
-from entity import Entity, EntityAttribute
+from entity import Entity
 from mathx import Vector2
 
 
 class Player(Entity):
-    sprite = EntityAttribute('sprites/player.png')
+    _class_attributes = Entity._class_attributes.copy()
+    _class_attributes['sprite'] = 's', 'sprites/player.png'
 
     def __init__(self):
         self.socket = None

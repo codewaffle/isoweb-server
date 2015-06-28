@@ -1,3 +1,4 @@
+import inspect
 from struct import Struct
 import os
 import struct
@@ -9,20 +10,25 @@ from mathx import Vector2
 import packet_types
 
 
-class EntityAttribute(object):
-    def __init__(self, initial):
-        self.val = initial
-
-    def __get__(self, instance, owner):
-        return self.val
-
-    def __set__(self, instance, value):
-        self.val = value
-
 transform_struct = Struct('>fff')
 
 class Entity(object):
+    _class_attributes = {}
+
+    def __getitem__(self, item):
+        return self._local_attributes.get(item) or self._class_attributes[item][1]
+
+    def __setitem__(self, key, value):
+        self._local_attributes[key] = value
+
+    def get_all_attributes(self):
+        tmp = self._class_attributes.copy()
+        tmp.update(self._local_attributes)
+
+        return tmp
+
     def __init__(self, position=None, bearing=None):
+        self._local_attributes = {}
         self._dirty = False
         self._id = None
         self.position = position or Vector2()
@@ -103,8 +109,40 @@ class Entity(object):
             self.bearing
         )
 
+        # TODO : pack in attributes...
+        packet += self.pack_attributes()
+
+        print repr(packet)
+
         for pl in players:
             pl.socket.send(packet)
+
+    def pack_attributes(self):
+        fmt = ['>B']  # number of properties
+        args = []
+
+        prop_count = 0
+
+        for k, (t, v) in self.get_all_attributes().iteritems():
+            prop_count += 1
+            fmt.append('B%dsc' % len(k))
+            args.extend([len(k), k, t])
+
+            if t == 's':  # smallstring - limited 2^8 bytes
+                fmt.append('B%ds' % len(v))
+                args.extend([len(v), v])
+            elif t == 'S':  # string - limited 2^16 bytes
+                fmt.append('H%ds' % len(v))
+                args.extend([len(v), v])
+            else:
+                assert len(t) == 1, 'complex attribute types not yet implemented'
+
+                fmt.append(t)
+                args.append(v)
+
+        fmt = ''.join(fmt)
+
+        return struct.pack(fmt, prop_count, *args)
 
     def __repr__(self):
         return '<{self.classname}({self.id})>'.format(self=self)
