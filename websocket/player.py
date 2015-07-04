@@ -51,13 +51,16 @@ class PlayerSocket(object):
 
         self.player = Player()
         self.player.id = random.randint(1, 1234)
-        self.player.position.x = random.random() * 50
-        self.player.position.y = random.random() * 50
+        #self.player.position.x = random.random() * 50
+        #self.player.position.y = random.random() * 50
+        self.player.position.x = 0.1
+        self.player.position.y = 0.1
         self.player.bearing = random.random() * 360 - 180
         self.player.socket = self
         self.player.set_dirty()
         self.island.add_entity(self.player)
 
+        # TODO : this should be spawned by the island, i think..
         self.player.spawn([self.player])
 
     def handle_logout(self):

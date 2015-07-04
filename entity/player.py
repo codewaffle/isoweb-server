@@ -3,8 +3,12 @@ from mathx import Vector2
 
 
 class Player(Entity):
-    _class_attributes = Entity._class_attributes.copy()
-    _class_attributes['sprite'] = 's', 'sprites/player.png'
+    client_class = 'SimpleSprite'
+
+    _class_attributes = Entity.subclass_attributes({
+        'sprite':  ('s', 'sprites/player.png'),
+        'model': ('s', 'models/guy.json')
+    })
 
     def __init__(self):
         self.socket = None

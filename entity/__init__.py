@@ -13,7 +13,17 @@ import packet_types
 transform_struct = Struct('>fff')
 
 class Entity(object):
+    client_class = 'Entity'
     _class_attributes = {}
+
+    def __init__(self, position=None, bearing=None):
+        self._local_attributes = {}
+        self._dirty = False
+        self._id = None
+        self.position = position or Vector2()
+        self.bearing = bearing or 0
+        self.island = None
+        self.log = Logger('UnboundEntity')
 
     def __getitem__(self, item):
         return self._local_attributes.get(item) or self._class_attributes[item][1]
@@ -27,15 +37,6 @@ class Entity(object):
 
         return tmp
 
-    def __init__(self, position=None, bearing=None):
-        self._local_attributes = {}
-        self._dirty = False
-        self._id = None
-        self.position = position or Vector2()
-        self.bearing = bearing or 0
-        self.island = None
-        self.log = Logger('UnboundEntity')
-
     @property
     def id(self):
         return self._id
@@ -43,11 +44,11 @@ class Entity(object):
     @id.setter
     def id(self, val):
         self._id = val
-        self.log = Logger('{} #{}'.format(self.classname, self._id))
+        self.log = Logger('{} #{}'.format(self.classpath, self._id))
 
     @property
-    def classname(self):
-        return '.'.join((self.__class__.__module__, self.__class__.__name__))
+    def classpath(self):
+        return '.'.join((self.__module__, self.__class__.__name__))
 
     def set_dirty(self):
         if self._dirty:
@@ -97,13 +98,11 @@ class Entity(object):
             players = ''  # TODO : initial spawn figures out its own scope (or all players or whatever..)
 
         # build the packet.
-        classname = self.classname
-
         packet = struct.pack(
-            '>HB{}sfff'.format(len(classname)),
+            '>HB{}sfff'.format(len(self.client_class)),
             packet_types.SPAWN,
-            len(classname),
-            classname,
+            len(self.client_class),
+            self.client_class,
             self.position.x,
             self.position.y,
             self.bearing
@@ -144,5 +143,11 @@ class Entity(object):
 
         return struct.pack(fmt, prop_count, *args)
 
+    @classmethod
+    def subclass_attributes(cls, attrs):
+        ret = cls._class_attributes.copy()
+        ret.update(attrs)
+        return ret
+
     def __repr__(self):
-        return '<{self.classname}({self.id})>'.format(self=self)
+        return '{self.classpath}({self.id})'.format(self=self)
