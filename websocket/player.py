@@ -15,8 +15,10 @@ class PlayerSocket(object):
         self.player = None
         self.ws = ws
         self.island = None
+        self.log = logbook.Logger('PlayerSocket({})'.format(str(id(self))))
 
     def on_connect(self, island):
+        self.log.debug('on_connect')
         self.island = island
         self.handle_login()
 

@@ -4,6 +4,7 @@ import time
 from gevent import Greenlet
 import gevent
 from logbook import Logger
+from logbook.handlers import StderrHandler, NullHandler
 
 from entity.player import Player
 from mathx import RNG
@@ -31,6 +32,7 @@ class Island(Greenlet):
         self.rng = RNG(seed)
         self.width = self.rng.randint(15, 150)
         self.height = self.rng.randint(self.width/2, self.width*2)
+        self.log_handler = NullHandler(bubble=True)
         self.log.debug('Initialized')
 
     def update(self, dt):
@@ -92,16 +94,18 @@ class Island(Greenlet):
         self.log.debug('Removed entity {0}', ent)
 
     def run(self):
-        while True:
-            start = time.clock()
-            # tick entities
-            self.update(self.update_rate)
+        with self.log_handler:
+            self.log.info('Entering gameloop')
+            while True:
+                start = time.clock()
+                # tick entities
+                self.update(self.update_rate)
 
-            # send updates to players..
-            self.update_players()
-            delta = start - time.clock()
+                # send updates to players..
+                self.update_players()
+                delta = start - time.clock()
 
-            gevent.sleep(max(self.update_rate-delta, 0))
+                gevent.sleep(max(self.update_rate-delta, 0))
 
     def add_dirty(self, ent):
         self._dirty_entities.add(ent)

@@ -48,4 +48,4 @@ class Vector2(object):
         return self.dot(self)
 
     def __repr__(self):
-        return '<Vec2({s.x}, {s.y})>'.format(s=self)
+        return 'Vec2({s.x}, {s.y})'.format(s=self)
