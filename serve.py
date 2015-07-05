@@ -30,12 +30,11 @@ ws_zmq_handler = ZeroMQHandler('tcp://127.0.0.1:9009', bubble=True)
 def ws_app(env, start):
     if env['PATH_INFO'] == '/player':
         ws = env['wsgi.websocket']
-        print ws
         ws.stream.handler.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        #ws.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        ps = PlayerSocket(ws)
 
         with ws_zmq_handler:
+            ps = PlayerSocket(ws)
+
             return ps.on_connect(island)
 
 ws_server = WebSocketServer(
