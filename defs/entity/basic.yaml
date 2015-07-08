@@ -1,0 +1,60 @@
+wood:
+  name: Wood
+  description: This probably came from a tree, at least at some point.
+  flags: [bulk]
+  density: 0.75 # kg / L
+  volume: 1.0 # liters
+
+stone:
+  name: Stone
+  description: Nondescript, bulk stone.
+  flags: [bulk]
+  density: 2.65
+  volume: 1.0
+
+plant_material:
+  name: Plant Material
+  description: Vines, leaves, useful things from plants.
+  flags: [bulk]
+  density: 0.5
+  volume: 1.0
+
+water:
+  name: Water
+  description: This stuff belongs in a toilet.
+  flags: [bulk, liquid]
+  density: 1.0
+  volume: 1.0
+
+stoneaxe:
+  name: Stone Axe
+  description: For chopping woody things into smaller bits.
+  flags: [craftable]
+  volume: 15
+  components:
+    wood: 3
+    stone: 3
+  provides:
+    chop: 1
+
+fruit:
+  name: Fruit
+  description: Eat it for slight nourishment, and because there's nothing else. Probably apple-shaped.
+  mass: 0.3
+  volume: 0.3
+  flags: [edible, flammable]
+  attributes:
+    hunger: 10
+    thirst: 10
+
+campfire:
+  name: Campfire
+  description: An inefficient but simple campfire.
+  flags: [buildable, flammable]
+  components:
+    wood: 10
+
+tree:
+  name: Tree
+  description: Bark Bark
+  flags: [anchored, flammable]
