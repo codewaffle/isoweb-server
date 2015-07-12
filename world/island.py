@@ -1,13 +1,18 @@
+"""
+Islands are self contained..
+
+Interaction between islands can occur - mostly in the case of multi-tile Vehicles (which are themselves islands).
+"""
 import struct
 import time
 
 from gevent import Greenlet
 import gevent
 from logbook import Logger
-from logbook.handlers import StderrHandler, NullHandler
+from logbook.handlers import NullHandler
 
-from entity.player import Player
-from mathx import RNG
+from entity.retired.player import Player
+from mathx import RNG, Rect
 import packet_types
 
 
@@ -18,7 +23,9 @@ class Island(Greenlet):
 
     def __init__(self, seed):
         super(Island, self).__init__()
+        self.bounds = Rect()
         self.id = self.seed = seed
+
         self._entities = set()
         self._pending_add = set()
         self._pending_remove = set()
@@ -101,10 +108,7 @@ class Island(Greenlet):
                 # tick entities
                 self.update(self.update_rate)
 
-                # send updates to players..
-                self.update_players()
                 delta = start - time.clock()
-
                 gevent.sleep(max(self.update_rate-delta, 0))
 
     def add_dirty(self, ent):

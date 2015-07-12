@@ -1,5 +1,0 @@
-travois:
-  name: Travois
-  description: Two sticks with some stuff stretched between them. Better than basic dragging.
-  view:
-    sprite: assets/sprites/travois.png

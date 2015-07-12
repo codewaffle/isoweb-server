@@ -1,18 +1,19 @@
 import random
 import struct
-import ujson
+
 from geventwebsocket import WebSocketError
 import logbook
-from entity.player import Player
-from mathx import Vector2
+
+from entity.retired.player import Player
 import packet_types
 
 packet_header = struct.Struct('>H')
 move_to = struct.Struct('>ff')
 
-class PlayerSocket(object):
+class PlayerWebsocket(object):
     def __init__(self, ws):
-        self.player = None
+        self.entity = None
+
         self.ws = ws
         self.island = None
         self.log = logbook.Logger('PlayerSocket({})'.format(str(id(self))))
@@ -36,7 +37,7 @@ class PlayerSocket(object):
 
         if packet_type == packet_types.MOVE_TO:
             x, y = move_to.unpack_from(data, 2)
-            self.player.move_to(x, y)
+            self.entity.request_move_to(x, y)
             return True
 
         logbook.warn('Unknown packet type: {0}', packet_type)
