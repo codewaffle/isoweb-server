@@ -13,6 +13,9 @@ class EntityReference(object):
 
 
 class Entity(object):
+    """
+    an Entity is a bag of component data that points to an EntityDef.
+    """
     def __init__(self, entity_def):
         self._memo_cache = {}
         self._component_data = {}
@@ -22,6 +25,9 @@ class Entity(object):
     def __getattr__(self, item):
         # return memoized component proxy
         return getattr(self.entity_def, item).proxy(self)
+
+    def has_component(self, key):
+        return hasattr(self.entity_def, key)
 
     @memoize
     def reference(self):
