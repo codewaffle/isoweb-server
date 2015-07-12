@@ -1,11 +1,12 @@
 import os
 import fnmatch
 from component import component_by_name
+from component.base import DataProxy
 
 
 class EntityDef(object):
     def __init__(self, data):
-        self._components = {}
+        self._component_data = {}
 
         if isinstance(data, dict):
             self.load_data(data)
@@ -28,6 +29,9 @@ class EntityDef(object):
             comp_name = c.pop('class')
             comp_class = component_by_name(comp_name)
             setattr(self, comp_name, comp_class)
+
+            dataproxy = self._component_data[comp_name] = DataProxy(getattr(comp_class, '_data'))
+            dataproxy.update(c)
 
 _defs = {}
 

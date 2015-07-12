@@ -1,3 +1,7 @@
+meatbag:
+  components:
+  - class: CharacterController
+
 large_stick:
   components:
   - class: Melee

@@ -16,7 +16,7 @@ class Equippable(BaseComponent):
     pass
 
 class Container(BaseComponent):
-    defaults = {
+    _data = {
         'capacity': 0
     }
 
@@ -27,7 +27,7 @@ class Craftable(BaseComponent):
     pass
 
 class Hammer(BaseComponent):
-    defaults = {
+    _data = {
         'beat': 12
     }
 
@@ -39,4 +39,7 @@ class Hammer(BaseComponent):
         return 'beat return', data.beats
 
 class Foliage(BaseComponent):
+    pass
+
+class CharacterController(BaseComponent):
     pass
