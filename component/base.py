@@ -1,6 +1,19 @@
 from functools import partial
 from util import memoize
 
+class DataProxy(dict):
+    def __init__(self, src):
+        dict.__setattr__(self, '_src', src)
+        super(DataProxy, self).__init__()
+
+    def __missing__(self, key):
+        return self._src[key]
+
+    def __getattr__(self, item):
+        return self[item]
+
+    def __setattr__(self, key, value):
+        self[key] = value
 
 class ComponentProxy(object):
     def __init__(self, cls, entity):
@@ -11,7 +24,12 @@ class ComponentProxy(object):
 
     @property
     def data(self):
-        return self.entity._component_data[self.cls.__name__]
+        try:
+            return self.entity._component_data[self.cls.__name__]
+        except KeyError:
+            print self.cls.defaults
+            data = self.entity._component_data[self.cls.__name__] = DataProxy(self.cls.defaults)
+            return data
 
     @memoize
     def __getattr__(self, item):
@@ -23,6 +41,8 @@ class ComponentProxy(object):
 
 
 class BaseComponent(object):
+    defaults = {}
+
     @classmethod
     def on_attached(cls, entity, data):
         pass

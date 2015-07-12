@@ -5,7 +5,7 @@ from util import memoize, AttributeDict
 class Entity(object):
     def __init__(self, entity_def):
         self._memo_cache = {}
-        self._component_data = defaultdict(AttributeDict)
+        self._component_data = {}
         self.entity_def = entity_def
 
     @memoize

@@ -16,7 +16,9 @@ class Equippable(BaseComponent):
     pass
 
 class Container(BaseComponent):
-    capacity = 0
+    defaults = {
+        'capacity': 0
+    }
 
 class Melee(BaseComponent):
     pass
@@ -25,9 +27,9 @@ class Craftable(BaseComponent):
     pass
 
 class Hammer(BaseComponent):
-    @classmethod
-    def on_attached(cls, entity, data):
-        data.beats = 0
+    defaults = {
+        'beat': 12
+    }
 
     @classmethod
     def beat(cls, entity, data):
