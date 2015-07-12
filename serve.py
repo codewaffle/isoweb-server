@@ -1,8 +1,6 @@
 from gevent.monkey import patch_all
 from logbook.queues import ZeroMQHandler
 
-from world.region import Region
-
 patch_all(ssl=False)
 
 import gevent
@@ -13,7 +11,7 @@ import logbook
 logbook.default_handler.level = logbook.DEBUG
 from network.player import PlayerWebsocket
 
-from world.island import Island
+from island import Island
 
 
 import logging
@@ -24,10 +22,8 @@ from web.app import create_app
 
 ws_zmq_handler = ZeroMQHandler('tcp://127.0.0.1:9009', bubble=True)
 
-region = Region()
 island = Island(42)
 island.log_handler = ws_zmq_handler
-region.add_island(island)
 
 def ws_app(env, start):
     if env['PATH_INFO'] == '/player':

@@ -4,7 +4,11 @@ from util import memoize
 
 class DataProxy(dict):
     def __init__(self, src):
-        dict.__setattr__(self, '_src', src)
+        self.__dict__.update({
+            '_src': src,
+            '_dirty': False
+        })
+
         super(DataProxy, self).__init__()
 
     def __missing__(self, key):
@@ -14,6 +18,7 @@ class DataProxy(dict):
         return self[item]
 
     def __setattr__(self, key, value):
+        self.__dict__['dirty'] = True
         self[key] = value
 
 

@@ -24,6 +24,7 @@ class Entity(object):
         self._component_data = {}
         self.entity_def = entity_def
         self.Transform = component.registry.Transform.bind(self, False)
+        self.island = None
         self._frozen = True
 
     @memoize
