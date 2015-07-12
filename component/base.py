@@ -18,10 +18,11 @@ class DataProxy(dict):
 
 
 class ComponentProxy(object):
-    def __init__(self, cls, entity):
+    def __init__(self, cls, entity, bind_def):
         self._memo_cache = {}
         self.cls = cls
         self.entity = entity
+        self.bind_def = bind_def
         cls.on_attached(entity, self.data)
 
     @property
@@ -30,9 +31,14 @@ class ComponentProxy(object):
         try:
             return self.entity._component_data[self.cls.__name__]
         except KeyError:
-            data = self.entity._component_data[self.cls.__name__] = DataProxy(
-                self.entity.entity_def._component_data[self.cls.__name__]
-            )
+            if self.bind_def:
+                data = self.entity._component_data[self.cls.__name__] = DataProxy(
+                    self.entity.entity_def._component_data[self.cls.__name__]
+                )
+            else:
+                data = self.entity._component_data[self.cls.__name__] = DataProxy(
+                    self.cls._data
+                )
             return data
 
     @memoize
@@ -62,5 +68,6 @@ class BaseComponent(object):
 
     @classmethod
     # not memoized - memoize on accessor! classmethods never ever garbage collect.
-    def proxy(cls, entity):
-        return ComponentProxy(cls, entity)
+    def bind(cls, entity, bind_def=True):
+        return ComponentProxy(cls, entity, bind_def)
+

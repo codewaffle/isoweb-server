@@ -45,3 +45,9 @@ class MeshMaterial(BaseComponent):
         'type': 'MeshLambertMaterial',
         'map': 'textures/dev.png',
     }
+
+class Transform(BaseComponent):
+    _data = {
+        'x': 1,
+        'y': 2
+    }

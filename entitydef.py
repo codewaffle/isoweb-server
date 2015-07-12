@@ -1,7 +1,7 @@
 import os
 import fnmatch
-from component import component_by_name
 from component.base import DataProxy
+import component
 
 
 class EntityDef(object):
@@ -27,7 +27,7 @@ class EntityDef(object):
     def load_components(self, data):
         for c in data:
             comp_name = c.pop('class')
-            comp_class = component_by_name(comp_name)
+            comp_class = component.get(comp_name)
             setattr(self, comp_name, comp_class)
 
             dataproxy = self._component_data[comp_name] = DataProxy(getattr(comp_class, '_data'))

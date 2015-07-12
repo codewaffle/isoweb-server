@@ -4,6 +4,7 @@ import os.path
 import sys
 from inspect import isclass, getmembers
 from component.base import BaseComponent
+from util import AttributeDict
 
 modules = glob.glob(os.path.dirname(__file__) + '/*.py')
 
@@ -16,16 +17,16 @@ from . import *
 def component_filter(m):
     return m != BaseComponent and isclass(m) and issubclass(m, BaseComponent)
 
-_components = {}
+registry = AttributeDict()
+
 def load_components():
+    g = globals()
     for mod in __all__:
         for clsname, cls in getmembers(getattr(sys.modules[__name__], mod), component_filter):
-            _components[clsname] = cls
-
+            registry[clsname] = cls
 
 load_components()
 
-def component_by_name(classname):
-    return _components[classname]
-
+def get(classname):
+    return registry[classname]
 
