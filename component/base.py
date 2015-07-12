@@ -2,11 +2,6 @@ from functools import partial
 from util import memoize
 
 
-# TODO !!! entity defs should also be able to have properties that sit between themselves and entities..
-# we may have a million entities that all have the same Sprite value but it might not be the
-# default Sprite component value... also TODO : Sprite component.
-
-
 class DataProxy(dict):
     def __init__(self, src):
         dict.__setattr__(self, '_src', src)

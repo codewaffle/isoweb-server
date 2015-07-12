@@ -27,19 +27,21 @@ class Craftable(BaseComponent):
     pass
 
 class Hammer(BaseComponent):
-    _data = {
-        'beat': 12
-    }
-
-    @classmethod
-    def beat(cls, entity, data):
-        print entity
-        print data
-        data.beats += 1
-        return 'beat return', data.beats
+    pass
 
 class Foliage(BaseComponent):
     pass
 
 class CharacterController(BaseComponent):
     pass
+
+class Mesh(BaseComponent):
+    _data = {
+        'model': 'models/quad.json',
+    }
+
+class MeshMaterial(BaseComponent):
+    _data = {
+        'type': 'MeshLambertMaterial',
+        'map': 'textures/dev.png',
+    }

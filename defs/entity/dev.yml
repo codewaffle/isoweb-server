@@ -1,6 +1,8 @@
 meatbag:
   components:
   - class: CharacterController
+  - class: Mesh
+  - class: MeshMaterial
 
 large_stick:
   components:
