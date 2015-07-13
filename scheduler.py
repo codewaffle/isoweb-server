@@ -11,8 +11,8 @@ class Scheduler(Greenlet):
 
     def _run(self):
         queue = self.queue
-        res = self.resolution
-        
+        resolution = self.resolution
+
         while True:
             now = time()
             while queue.peek()[0] < now:
@@ -31,9 +31,12 @@ class Scheduler(Greenlet):
                     res = f(d)
 
                 if res:
-                    queue.put((now+res, now, f, a, k))
+                    if res > 0:
+                        queue.put((now + res, now, f, a, k))
+                    else:  # negative reschedule supports fixed clock rate.
+                        queue.put((t - res, now, f, a, k))
 
-            sleep(res)
+            sleep(resolution)
 
     def schedule(self, at=None, wait=None, func=None, args=None, kwargs=None):
         print 'scheduled', at, func, args, kwargs
