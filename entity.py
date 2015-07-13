@@ -22,28 +22,18 @@ class Entity(object):
 
     def __init__(self, entity_def):
         self._memo_cache = {}
+        self.cache = AttributeDict()
         self._component_data = {}
         self.entity_def = entity_def
         self.island = None
 
-    @classmethod
-    def spawn(cls, entdef, components=None):
-        if isinstance(entdef, basestring):
-            entdef = definition_from_key(entdef)
+    @property
+    def components(self):
+        return self.entity_def.components | set(self._component_data.keys())
 
-        ent = cls(entdef)
-
-        if isinstance(components, list):
-            for comp_class in components:
-                setattr(ent, comp_class.__name__, comp_class.bind(ent, False))
-        elif isinstance(components, dict):
-            for comp_class, data in components.items():
-                comp = comp_class.bind(ent, False)
-                setattr(ent, comp_class.__name__, comp)
-                comp.data.update(data)
-
-        ent._frozen = True
-        return ent
+    def initialize(self):
+        for c in self.components:
+            getattr(self, c).initialize()
 
     @memoize
     def __getattr__(self, item):
@@ -56,7 +46,7 @@ class Entity(object):
         object.__setattr__(self, key, value)
 
     def has_component(self, key):
-        return hasattr(self.entity_def, key)
+        return key in self.components
 
     @memoize
     def reference(self):

@@ -28,7 +28,6 @@ class ComponentProxy(object):
         self.cls = cls
         self.entity = entity
         self.bind_def = bind_def
-        cls.on_attached(entity, self.data)
 
     @property
     @memoize
@@ -63,7 +62,7 @@ class BaseComponent(object):
     _data = {}
 
     @classmethod
-    def on_attached(cls, entity, data):
+    def initialize(cls, entity, data):
         pass
 
     @classmethod

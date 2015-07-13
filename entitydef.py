@@ -7,6 +7,7 @@ import component
 class EntityDef(object):
     def __init__(self, data):
         self._component_data = {}
+        self.components = set()
 
         if isinstance(data, dict):
             self.load_data(data)
@@ -25,10 +26,12 @@ class EntityDef(object):
                 setattr(self, k, v)
 
     def load_components(self, data):
+
         for c in data:
             comp_name = c.pop('class')
             comp_class = component.get(comp_name)
             setattr(self, comp_name, comp_class)
+            self.components.add(comp_name)
 
             dataproxy = self._component_data[comp_name] = DataProxy(getattr(comp_class, '_data'))
             dataproxy.update(c)
