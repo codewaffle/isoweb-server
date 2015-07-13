@@ -17,16 +17,16 @@ from . import *
 def component_filter(m):
     return m != BaseComponent and isclass(m) and issubclass(m, BaseComponent)
 
-registry = AttributeDict()
+c = AttributeDict()
 
 def load_components():
     g = globals()
     for mod in __all__:
         for clsname, cls in getmembers(getattr(sys.modules[__name__], mod), component_filter):
-            registry[clsname] = cls
+            c[clsname] = cls
 
 load_components()
 
 def get(classname):
-    return registry[classname]
+    return c[classname]
 

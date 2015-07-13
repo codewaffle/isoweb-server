@@ -44,6 +44,8 @@ tree:
   components:
   - class: Foliage
   - class: Choppable
+  - class: Mesh
+  - class: MeshMaterial
 
 crate:
   components:

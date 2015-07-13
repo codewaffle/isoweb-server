@@ -1,4 +1,5 @@
 from collections import defaultdict
+from entitydef import definition_from_key
 from util import memoize, AttributeDict
 import component
 
@@ -23,9 +24,26 @@ class Entity(object):
         self._memo_cache = {}
         self._component_data = {}
         self.entity_def = entity_def
-        self.Transform = component.registry.Transform.bind(self, False)
         self.island = None
-        self._frozen = True
+
+    @classmethod
+    def spawn(cls, entdef, components=None):
+        if isinstance(entdef, basestring):
+            entdef = definition_from_key(entdef)
+
+        ent = cls(entdef)
+
+        if isinstance(components, list):
+            for comp_class in components:
+                setattr(ent, comp_class.__name__, comp_class.bind(ent, False))
+        elif isinstance(components, dict):
+            for comp_class, data in components.items():
+                comp = comp_class.bind(ent, False)
+                setattr(ent, comp_class.__name__, comp)
+                comp.data.update(data)
+
+        ent._frozen = True
+        return ent
 
     @memoize
     def __getattr__(self, item):
