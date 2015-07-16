@@ -7,7 +7,7 @@ class DataProxy(dict):
     def __init__(self, src):
         self.__dict__.update({
             '_src': src,
-            '_dirty': {}
+            # '_dirty': {}
         })
 
         super(DataProxy, self).__init__()
@@ -22,7 +22,7 @@ class DataProxy(dict):
         self[key] = value
 
     def __setitem__(self, key, value):
-        self.__dict__['_dirty'][key] = time()
+        # self.__dict__['_dirty'][key] = time()
         dict.__setitem__(self, key, value)
 
 class ComponentProxy(object):

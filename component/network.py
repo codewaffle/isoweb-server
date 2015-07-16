@@ -1,21 +1,24 @@
+from collections import defaultdict
+from time import time
 from component import BaseComponent
 
 
 class NetworkViewer(BaseComponent):
-    _data = {
+    data = {
         'socket': None,
+        'visibility_radius': 300
     }
 
-    @classmethod
-    def connect(cls, entity, data, socket):
-        data.socket = socket
-        # send snapshot
 
-        # then update based upon...???
-    @classmethod
-    def update(cls, entity, data, schedule_info):
-        entity.island.schedule()
+class NetworkData(BaseComponent):
+    """
+    everything that has a transform will have a NetworkVars..
+    NetworkView will only see NetworkVars :/
+    need to move quadtree shittles here maybe.. maybe not. maybe two quadtrees!
 
-    @classmethod
-    def disconnect(cls, entity, data):
-        data.socket = None
+    (i'm actually thinking a few quadtrees, one per priority level.. as the higher priorities would be much more
+    sparsely populated the performance hit should be low)
+    """
+    data = {
+
+    }
