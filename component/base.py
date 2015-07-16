@@ -1,4 +1,5 @@
 from functools import partial
+from time import time
 from util import memoize
 
 
@@ -6,7 +7,7 @@ class DataProxy(dict):
     def __init__(self, src):
         self.__dict__.update({
             '_src': src,
-            '_dirty': False
+            '_dirty': {}
         })
 
         super(DataProxy, self).__init__()
@@ -18,9 +19,11 @@ class DataProxy(dict):
         return self[item]
 
     def __setattr__(self, key, value):
-        self.__dict__['dirty'] = True
         self[key] = value
 
+    def __setitem__(self, key, value):
+        self.__dict__['_dirty'][key] = time()
+        dict.__setitem__(self, key, value)
 
 class ComponentProxy(object):
     def __init__(self, cls, entity, bind_def):
@@ -74,4 +77,3 @@ class BaseComponent(object):
     # not memoized - memoize on accessor! classmethods never ever garbage collect.
     def bind(cls, entity, bind_def=True):
         return ComponentProxy(cls, entity, bind_def)
-

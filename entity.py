@@ -1,7 +1,5 @@
-from collections import defaultdict
-from entitydef import definition_from_key
 from util import memoize, AttributeDict
-import component
+
 
 class EntityReference(object):
     """An invalidate-able reference to an Entity.
@@ -29,11 +27,13 @@ class Entity(object):
     _frozen = False
 
     def __init__(self, entity_def):
-        self._memo_cache = {}
+        self._memo_cache = {}  # for @memoize
         self.cache = AttributeDict()
-        self.component_data = {}
         self.entity_def = entity_def
         self.island = None
+
+        # this is a name/DataProxy dict.
+        self.component_data = {}
 
     @property
     def components(self):
@@ -60,7 +60,3 @@ class Entity(object):
     @memoize
     def reference(self):
         return EntityReference(self)
-
-    @property
-    def data(self):
-        return self.component_data
