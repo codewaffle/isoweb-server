@@ -34,6 +34,7 @@ class Entity(object):
 
         # this is a name/DataProxy dict.
         self.component_data = {}
+        self.snapshots = {}
 
     @property
     def components(self):
@@ -60,3 +61,8 @@ class Entity(object):
     @memoize
     def reference(self):
         return EntityReference(self)
+
+    def changes_after(self, ts):
+        for ss_func, ss_time in self.snapshots.iteritems():
+            if ss_time > ts:
+                yield ss_func()
