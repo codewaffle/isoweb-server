@@ -17,7 +17,7 @@ class Equippable(BaseComponent):
     pass
 
 class Container(BaseComponent):
-    _data = {
+    data = {
         'capacity': 0
     }
 

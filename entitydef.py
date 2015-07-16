@@ -6,16 +6,13 @@ import component
 
 class EntityDef(object):
     def __init__(self, data):
-        self._component_data = {}
+        self.component_data = {}
         self.components = set()
 
         if isinstance(data, dict):
             self.load_data(data)
         else:
             raise RuntimeError
-
-    def __getattr__(self, item):
-        return self._components[item]
 
     def load_data(self, data):
         for k, v in data.iteritems():
@@ -33,7 +30,7 @@ class EntityDef(object):
             setattr(self, comp_name, comp_class)
             self.components.add(comp_name)
 
-            dataproxy = self._component_data[comp_name] = DataProxy(getattr(comp_class, '_data'))
+            dataproxy = self.component_data[comp_name] = DataProxy(comp_class.data)
             dataproxy.update(c)
 
 _defs = {}

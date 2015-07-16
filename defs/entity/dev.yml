@@ -2,7 +2,6 @@ meatbag:
   components:
   - class: CharacterController
   - class: Mesh
-  - class: MeshMaterial
 
 large_stick:
   components:
@@ -45,7 +44,13 @@ tree:
   - class: Foliage
   - class: Choppable
   - class: Mesh
-  - class: MeshMaterial
+    type: SkinnedMesh
+    model: models/tree.json
+    material:
+      type: MeshLambertMaterial
+      map: textures/tree.png
+    castShadow: true
+    receiveShadow: true
 
 crate:
   components:

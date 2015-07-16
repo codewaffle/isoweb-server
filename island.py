@@ -43,4 +43,4 @@ class Island(Greenlet):
 
         ent._frozen = True
         ent.initialize()
-        return ent
+        return ent.reference

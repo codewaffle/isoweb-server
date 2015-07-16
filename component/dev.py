@@ -12,7 +12,7 @@ class EntityOb(quadtree.ob):
 
 
 class Position(BaseComponent):
-    _data = {
+    data = {
         'x': 1,
         'y': 2,
         'r': 1
@@ -38,3 +38,6 @@ class Position(BaseComponent):
         data.y = y
         cls._update_quadtree(entity, data)
 
+    @classmethod
+    def find_nearby(cls, entity, data, radius, exclude=True):
+        pass

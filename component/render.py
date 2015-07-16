@@ -2,12 +2,10 @@ from component import BaseComponent
 
 
 class Mesh(BaseComponent):
-    _data = {
+    data = {
         'model': 'models/quad.json',
-    }
-
-class MeshMaterial(BaseComponent):
-    _data = {
-        'type': 'MeshLambertMaterial',
-        'map': 'textures/dev.png',
+        'material': {
+            'type': 'MeshLambertMaterial',
+            'map': 'textures/dev.png',
+        }
     }

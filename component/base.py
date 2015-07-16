@@ -33,15 +33,15 @@ class ComponentProxy(object):
     @memoize
     def data(self):
         try:
-            return self.entity._component_data[self.cls.__name__]
+            return self.entity.component_data[self.cls.__name__]
         except KeyError:
             if self.bind_def:
-                data = self.entity._component_data[self.cls.__name__] = DataProxy(
-                    self.entity.entity_def._component_data[self.cls.__name__]
+                data = self.entity.component_data[self.cls.__name__] = DataProxy(
+                    self.entity.entity_def.component_data[self.cls.__name__]
                 )
             else:
-                data = self.entity._component_data[self.cls.__name__] = DataProxy(
-                    self.cls._data
+                data = self.entity.component_data[self.cls.__name__] = DataProxy(
+                    self.cls.data
                 )
             return data
 
@@ -59,7 +59,7 @@ class ComponentProxy(object):
 
 
 class BaseComponent(object):
-    _data = {}
+    data = {}
 
     @classmethod
     def initialize(cls, entity, data):
