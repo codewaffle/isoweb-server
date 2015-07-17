@@ -1,10 +1,9 @@
 from gevent import Greenlet
 from entity import Entity
 from entitydef import definition_from_key
+from quadtree import Quadtree
 
 from scheduler import Scheduler
-
-import quadtree
 
 
 class Island(Greenlet):
@@ -12,7 +11,7 @@ class Island(Greenlet):
         super(Island, self).__init__()
         self.scheduler = Scheduler()
         self.entities = set()
-        self.quadtree = quadtree.quadtree()
+        self.quadtree = Quadtree()
 
     def _run(self):
         self.scheduler.start()

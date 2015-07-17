@@ -1,15 +1,15 @@
-import struct
 from time import time
 from component import BaseComponent
-import quadtree
+from quadtree import NodeItem
 
 
 class CharacterController(BaseComponent):
     pass
 
 
-class EntityOb(quadtree.ob):
+class EntityOb(NodeItem):
     def __init__(self, ent):
+        super(EntityOb, self).__init__()
         self.ent = ent
 
 
@@ -22,19 +22,24 @@ class Position(BaseComponent):
 
     @classmethod
     def _update(cls, entity, data):
+        # update quadtree position
         ob = entity.cache.ob
-        entity.island.quadtree.delete(ob)
-        ob.set_rect(data.x - data.r, data.y + data.r, data.x + data.r, data.y - data.r)
-        entity.island.quadtree.insert(ob)
+        ob.x = data.x
+        ob.y = data.y
+        ob.update_quadtree()
+
+        # update snapshot
         entity.snapshots[entity.Position.snapshot] = time()
 
     @classmethod
     def initialize(cls, entity, data):
-        entity.snapshots[entity.Position.snapshot] = 0
+        # quadtree junk
         ob = entity.cache.ob = EntityOb(entity)
-        ob.set_rect(data.x - data.r, data.y + data.r, data.x + data.r, data.y - data.r)
+        ob.x = data.x
+        ob.y = data.y
+        entity.island.quadtree.insert(ob)
 
-        entity.island.quadtree.insert(entity.cache.ob)
+        entity.snapshots[entity.Position.snapshot] = 0
 
     @classmethod
     def snapshot(cls, entity, data):
