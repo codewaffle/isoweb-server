@@ -4,8 +4,9 @@ def try_len(n):
     except:
         return n
 
+
 class Node(object):
-   # __slots__ = ('x', 'y', 'w', 'hw', 'd', 'p', 'nodes', 'items')
+    __slots__ = ('x', 'y', 'w', 'hw', 'd', 'p', 'nodes', 'items')
 
     def __init__(self, x, y, w, d, p):
         self.x = x
@@ -14,9 +15,6 @@ class Node(object):
         self.hw = w/2
         self.d = d
         self.p = p
-
-        if p is None:
-            print 'waaa'
 
         self.nodes = None
         self.items = set()
@@ -37,6 +35,7 @@ class Node(object):
         # -----
         # 0 -/- | 1 +/-
         #
+        self.nodes = True
 
         self.nodes = [
             Node(self.x - qw, self.y - qw, self.hw, nd, self),
@@ -114,10 +113,7 @@ class Node(object):
         """
         items = set()
 
-        if not self.nodes:
-            print self.d, self.items, self.nodes
-            #print 'fuck'
-            return
+        assert bool(self.nodes)
 
         for n in self.nodes:
             if n.nodes:  # subnodes? don't collapse
@@ -127,12 +123,13 @@ class Node(object):
                 items |= n.items
 
         if len(items) < 5:
-            # print 'collapse', self.nodes, self.items
-            for n in self.nodes:
-                print n
             self.nodes = None
-            self.items = items
+            self.items = set()
 
+            for i in items:
+                self.insert(i)
+
+            self.nodes = None
 
 class NodeItem(object):
     def __init__(self):
@@ -142,6 +139,7 @@ class NodeItem(object):
 
     def update_quadtree(self):
         node = self.node
+
         while node.x + node.hw < self.x or \
             node.x - node.hw > self.x or \
             node.y + node.hw < self.y or \
@@ -149,10 +147,8 @@ class NodeItem(object):
 
             if node.p is None:
                 node.expand()
-                print 'expand'
-                continue
-
-            node = node.p
+            else:
+                node = node.p
 
         if node != self.node:
             self.node.remove(self)
