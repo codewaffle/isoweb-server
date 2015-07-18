@@ -43,6 +43,14 @@ class Vector2(object):
     def dot(self, other):
         return self.x*other.x+self.y*other.y
 
+    def update(self, other=0, y=None):
+        if y:
+            self.x = other,
+            self.y = y
+        else:
+            self.x = other.x
+            self.y = other.y
+
     @property
     def magnitude(self):
         return sqrt(self.dot(self))
@@ -120,25 +128,26 @@ class Rect(object):
     def center(self):
         return Vector2((self.right - self.left) / 2., (self.top - self.bottom) / 2.)
 
+class AABB(object):
+    __slots__ = ('center', 'hwidth', 'hheight')
 
-class AABS(object):
-    """
-    Axis Aligned Bounding SQUARE...
-    """
-    __slots__ = ('center', 'hwidth')
-
-    def __init__(self, center, hwidth=None):
-        if isinstance(center, AABS):
+    def __init__(self, center, hwidth=0, hheight=None):
+        if isinstance(center, AABB):
             self.center = Vector2(center.center)
             self.hwidth = center.hwidth
+            self.hheight = center.hheight
         else:
             self.center = center
             self.hwidth = hwidth
 
+            if hheight is None:
+                self.hheight = hwidth
+            else:
+                self.hheight = hheight
+
     def intersects(self, other):
-        w2 = (self.hwidth + other.hwidth) * 2
-        return (fabs(self.center.x - other.center.x) * 2 < w2) and \
-               (fabs(self.center.y - other.center.y) * 2 < w2)
+        return (fabs(self.center.x - other.center.x) * 2 < (self.hwidth + other.hwidth) * 2) and \
+               (fabs(self.center.y - other.center.y) * 2 < (self.hheight + other.hheight) * 2)
 
     def __add__(self, other):
         self.center += other
@@ -148,4 +157,4 @@ class AABS(object):
 
     def contains(self, point):
         return self.center.x - self.hwidth < point.x < self.center.x + self.hwidth and \
-            self.center.y - self.hwidth < point.y < self.center.y + self.hwidth
+               self.center.y - self.hheight < point.y < self.center.y + self.hheight

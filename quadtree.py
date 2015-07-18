@@ -1,4 +1,4 @@
-from mathx import AABS, Vector2
+from mathx import AABB, Vector2
 
 
 def try_len(n):
@@ -28,6 +28,18 @@ class Node(object):
             try_len(self.nodes)
         )
 
+    def index(self, point):
+        if point.y < self.box.center.y:
+            if point.x < self.box.center.x:
+                return 0
+            else:
+                return 1
+        else:
+            if point.x < self.box.center.x:
+                return 2
+            else:
+                return 3
+
     def subdivide(self, n=1):
         qw = self.box.hwidth / 2
         nd = self.d + 1
@@ -40,10 +52,10 @@ class Node(object):
         self.nodes = True
 
         self.nodes = [
-            Node(AABS(Vector2(self.box.center.x - qw, self.box.center.y - qw), qw), nd, self),
-            Node(AABS(Vector2(self.box.center.x + qw, self.box.center.y - qw), qw), nd, self),
-            Node(AABS(Vector2(self.box.center.x - qw, self.box.center.y + qw), qw), nd, self),
-            Node(AABS(Vector2(self.box.center.x + qw, self.box.center.y + qw), qw), nd, self),
+            Node(AABB(Vector2(self.box.center.x - qw, self.box.center.y - qw), qw), nd, self),
+            Node(AABB(Vector2(self.box.center.x + qw, self.box.center.y - qw), qw), nd, self),
+            Node(AABB(Vector2(self.box.center.x - qw, self.box.center.y + qw), qw), nd, self),
+            Node(AABB(Vector2(self.box.center.x + qw, self.box.center.y + qw), qw), nd, self),
         ]
 
         x = self.items
@@ -80,21 +92,14 @@ class Node(object):
 
     def insert(self, item):
         if self.nodes:
-            if item.y < self.box.center.y:
-                if item.x < self.box.center.x:
-                    return self.nodes[0].insert(item)
-                else:
-                    return self.nodes[1].insert(item)
-            else:
-                if item.x < self.box.center.x:
-                    return self.nodes[2].insert(item)
-                else:
-                    return self.nodes[3].insert(item)
+            index = self.index(item.pos)
+            self.nodes[index].insert(item)
+            return
 
         self.items.add(item)
         item.node = self
 
-        if len(self.items) >= 5:
+        if len(self.items) >= 5 and self.box.hwidth > 1:
             self.subdivide()
 
     def remove(self, item):
@@ -130,16 +135,29 @@ class Node(object):
 
             self.nodes = None
 
+    def _q_aabb(self, aabb, output):
+        # completely outside of this quad
+        if not self.box.intersects(aabb):
+            return
+
+        if self.items:
+            output |= set((i for i in self.items if aabb.contains(i.pos)))
+            return
+
+        if self.nodes:
+            for n in self.nodes:
+                n._q_aabb(aabb, output)
+            return
+
 class NodeItem(object):
     def __init__(self):
         self.node = None
-        self.x = 0
-        self.y = 0
+        self.pos = Vector2(0, 0)
 
     def update_quadtree(self):
         node = self.node
 
-        while not node.box.contains(self):
+        while not node.box.contains(self.pos):
             if node.p is None:
                 node.expand()
             else:
@@ -152,7 +170,12 @@ class NodeItem(object):
 
 class Quadtree(object):
     def __init__(self):
-        self.root = Node(AABS(Vector2(0, 0), 65536), 0, None)
+        self.root = Node(AABB(Vector2(0, 0), 65536), 0, None)
 
     def insert(self, item):
         self.root.insert(item)
+
+    def query_aabb(self, aabb):
+        result = set()
+        self.root._q_aabb(aabb, result)
+        return result
