@@ -1,5 +1,5 @@
 # this file should mirror mathx.coffee
-from math import floor, ceil, sqrt
+from math import floor, ceil, sqrt, fabs
 
 
 class RNG(object):
@@ -20,9 +20,13 @@ class RNG(object):
 class Vector2(object):
     __slots__ = ['x', 'y']
 
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+    def __init__(self, x=None, y=None):
+        if isinstance(x, Vector2):
+            self.x = x.x
+            self.y = x.y
+        else:
+            self.x = float(x or 0.)
+            self.y = float(y or 0.)
 
     def __sub__(self, other):
         return Vector2(self.x - other.x, self.y - other.y)
@@ -115,3 +119,33 @@ class Rect(object):
     @property
     def center(self):
         return Vector2((self.right - self.left) / 2., (self.top - self.bottom) / 2.)
+
+
+class AABS(object):
+    """
+    Axis Aligned Bounding SQUARE...
+    """
+    __slots__ = ('center', 'hwidth')
+
+    def __init__(self, center, hwidth=None):
+        if isinstance(center, AABS):
+            self.center = Vector2(center.center)
+            self.hwidth = center.hwidth
+        else:
+            self.center = center
+            self.hwidth = hwidth
+
+    def intersects(self, other):
+        w2 = (self.hwidth + other.hwidth) * 2
+        return (fabs(self.center.x - other.center.x) * 2 < w2) and \
+               (fabs(self.center.y - other.center.y) * 2 < w2)
+
+    def __add__(self, other):
+        self.center += other
+
+    def __sub__(self, other):
+        self.center -= other
+
+    def contains(self, point):
+        return self.center.x - self.hwidth < point.x < self.center.x + self.hwidth and \
+            self.center.y - self.hwidth < point.y < self.center.y + self.hwidth
