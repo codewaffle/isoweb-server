@@ -14,17 +14,21 @@ cdef class Node:
         self.d = d
         self.p = p
 
-        self.nodes = None
+        self.node0 = None
+        self.node1 = None
+        self.node2 = None
+        self.node3 = None
+
         self.items = set()
 
     def __repr__(self):
-        return 'Node({}, {}, num_items={}, num_nodes={})'.format(
+        return 'Node({}, {}, num_items={}, nodes={})'.format(
             self.box, self.d,
             try_len(self.items),
-            try_len(self.nodes)
+            self.node0 is not None
         )
 
-    def index(self, Vector2 point):
+    cdef int index(self, Vector2 point):
         if point.y < self.box.center.y:
             if point.x < self.box.center.x:
                 return 0
@@ -36,7 +40,20 @@ cdef class Node:
             else:
                 return 3
 
-    def subdivide(self, n=1):
+    cdef Node subnode(self, Vector2 point):
+        if point.y < self.box.center.y:
+            if point.x < self.box.center.x:
+                return self.node0
+            else:
+                return self.node1
+        else:
+            if point.x < self.box.center.x:
+                return self.node2
+            else:
+                return self.node3
+
+
+    cdef subdivide(self, int n=1):
         qw = self.box.hwidth / 2
         nd = self.d + 1
 
@@ -45,21 +62,20 @@ cdef class Node:
         # -----
         # 0 -/- | 1 +/-
         #
-        self.nodes = True
 
-        self.nodes = [
-            Node(AABB(Vector2(self.box.center.x - qw, self.box.center.y - qw), qw), nd, self),
-            Node(AABB(Vector2(self.box.center.x + qw, self.box.center.y - qw), qw), nd, self),
-            Node(AABB(Vector2(self.box.center.x - qw, self.box.center.y + qw), qw), nd, self),
-            Node(AABB(Vector2(self.box.center.x + qw, self.box.center.y + qw), qw), nd, self),
-        ]
+        self.node0 = Node(AABB(Vector2(self.box.center.x - qw, self.box.center.y - qw), qw), nd, self)
+        self.node1 = Node(AABB(Vector2(self.box.center.x + qw, self.box.center.y - qw), qw), nd, self)
+        self.node2 = Node(AABB(Vector2(self.box.center.x - qw, self.box.center.y + qw), qw), nd, self)
+        self.node3 = Node(AABB(Vector2(self.box.center.x + qw, self.box.center.y + qw), qw), nd, self)
 
         x = self.items
         self.items = None
 
         if n > 1:
-            for node in self.nodes:
-                node.subdivide(n - 1)
+            self.node0.subdivide(n-1)
+            self.node1.subdivide(n-1)
+            self.node2.subdivide(n-1)
+            self.node3.subdivide(n-1)
 
         if x:
             for item in x:
@@ -70,26 +86,35 @@ cdef class Node:
 
         self.box.hwidth *= 2
 
-        if self.nodes:
-            prev = self.nodes[:]
+        if self.node0:
+            prev = self.node0, self.node1, self.node2, self.node3
 
             self.subdivide(2)
 
             # reattach manually for maximum speed
-            n0 = self.nodes[0].nodes[3] = prev[0]
-            n1 = self.nodes[1].nodes[2] = prev[1]
-            n2 = self.nodes[2].nodes[1] = prev[2]
-            n3 = self.nodes[3].nodes[0] = prev[3]
+            n0 = self.node0.node3 = prev[0]
+            n1 = self.node1.node2 = prev[1]
+            n2 = self.node2.node1 = prev[2]
+            n3 = self.node3.node0 = prev[3]
 
-            n0.p = self.nodes[0]
-            n1.p = self.nodes[1]
-            n2.p = self.nodes[2]
-            n3.p = self.nodes[3]
+            n0.p = self.node0
+            n1.p = self.node1
+            n2.p = self.node2
+            n3.p = self.node3
+
+    def get_node(self, index):
+        if index == 0:
+            return self.node0
+        if index == 1:
+            return self.node1
+        if index == 2:
+            return self.node2
+        if index == 3:
+            return self.node3
 
     def insert(self, NodeItem item):
-        if self.nodes:
-            index = self.index(item.pos)
-            self.nodes[index].insert(item)
+        if self.node0:
+            self.subnode(item.pos).insert(item)
             return
 
         self.items.add(item)
@@ -111,38 +136,36 @@ cdef class Node:
         Check if < threshold items are in subnodes.. if so, steal them and demolish the subnodes.
         :return:
         """
-        items = set()
+        assert bool(self.node0)
 
-        assert bool(self.nodes)
+        # do not collapse nodes with subnodes
+        if self.node0.node0 or self.node1.node0 or self.node2.node0 or self.node3.node0:
+            return
 
-        for n in self.nodes:
-            if n.nodes:  # subnodes? don't collapse
-                return
-
-            if n.items:
-                items |= n.items
+        items = self.node0.items | self.node1.items | self.node2.items | self.node3.items
 
         if len(items) < 5:
-            self.nodes = None
-            self.items = set()
+            self.items = items
 
             for i in items:
-                self.insert(i)
+                i.node = self
 
-            self.nodes = None
+            self.node0 = self.node1 = self.node2 = self.node3 = None
 
-    def _q_aabb(self, AABB aabb, set output):
+    cdef void q_aabb(self, AABB aabb, set output):
         # completely outside of this quad
         if not self.box.intersects(aabb):
             return
 
         if self.items:
-            output |= set((i for i in self.items if aabb.contains(i.pos)))
+            output |= {i for i in self.items if aabb.contains(i.pos)}
             return
 
-        if self.nodes:
-            for n in self.nodes:
-                n._q_aabb(aabb, output)
+        if self.node0:
+            self.node0.q_aabb(aabb, output)
+            self.node1.q_aabb(aabb, output)
+            self.node2.q_aabb(aabb, output)
+            self.node3.q_aabb(aabb, output)
             return
 
 cdef class NodeItem:
@@ -171,7 +194,15 @@ cdef class Quadtree:
     def insert(self, NodeItem item):
         self.root.insert(item)
 
-    def query_aabb(self, AABB aabb):
-        result = set()
-        self.root._q_aabb(aabb, result)
+    cdef query_aabb(self, AABB aabb):
+        cdef set result = set()
+        self.root.q_aabb(aabb, result)
+        return result
+
+    cpdef query_aabb_ents(self, AABB aabb, set exclude):
+        cdef set result = {i.ent for i in self.query_aabb(aabb)}
+
+        if exclude:
+            result -= exclude
+
         return result
