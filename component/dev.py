@@ -1,8 +1,10 @@
 from time import time
 from component import BaseComponent
-from mathx import AABB, Vector2
-from quadtree import NodeItem
+from mathx import Vector2
+from mathx import AABB
 from random import random
+from mathx.quadtree import NodeItem
+
 
 class CharacterController(BaseComponent):
     pass
@@ -10,7 +12,7 @@ class CharacterController(BaseComponent):
 
 class EntityOb(NodeItem):
     def __init__(self, ent):
-        super(EntityOb, self).__init__()
+        NodeItem.__init__(self)
         self.ent = ent
 
     def __repr__(self):

@@ -1,7 +1,7 @@
 from gevent import Greenlet
 from entity import Entity
 from entitydef import definition_from_key
-from quadtree import Quadtree
+from mathx import Quadtree
 
 from scheduler import Scheduler
 

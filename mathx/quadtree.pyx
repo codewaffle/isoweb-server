@@ -1,5 +1,5 @@
-from mathx import AABB, Vector2
-
+from mathx.aabb import AABB
+from mathx.vector2 import Vector2
 
 def try_len(n):
     try:
@@ -8,11 +8,7 @@ def try_len(n):
         return n
 
 
-
-
-class Node(object):
-    __slots__ = ('box', 'd', 'p', 'nodes', 'items')
-
+cdef class Node:
     def __init__(self, box, d, p):
         self.box = box
         self.d = d
@@ -28,7 +24,7 @@ class Node(object):
             try_len(self.nodes)
         )
 
-    def index(self, point):
+    def index(self, Vector2 point):
         if point.y < self.box.center.y:
             if point.x < self.box.center.x:
                 return 0
@@ -90,7 +86,7 @@ class Node(object):
             n2.p = self.nodes[2]
             n3.p = self.nodes[3]
 
-    def insert(self, item):
+    def insert(self, NodeItem item):
         if self.nodes:
             index = self.index(item.pos)
             self.nodes[index].insert(item)
@@ -102,7 +98,7 @@ class Node(object):
         if len(self.items) >= 8 and self.box.hwidth > 1:
             self.subdivide()
 
-    def remove(self, item):
+    def remove(self, NodeItem item):
         item.node = None
 
         self.items.remove(item)
@@ -135,7 +131,7 @@ class Node(object):
 
             self.nodes = None
 
-    def _q_aabb(self, aabb, output):
+    def _q_aabb(self, AABB aabb, set output):
         # completely outside of this quad
         if not self.box.intersects(aabb):
             return
@@ -149,7 +145,7 @@ class Node(object):
                 n._q_aabb(aabb, output)
             return
 
-class NodeItem(object):
+cdef class NodeItem:
     def __init__(self):
         self.node = None
         self.pos = Vector2(0, 0)
@@ -168,14 +164,14 @@ class NodeItem(object):
             node.insert(self)
 
 
-class Quadtree(object):
+cdef class Quadtree:
     def __init__(self):
         self.root = Node(AABB(Vector2(0, 0), 65536), 0, None)
 
-    def insert(self, item):
+    def insert(self, NodeItem item):
         self.root.insert(item)
 
-    def query_aabb(self, aabb):
+    def query_aabb(self, AABB aabb):
         result = set()
         self.root._q_aabb(aabb, result)
         return result
