@@ -30,12 +30,10 @@ class Island(Greenlet):
 
         if isinstance(components, list):
             for comp_class in components:
-                setattr(ent, comp_class.__name__, comp_class.bind(ent, False))
+                ent.add_component(comp_class, initialize=False)
         elif isinstance(components, dict):
             for comp_class, data in components.items():
-                comp = comp_class.bind(ent, False)
-                setattr(ent, comp_class.__name__, comp)
-                comp.data.update(data)
+                ent.add_component(comp_class, initialize=False, **data)
 
         self.entities.add(ent)
         ent.island = self

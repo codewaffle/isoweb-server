@@ -44,6 +44,10 @@ class Entity(object):
         for c in self.components:
             getattr(self, c).initialize()
 
+    @property
+    def scheduler(self):
+        return self.island.scheduler
+
     @memoize
     def __getattr__(self, item):
         # return memoized component proxy
@@ -56,6 +60,16 @@ class Entity(object):
 
     def has_component(self, key):
         return key in self.components
+
+    def add_component(self, comp_class, initialize=True, **data):
+        comp = comp_class.bind(self, False)
+        object.__setattr__(self, comp_class.__name__, comp)
+        comp.data.update(data)
+
+        if initialize:
+            comp.initialize()
+
+        return comp
 
     @property
     @memoize
