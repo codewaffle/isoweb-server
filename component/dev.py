@@ -63,9 +63,9 @@ class Position(BaseComponent):
         cls.q_aabb.hwidth = cls.q_aabb.hheight = radius
 
         if exclude:
-            return [ob.ent for ob in entity.island.quadtree.query_aabb(cls.q_aabb)if ob.ent is not entity]
+            return set(ob.ent for ob in entity.island.quadtree.query_aabb(cls.q_aabb)if ob.ent is not entity)
         else:
-            return [ob.ent for ob in entity.island.quadtree.query_aabb(cls.q_aabb)]
+            return set(ob.ent for ob in entity.island.quadtree.query_aabb(cls.q_aabb))
 
     @classmethod
     def get_pos(cls, entity, data, copy=False):

@@ -99,7 +99,7 @@ class Node(object):
         self.items.add(item)
         item.node = self
 
-        if len(self.items) >= 5 and self.box.hwidth > 1:
+        if len(self.items) >= 8 and self.box.hwidth > 1:
             self.subdivide()
 
     def remove(self, item):
