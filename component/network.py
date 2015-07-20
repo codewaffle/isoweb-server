@@ -1,8 +1,11 @@
 from collections import defaultdict
 from random import random
+import struct
 from time import time
+import gevent
 from component import BaseComponent
 from entity import ObFlags
+import packet_types
 
 
 class NetworkViewer(BaseComponent):
@@ -12,8 +15,58 @@ class NetworkViewer(BaseComponent):
     }
 
     @classmethod
-    def gather(cls, entity, data):
-        entity.Position.find_nearby(data.visibility_radius, flags=ObFlags.REPLICATE)
+    def initialize(cls, entity, data):
+        entity.cache.network_viewer = {}
+        entity.scheduler.schedule(func=entity.NetworkViewer.update)
+
+    @classmethod
+    def update(cls, entity, data, dt):
+        now = time()
+
+        cache = entity.cache.network_viewer
+
+        visible = entity.Position.find_nearby(data.visibility_radius, flags=ObFlags.REPLICATE)
+
+        # cur = set(cache.keys())
+        # exit = cur - visible
+        # enter = visible - cur
+
+        # loop through previously-and-still-visible entities and only process those that are due.
+        # entities that were not previously visible but cached can still sit around in the cache and only get
+        # delta updated! TODO : we need a packet for visibility.
+        for ref in visible:
+            when, last = cache.get(ref, (now, 0))
+
+            # not ready to check this yet
+            if when < now:
+                continue
+
+            packet_fmt = []
+            packet_data = []
+
+            # append changes.
+            for fmt, data in ref.changes_after(last):
+                packet_fmt.append(fmt)
+                packet_data.extend(data)
+
+            # queue up again based on priority or something.
+            cache[ref] = now + 1/30., now  # for now, just ensure we update faster than the network rate so it's 1:1
+
+            if packet_fmt:
+                # entity update header
+                packet_fmt = ['HII'] + packet_fmt
+                packet_data = [packet_types.ENTITY_UPDATE, ref.island_id, ref.id] + packet_data
+
+                # SEND
+                print ':' + repr(struct.pack(''.join(packet_fmt), *packet_data))
+
+        # TODO : cleanup old entities?
+        # TODO : send the 'go invisible' packet here.. at some point we'll flush it from cache and
+        # TODO : also tell the client to flush it
+
+        # update @ 20hz
+        return 1/20.
+
 
 
 class NetworkManager(BaseComponent):
@@ -23,12 +76,3 @@ class NetworkManager(BaseComponent):
     @classmethod
     def initialize(cls, entity, data):
         entity.ob.flags |= ObFlags.REPLICATE
-        entity.cache.network_last = time()
-        entity.scheduler.schedule(func=entity.NetworkManager.update)
-
-    @classmethod
-    def update(cls, entity, data, dt):
-        print 'replicate, wait 5s, waited: ', dt
-        return -5.5 + random()
-
-

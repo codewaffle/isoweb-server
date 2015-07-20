@@ -39,7 +39,7 @@ class Scheduler(Greenlet):
             sleep(resolution)
 
     def schedule(self, at=None, wait=None, func=None, args=None, kwargs=None):
-        print 'scheduled', at, func, args, kwargs
+        # print 'scheduled', at, func, args, kwargs
         now = when = time()
 
         if at:

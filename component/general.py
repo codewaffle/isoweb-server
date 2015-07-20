@@ -2,12 +2,13 @@ from random import random
 from time import time
 from component import BaseComponent
 from mathx import AABB, Vector2, NodeItem
+import packet_types
 
 
 class EntityOb(NodeItem):
     def __init__(self, ent):
         NodeItem.__init__(self)
-        self.ent = ent
+        self.ent = ent.reference
 
     def __repr__(self):
         return 'EntityOb({})'.format(repr(self.pos))
@@ -36,16 +37,17 @@ class Position(BaseComponent):
     @classmethod
     def initialize(cls, entity, data):
         # quadtree junk
-        ob = entity.ob = EntityOb(entity)
+        ob = entity.ob
         ob.pos.x = data.x or random() - 0.5
         ob.pos.y = data.y or random() - 0.5
+
         entity.island.quadtree.insert(ob)
 
         entity.snapshots[entity.Position.snapshot] = 0
 
     @classmethod
     def snapshot(cls, entity, data):
-        return 'ff', data.x, data.y
+        return 'Hfff', (packet_types.POSITION_UPDATE, data.x, data.y, data.r)
 
     @classmethod
     def teleport(cls, entity, data, x, y):

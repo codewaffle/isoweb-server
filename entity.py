@@ -31,15 +31,19 @@ class Entity(object):
     _frozen = False
 
     def __init__(self, entity_def):
+        from component.general import EntityOb
+
         self._memo_cache = {}  # for @memoize
         self.cache = AttributeDict()
         self.entity_def = entity_def
         self.island = None
+        self.island_id = 0  # TODO : use this.
+        self.id = id(self)
 
         # this is a name/DataProxy dict.
         self.component_data = {}
         self.snapshots = {}
-        self.ob = None
+        self.ob = EntityOb(self)
 
     @property
     def components(self):

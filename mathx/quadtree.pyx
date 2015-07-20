@@ -168,6 +168,7 @@ cdef class Node:
             self.node3.q_aabb(aabb, output, flags)
             return
 
+
 cdef class NodeItem:
     def __init__(self):
         self.node = None
