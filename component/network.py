@@ -42,9 +42,9 @@ class NetworkViewer(BaseComponent):
             packet_data = []
 
             # append changes.
-            for fmt, data in ref.changes_after(last):
+            for fmt, pdata in ref.changes_after(last):
                 packet_fmt.append(fmt)
-                packet_data.extend(data)
+                packet_data.extend(pdata)
 
             # queue up again based on priority or something.
             cache[ref] = now + 1/30., now  # for now, just ensure we update faster than the network rate so it's 1:1
@@ -55,7 +55,7 @@ class NetworkViewer(BaseComponent):
                 packet_data = [packet_types.ENTITY_UPDATE, ref.island_id, ref.id] + packet_data + [0]
 
                 # SEND
-                print repr(struct.pack(''.join(packet_fmt), *packet_data))
+                data.socket.send(struct.pack(''.join(packet_fmt), *packet_data))
 
         # TODO : cleanup old entities?
         # TODO : send the 'go invisible' packet here.. at some point we'll flush it from cache and

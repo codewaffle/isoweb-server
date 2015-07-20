@@ -3,8 +3,8 @@ import struct
 
 from geventwebsocket import WebSocketError
 import logbook
+from component import c
 
-from entity.retired.player import Player
 import packet_types
 
 packet_header = struct.Struct('>H')
@@ -44,6 +44,7 @@ class PlayerWebsocket(object):
         return False
 
     def send(self, data):
+        # DEBUG?
         try:
             self.ws.send(data, binary=True)
         except WebSocketError:
@@ -52,25 +53,14 @@ class PlayerWebsocket(object):
     def handle_login(self):
         # assign player to island, send initial bla bla bla
 
-        self.player = Player()
-        self.player.id = random.randint(1, 1234)
-        #self.player.position.x = random.random() * 50
-        #self.player.position.y = random.random() * 50
-        self.player.position.x = 0.1
-        self.player.position.y = 0.1
-        self.player.bearing = random.random() * 360 - 180
-        self.player.socket = self
-        self.player.set_dirty()
-        self.island.add_entity(self.player)
-
-        # TODO : this should be spawned by the island, i think..
-        self.player.spawn([self.player])
+        self.entity = self.island.spawn('meatbag', {
+            c.Position: {'x': -10 + random.random() * 20., 'y': -10 + random.random() * 20.},
+            c.NetworkViewer: {'socket': self},
+            c.NetworkManager: {}
+        })
 
     def handle_logout(self):
         pass
 
     def on_disconnect(self):
-        if self.player and self.player.island:
-            self.player.island.remove_entity(self.player)
-
         print '{} disconnected'.format(self)
