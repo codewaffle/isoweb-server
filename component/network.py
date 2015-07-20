@@ -1,8 +1,5 @@
-from collections import defaultdict
-from random import random
 import struct
 from time import time
-import gevent
 from component import BaseComponent
 from entity import ObFlags
 import packet_types
@@ -38,7 +35,7 @@ class NetworkViewer(BaseComponent):
             when, last = cache.get(ref, (now, 0))
 
             # not ready to check this yet
-            if when < now:
+            if when > now:
                 continue
 
             packet_fmt = []
@@ -54,19 +51,18 @@ class NetworkViewer(BaseComponent):
 
             if packet_fmt:
                 # entity update header
-                packet_fmt = ['HII'] + packet_fmt
-                packet_data = [packet_types.ENTITY_UPDATE, ref.island_id, ref.id] + packet_data
+                packet_fmt = ['>HII'] + packet_fmt + ['H']
+                packet_data = [packet_types.ENTITY_UPDATE, ref.island_id, ref.id] + packet_data + [0]
 
                 # SEND
-                print ':' + repr(struct.pack(''.join(packet_fmt), *packet_data))
+                print repr(struct.pack(''.join(packet_fmt), *packet_data))
 
         # TODO : cleanup old entities?
         # TODO : send the 'go invisible' packet here.. at some point we'll flush it from cache and
         # TODO : also tell the client to flush it
 
         # update @ 20hz
-        return 1/20.
-
+        return -1/20.
 
 
 class NetworkManager(BaseComponent):
