@@ -29,6 +29,9 @@ class PlayerWebsocket(object):
         self.handle_logout()
 
     def recv(self):
+        if self.ws is None:
+            return None
+
         data = self.ws.receive()
         if data is None:
             return None
@@ -44,10 +47,14 @@ class PlayerWebsocket(object):
         return False
 
     def send(self, data):
+        if self.ws is None:
+            return
+
         # DEBUG?
         try:
             self.ws.send(data, binary=True)
         except WebSocketError:
+            self.ws = None
             return self.on_disconnect()
 
     def handle_login(self):
@@ -63,4 +70,5 @@ class PlayerWebsocket(object):
         pass
 
     def on_disconnect(self):
+        self.ws = None
         print '{} disconnected'.format(self)
