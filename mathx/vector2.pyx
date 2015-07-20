@@ -1,3 +1,5 @@
+from libc.math cimport sqrt
+
 cdef class Vector2:
     def __init__(self, x=0, y=0.):
         self.x, self.y = x,y
@@ -25,3 +27,15 @@ cdef class Vector2:
 
     def __repr__(self):
         return 'Vector2({s.x}, {s.y})'.format(s=self)
+
+    @property
+    def mag2(self):
+        return self.x*self.x + self.y*self.y
+
+    @property
+    def magnitude(self):
+        return sqrt(self.x*self.x + self.y*self.y)
+
+    @property
+    def normalized(self):
+        return self / self.magnitude
