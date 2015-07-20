@@ -48,8 +48,7 @@ tree:
     type: SkinnedMesh
     model: models/tree.json
     material:
-      type: MeshLambertMaterial
-      map: textures/tree.png
+      map: textures/dev.png
 
 crate:
   components:
