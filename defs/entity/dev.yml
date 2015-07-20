@@ -1,7 +1,8 @@
 meatbag:
   components:
   - class: CharacterController
-  - class: Mesh
+  - class: Sprite
+    sprite: sprites/player.png
 
 large_stick:
   components:
@@ -49,8 +50,6 @@ tree:
     material:
       type: MeshLambertMaterial
       map: textures/tree.png
-    castShadow: true
-    receiveShadow: true
 
 crate:
   components:
