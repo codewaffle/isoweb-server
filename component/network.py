@@ -72,3 +72,14 @@ class NetworkManager(BaseComponent):
     @classmethod
     def initialize(cls, entity, data):
         entity.ob.flags |= ObFlags.REPLICATE
+
+
+def string_replicator(func, attr_name):
+    name_len = len(attr_name)
+
+    def inner():
+        res = str(func())
+        res_len = len(res)
+        return 'HB{}sH{}s'.format(name_len, res_len), [packet_types.STRING_UPDATE, name_len, attr_name, res_len, res]
+
+    return inner

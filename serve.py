@@ -1,3 +1,4 @@
+import random
 from gevent.monkey import patch_all
 
 patch_all(ssl=False)
@@ -19,6 +20,7 @@ from network.player import PlayerWebsocket
 from entitydef import load_defs
 load_defs()
 
+from component import c
 from island import Island
 
 
@@ -33,6 +35,14 @@ ws_zmq_handler = ZeroMQHandler('tcp://127.0.0.1:9009', bubble=True)
 island = Island()
 island.log_handler = ws_zmq_handler
 island.start()
+
+# spawn a buncha treez
+for x in range(200):
+    ent = island.spawn('tree', {
+        c.Position: {'x': random.random() * 200., 'y': random.random() * 200.},
+        c.NetworkManager: {}
+    })
+
 
 def ws_app(env, start):
     if env['PATH_INFO'] == '/player':

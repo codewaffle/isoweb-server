@@ -82,6 +82,9 @@ class Entity(object):
         return EntityReference(self)
 
     def changes_after(self, ts):
+        ret = []
         for ss_func, ss_time in self.snapshots.iteritems():
-            if ss_time > ts:
-                yield ss_func()
+            if ss_time >= ts:
+                ret.append(ss_func())
+
+        return ret

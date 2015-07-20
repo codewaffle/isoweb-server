@@ -1,7 +1,8 @@
 from functools import partial
 from time import time
 from component import BaseComponent
-from component.base import string_replicator
+from component.network import string_replicator
+
 
 class Mesh(BaseComponent):
     data = {

@@ -1,6 +1,5 @@
 from functools import partial
-from time import time
-import packet_types
+
 from util import memoize
 
 
@@ -60,17 +59,6 @@ class ComponentProxy(object):
     @memoize
     def __repr__(self):
         return '{}({})'.format(self.cls.__name__, self.entity)
-
-
-def string_replicator(func, attr_name):
-    name_len = len(attr_name)
-
-    def inner():
-        res = str(func())
-        res_len = len(res)
-        return 'HB{}sH{}s'.format(name_len, res_len), [packet_types.STRING_UPDATE, name_len, attr_name, res_len, res]
-
-    return inner
 
 
 class BaseComponent(object):
