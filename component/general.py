@@ -1,8 +1,7 @@
 from random import random
 from time import time
 from component import BaseComponent
-from mathx import AABB, Vector2
-from mathx.quadtree import NodeItem
+from mathx import AABB, Vector2, NodeItem
 
 
 class EntityOb(NodeItem):
@@ -26,7 +25,7 @@ class Position(BaseComponent):
     @classmethod
     def _update(cls, entity, data):
         # update quadtree position
-        ob = entity.cache.ob
+        ob = entity.ob
         ob.pos.x = data.x
         ob.pos.y = data.y
         ob.update_quadtree()
@@ -37,7 +36,7 @@ class Position(BaseComponent):
     @classmethod
     def initialize(cls, entity, data):
         # quadtree junk
-        ob = entity.cache.ob = EntityOb(entity)
+        ob = entity.ob = EntityOb(entity)
         ob.pos.x = data.x or random() - 0.5
         ob.pos.y = data.y or random() - 0.5
         entity.island.quadtree.insert(ob)
@@ -56,7 +55,7 @@ class Position(BaseComponent):
 
     @classmethod
     def find_nearby(cls, entity, data, radius, exclude=True, flags=0):
-        cls.q_aabb.center.update(entity.cache.ob.pos)
+        cls.q_aabb.center.update(entity.ob.pos)
         cls.q_aabb.hwidth = cls.q_aabb.hheight = radius
 
         if exclude is True:
@@ -67,6 +66,6 @@ class Position(BaseComponent):
     @classmethod
     def get_pos(cls, entity, data, copy=False):
         if copy:
-            return entity.cache.ob.pos.copy()
+            return entity.ob.pos.copy()
 
-        return entity.cache.ob.pos
+        return entity.ob.pos

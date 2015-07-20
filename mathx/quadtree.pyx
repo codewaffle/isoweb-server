@@ -152,20 +152,20 @@ cdef class Node:
 
             self.node0 = self.node1 = self.node2 = self.node3 = None
 
-    cdef void q_aabb(self, AABB aabb, set output):
+    cdef void q_aabb(self, AABB aabb, set output, int flags):
         # completely outside of this quad
         if not self.box.intersects(aabb):
             return
 
         if self.items:
-            output |= {i for i in self.items if aabb.contains(i.pos)}
+            output |= {i for i in self.items if flags & i.flags == flags and aabb.contains(i.pos)}
             return
 
         if self.node0:
-            self.node0.q_aabb(aabb, output)
-            self.node1.q_aabb(aabb, output)
-            self.node2.q_aabb(aabb, output)
-            self.node3.q_aabb(aabb, output)
+            self.node0.q_aabb(aabb, output, flags)
+            self.node1.q_aabb(aabb, output, flags)
+            self.node2.q_aabb(aabb, output, flags)
+            self.node3.q_aabb(aabb, output, flags)
             return
 
 cdef class NodeItem:
@@ -194,13 +194,13 @@ cdef class Quadtree:
     def insert(self, NodeItem item):
         self.root.insert(item)
 
-    cdef query_aabb(self, AABB aabb):
+    cdef query_aabb(self, AABB aabb, int flags):
         cdef set result = set()
-        self.root.q_aabb(aabb, result)
+        self.root.q_aabb(aabb, result, flags)
         return result
 
-    cpdef query_aabb_ents(self, AABB aabb, set exclude):
-        cdef set result = {i.ent for i in self.query_aabb(aabb)}
+    cpdef query_aabb_ents(self, AABB aabb, set exclude, int flags):
+        cdef set result = {i.ent for i in self.query_aabb(aabb, flags)}
 
         if exclude:
             result -= exclude

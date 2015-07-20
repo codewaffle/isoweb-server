@@ -19,11 +19,15 @@ class EntityReference(object):
     def __setattr__(self, key, value):
         raise RuntimeError("NO WAY JEEZE STOP IT")
 
+class ObFlags:
+    REPLICATE = 1
+
 
 class Entity(object):
     """
     an Entity is a bag of component data that points to an EntityDef.
     """
+
     _frozen = False
 
     def __init__(self, entity_def):
@@ -35,6 +39,7 @@ class Entity(object):
         # this is a name/DataProxy dict.
         self.component_data = {}
         self.snapshots = {}
+        self.ob = None
 
     @property
     def components(self):
@@ -52,11 +57,6 @@ class Entity(object):
     def __getattr__(self, item):
         # return memoized component proxy
         return getattr(self.entity_def, item).bind(self)
-
-    def __setattr__(self, key, value):
-        # this is mostly to prevent accidental ent.blah instead of ent.data.blah and might be modified/removed.
-        assert not self._frozen
-        object.__setattr__(self, key, value)
 
     def has_component(self, key):
         return key in self.components

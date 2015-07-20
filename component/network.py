@@ -1,6 +1,8 @@
 from collections import defaultdict
+from random import random
 from time import time
 from component import BaseComponent
+from entity import ObFlags
 
 
 class NetworkViewer(BaseComponent):
@@ -9,16 +11,24 @@ class NetworkViewer(BaseComponent):
         'visibility_radius': 300
     }
 
+    @classmethod
+    def gather(cls, entity, data):
+        entity.Position.find_nearby(data.visibility_radius, flags=ObFlags.REPLICATE)
 
-class NetworkData(BaseComponent):
+
+class NetworkManager(BaseComponent):
     """
-    everything that has a transform will have a NetworkVars..
-    NetworkView will only see NetworkVars :/
-    need to move quadtree shittles here maybe.. maybe not. maybe two quadtrees!
-
-    (i'm actually thinking a few quadtrees, one per priority level.. as the higher priorities would be much more
-    sparsely populated the performance hit should be low)
+    Lives on any entity that has a network representation.. responsible for stuff.
     """
-    data = {
+    @classmethod
+    def initialize(cls, entity, data):
+        entity.ob.flags |= ObFlags.REPLICATE
+        entity.cache.network_last = time()
+        entity.scheduler.schedule(func=entity.NetworkManager.update)
 
-    }
+    @classmethod
+    def update(cls, entity, data, dt):
+        print 'replicate, wait 5s, waited: ', dt
+        return -5.5 + random()
+
+
