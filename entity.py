@@ -37,8 +37,9 @@ class Entity(object):
         self.cache = AttributeDict()
         self.entity_def = entity_def
         self.island = None
-        self.island_id = 0  # TODO : use this.
-        self.id = id(self)
+        self.island_id = 0  # TODO : this will eventually be tied to the island that spawned this entity..
+        # TODO cont: i think 4 billion entities generated per island should be enough. we can spawn subentities somehow if needed.
+        self.id = id(self)  # this will be generated in a better manner as well..
 
         # this is a name/DataProxy dict.
         self.component_data = {}

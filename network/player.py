@@ -37,7 +37,7 @@ class PlayerWebsocket(object):
 
         if packet_type == packet_types.MOVE_TO:
             x, y = move_to.unpack_from(data, 2)
-            self.entity.request_move_to(x, y)
+            # self.entity.request_move_to(x, y)
             return True
 
         logbook.warn('Unknown packet type: {0}', packet_type)
