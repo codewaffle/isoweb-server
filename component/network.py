@@ -55,7 +55,9 @@ class NetworkViewer(BaseComponent):
                 packet_data = [packet_types.ENTITY_UPDATE, ref.island_id, ref.id] + packet_data + [0]
 
                 # SEND
-                data.socket.send(struct.pack(''.join(packet_fmt), *packet_data))
+                packet = struct.pack(''.join(packet_fmt), *packet_data)
+                # print repr(packet)
+                data.socket.send(packet)
 
         # TODO : cleanup old entities?
         # TODO : send the 'go invisible' packet here.. at some point we'll flush it from cache and

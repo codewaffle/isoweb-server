@@ -40,7 +40,8 @@ island.start()
 for x in range(200):
     ent = island.spawn('tree', {
         c.Position: {'x': random.random() * 200., 'y': random.random() * 200.},
-        c.NetworkManager: {}
+        c.NetworkManager: {},
+        c.Crawler: {}
     })
 
 
