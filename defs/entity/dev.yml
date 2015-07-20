@@ -4,6 +4,15 @@ meatbag:
   - class: Sprite
     sprite: sprites/player.png
 
+monster:
+  components:
+  - class: Mesh
+    model: models/turbosquid_monster_thing.json
+    material:
+      map: textures/turbosquid_monster_thing.jpg
+  - class: SimpleWander
+    velocity: 5.0
+
 large_stick:
   components:
   - class: Melee
