@@ -52,6 +52,7 @@ tree:
     type: SkinnedMesh
     model: models/quad.json
     scale: 2.0
+    z: 2.0
     material:
       map: sprites/blobby_tree_bush_thing.png
 
