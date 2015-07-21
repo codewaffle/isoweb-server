@@ -85,3 +85,13 @@ def string_replicator(func, attr_name):
         return 'HB{}sH{}s'.format(name_len, res_len), [packet_types.STRING_UPDATE, name_len, attr_name, res_len, res]
 
     return inner
+
+
+def float_replicator(func, attr_name):
+    name_len = len(attr_name)
+
+    def inner():
+        res = float(func())
+        return 'HB{}sf'.format(name_len), [packet_types.FLOAT_UPDATE, name_len, attr_name, res]
+
+    return inner
