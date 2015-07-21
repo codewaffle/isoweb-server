@@ -45,7 +45,7 @@ for x in range(500):
     })
 
 for x2 in range(50):
-    e = island.spawn('monster', {
+    e = island.spawn('meatbag', {
         c.Position: {'x': -256. + random.random() * 512., 'y': -256. + random.random() * 512.},
         c.NetworkManager: {},
         c.SimpleWander: {

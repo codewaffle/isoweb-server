@@ -1,15 +1,10 @@
 meatbag:
   components:
   - class: CharacterController
-  - class: Sprite
-    sprite: sprites/player.png
-
-monster:
-  components:
   - class: Mesh
-    model: models/turbosquid_monster_thing.json
+    model: models/quad.json
     material:
-      map: textures/turbosquid_monster_thing.jpg
+      map: sprites/player.png
   - class: SimpleWander
     velocity: 5.0
 
@@ -55,9 +50,10 @@ tree:
   - class: Choppable
   - class: Mesh
     type: SkinnedMesh
-    model: models/tree.json
+    model: models/quad.json
+    scale: 2.0
     material:
-      map: textures/dev.png
+      map: sprites/blobby_tree_bush_thing.png
 
 crate:
   components:
