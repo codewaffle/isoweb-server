@@ -1,3 +1,4 @@
+from math import pi
 import random
 from gevent.monkey import patch_all
 
@@ -43,6 +44,8 @@ for x in range(500):
         c.NetworkManager: {},
         #c.Crawler: {}
     })
+    ent.Mesh.data.scale = 1.5 + random.random()
+    ent.Position.data.r = 2.*pi * random.random()
 
 for x2 in range(50):
     e = island.spawn('meatbag', {
