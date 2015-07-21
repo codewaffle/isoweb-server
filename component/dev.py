@@ -1,3 +1,4 @@
+from math import atan2, pi
 from random import random
 from time import time
 from component import BaseComponent
@@ -30,6 +31,7 @@ class SimpleWander(BaseComponent):
 
     @classmethod
     def initialize(cls, entity, data):
+        data.velocity = 5. + random() * 5.
         entity.scheduler.schedule(at=time() + 2.0, func=entity.SimpleWander.update)
 
     @classmethod
@@ -54,4 +56,5 @@ class SimpleWander(BaseComponent):
 
         entity.Position.teleport(entity.ob.pos.x + move.x,
                                  entity.ob.pos.y + move.y)
+        entity.Position.data.r = atan2(move.y, move.x) - pi/2.
         return 1 / 30.
