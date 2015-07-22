@@ -15,6 +15,10 @@ large_stick:
 
 rock:
   components:
+  - class: Mesh
+    model: models/quad.json
+    material:
+      map: sprites/small_rock.png
   - class: Melee
     damage: 1
   - class: Hammer
@@ -58,5 +62,9 @@ tree:
 
 crate:
   components:
+  - class: Mesh
+    model: models/quad.json
+    material:
+      map: sprites/bad_crate.png
   - class: Container
     capacity: 125
