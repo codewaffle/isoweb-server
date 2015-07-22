@@ -38,16 +38,16 @@ island.log_handler = ws_zmq_handler
 island.start()
 
 # spawn a buncha treez
-for x in range(500):
+for x in range(100):
     ent = island.spawn('tree', {
-        c.Position: {'x': -256. + random.random() * 512., 'y': -256. + random.random() * 512.},
+        c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
         c.NetworkManager: {},
         #c.Crawler: {}
     })
     ent.Mesh.data.scale = 1.5 + random.random()
     ent.Position.data.r = 2.*pi * random.random()
 
-for x2 in range(50):
+for x2 in range(150):
     e = island.spawn('meatbag', {
         c.Position: {'x': -256. + random.random() * 512., 'y': -256. + random.random() * 512.},
         c.NetworkManager: {},
