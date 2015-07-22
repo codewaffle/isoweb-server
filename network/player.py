@@ -12,7 +12,7 @@ import packet_types
 packet_header = struct.Struct('>H')
 move_to = struct.Struct('>ff')
 
-pong = struct.Struct('>HHdd')
+pong = struct.Struct('>HdHd')
 ping = struct.Struct('>H')
 
 class PlayerWebsocket(object):
@@ -46,7 +46,7 @@ class PlayerWebsocket(object):
 
         if packet_type == packet_types.PING:
             num, = ping.unpack_from(data, 2)
-            self.send(pong.pack(packet_types.PONG, num, now, time.time()))
+            self.send(pong.pack(packet_types.PONG, time.time(), num, now))
             return True
 
         logbook.warn('Unknown packet type: {0}', packet_type)

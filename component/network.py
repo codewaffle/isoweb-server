@@ -51,8 +51,8 @@ class NetworkViewer(BaseComponent):
 
             if packet_fmt:
                 # entity update header
-                packet_fmt = ['>HII'] + packet_fmt + ['H']
-                packet_data = [packet_types.ENTITY_UPDATE, ref.island_id, ref.id] + packet_data + [0]
+                packet_fmt = ['>HdII'] + packet_fmt + ['H']
+                packet_data = [packet_types.ENTITY_UPDATE, time(), ref.island_id, ref.id] + packet_data + [0]
 
                 # SEND
                 packet = struct.pack(''.join(packet_fmt), *packet_data)
