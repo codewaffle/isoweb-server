@@ -1,5 +1,5 @@
 import struct
-from time import time
+from time import time, clock
 from component import BaseComponent
 from entity import ObFlags
 import packet_types
@@ -52,7 +52,7 @@ class NetworkViewer(BaseComponent):
             if packet_fmt:
                 # entity update header
                 packet_fmt = ['>HdII'] + packet_fmt + ['H']
-                packet_data = [packet_types.ENTITY_UPDATE, time(), ref.island_id, ref.id] + packet_data + [0]
+                packet_data = [packet_types.ENTITY_UPDATE, clock(), ref.island_id, ref.id] + packet_data + [0]
 
                 # SEND
                 packet = struct.pack(''.join(packet_fmt), *packet_data)

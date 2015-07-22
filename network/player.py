@@ -1,5 +1,6 @@
 import random
 import struct
+from time import clock
 import gevent
 
 from geventwebsocket import WebSocketError
@@ -14,6 +15,7 @@ move_to = struct.Struct('>ff')
 
 pong = struct.Struct('>HdHd')
 ping = struct.Struct('>H')
+
 
 class PlayerWebsocket(object):
     def __init__(self, ws):
@@ -38,7 +40,7 @@ class PlayerWebsocket(object):
             return None
 
         data = self.ws.receive()
-        now = time.time()
+        now = clock()
         if data is None:
             return None
 
@@ -46,7 +48,7 @@ class PlayerWebsocket(object):
 
         if packet_type == packet_types.PING:
             num, = ping.unpack_from(data, 2)
-            self.send(pong.pack(packet_types.PONG, time.time(), num, now))
+            self.send(pong.pack(packet_types.PONG, clock(), num, now))
             return True
 
         logbook.warn('Unknown packet type: {0}', packet_type)
