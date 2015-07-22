@@ -1,5 +1,5 @@
 from functools import partial
-from time import time
+from time import time, clock
 from component import BaseComponent
 from component.network import string_replicator, float_replicator
 
@@ -17,7 +17,7 @@ class Mesh(BaseComponent):
 
     @classmethod
     def initialize(cls, entity, data):
-        entity.snapshots[float_replicator(partial(getattr, data, 'scale'), 'scale')] = time()
-        entity.snapshots[float_replicator(partial(getattr, data, 'z'), 'z')] = time()
-        entity.snapshots[string_replicator(partial(getattr, data, 'model'), 'model')] = time()
-        entity.snapshots[string_replicator(partial(data.material.get, 'map'), 'map')] = time()
+        entity.snapshots[float_replicator(partial(getattr, data, 'scale'), 'scale')] = clock()
+        entity.snapshots[float_replicator(partial(getattr, data, 'z'), 'z')] = clock()
+        entity.snapshots[string_replicator(partial(getattr, data, 'model'), 'model')] = clock()
+        entity.snapshots[string_replicator(partial(data.material.get, 'map'), 'map')] = clock()

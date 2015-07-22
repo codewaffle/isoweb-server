@@ -1,5 +1,5 @@
 from random import random
-from time import time
+from time import time, clock
 from component import BaseComponent
 from mathx import AABB, Vector2, NodeItem
 import packet_types
@@ -32,7 +32,7 @@ class Position(BaseComponent):
         ob.update_quadtree()
 
         # update snapshot
-        entity.snapshots[entity.Position.snapshot] = time()
+        entity.snapshots[entity.Position.snapshot] = clock()
 
     @classmethod
     def initialize(cls, entity, data):

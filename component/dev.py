@@ -1,6 +1,6 @@
 from math import atan2, pi
 from random import random
-from time import time
+from time import time, clock
 from component import BaseComponent
 from mathx import Vector2
 
@@ -32,12 +32,14 @@ class SimpleWander(BaseComponent):
     @classmethod
     def initialize(cls, entity, data):
         data.velocity = 5. + random() * 5.
-        entity.scheduler.schedule(at=time() + 2.0, func=entity.SimpleWander.update)
+        entity.scheduler.schedule(at=clock() + 2.0, func=entity.SimpleWander.update)
 
     @classmethod
     def update(cls, entity, data, dt):
+        dt = 1/20.
+
         if data.target is None:
-            data.target = Vector2(-256 + random() * 512., -256 + random() * 512.)
+            data.target = Vector2(-128 + random() * 256., -128+ random() * 256.)
 
         diff = data.target - entity.ob.pos
         mag = diff.magnitude

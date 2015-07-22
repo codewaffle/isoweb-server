@@ -18,7 +18,7 @@ class NetworkViewer(BaseComponent):
 
     @classmethod
     def update(cls, entity, data, dt):
-        now = time()
+        now = clock()
 
         cache = entity.cache.network_viewer
 

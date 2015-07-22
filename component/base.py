@@ -22,7 +22,7 @@ class DataProxy(dict):
         self[key] = value
 
     def __setitem__(self, key, value):
-        # self.__dict__['_dirty'][key] = time()
+        # self.__dict__['_dirty'][key] = clock()
         dict.__setitem__(self, key, value)
 
 class ComponentProxy(object):

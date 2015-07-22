@@ -47,7 +47,7 @@ for x in range(100):
     ent.Mesh.data.scale = 1.5 + random.random()
     ent.Position.data.r = 2.*pi * random.random()
 
-for x2 in range(150):
+for x2 in range(30):
     e = island.spawn('meatbag', {
         c.Position: {'x': -256. + random.random() * 512., 'y': -256. + random.random() * 512.},
         c.NetworkManager: {},
