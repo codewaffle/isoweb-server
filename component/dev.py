@@ -57,4 +57,4 @@ class SimpleWander(BaseComponent):
         entity.Position.teleport(entity.ob.pos.x + move.x,
                                  entity.ob.pos.y + move.y)
         entity.Position.data.r = atan2(move.y, move.x) - pi/2.
-        return 1 / 30.
+        return -1 / 20.
