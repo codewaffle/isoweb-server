@@ -1,7 +1,9 @@
+from functools import partial
 from math import atan2, pi
 from random import random
 from time import time, clock
 from component import BaseComponent
+from component.network import string_replicator
 from mathx import Vector2
 
 
@@ -23,6 +25,15 @@ class Crawler(BaseComponent):
         entity.cache.crawler_vel -= (entity.ob.pos * dt * 0.1)
         return 1/30.
 
+class Interactive(BaseComponent):
+    data = {
+        'hit_area': 'Circle(0, 0, 33)'
+    }
+
+    @classmethod
+    def initialize(cls, entity, data):
+        entity.snapshots[string_replicator(partial(getattr, data, 'hit_area'), 'hit_area')] = clock()
+
 class SimpleWander(BaseComponent):
     data = {
         'velocity': 1.0,
@@ -31,7 +42,7 @@ class SimpleWander(BaseComponent):
 
     @classmethod
     def initialize(cls, entity, data):
-        data.velocity = 5. + random() * 5.
+        data.velocity = 2. + random() * 2.
         entity.scheduler.schedule(at=clock() + 2.0, func=entity.SimpleWander.update)
 
     @classmethod

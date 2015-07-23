@@ -5,7 +5,7 @@ from gevent.queue import PriorityQueue
 
 
 class Scheduler(Greenlet):
-    def __init__(self, resolution=1/20.):
+    def __init__(self, resolution=1/40.):
         super(Scheduler, self).__init__()
         self.resolution = resolution
         self.queue = PriorityQueue()

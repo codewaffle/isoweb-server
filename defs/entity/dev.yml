@@ -50,6 +50,7 @@ tree:
   - class: Choppable
   - class: Sprite
     sprite: sprites/blobby_tree_bush_thing.png
+  - class: Interactive
 
 crate:
   components:
@@ -57,3 +58,4 @@ crate:
     sprite: sprites/bad_crate.png
   - class: Container
     capacity: 125
+  - class: Interactive
