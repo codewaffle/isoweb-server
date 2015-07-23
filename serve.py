@@ -44,9 +44,9 @@ for x in range(100):
         c.NetworkManager: {},
         #c.Crawler: {}
     })
-    ent.Mesh.data.scale = 1.5 + random.random()
+    ent.Sprite.data.scale = 1.5 + random.random()
     ent.Position.data.r = 2.*pi * random.random()
-    ent.Position.data.z = ent.Mesh.data.scale / 2.
+    ent.Position.data.z = ent.Sprite.data.scale / 2.
 
 for x2 in range(12):
     e = island.spawn('meatbag', {
@@ -63,7 +63,7 @@ for x3 in range(50):
         c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
         c.NetworkManager: {}
     })
-    e.Mesh.data.scale = 1.5 + random.random()
+    e.Sprite.data.scale = 1.5 + random.random()
     e.Position.data.r = 2. * pi * random.random()
 
 for x4 in range(5):

@@ -39,7 +39,7 @@ class SimpleWander(BaseComponent):
         dt = 1/20.
 
         if data.target is None:
-            data.target = Vector2(-128 + random() * 256., -128+ random() * 256.)
+            data.target = Vector2(-64 + random() * 128., -64 + random() * 128.)
 
         diff = data.target - entity.ob.pos
         mag = diff.magnitude
@@ -58,5 +58,5 @@ class SimpleWander(BaseComponent):
 
         entity.Position.teleport(entity.ob.pos.x + move.x,
                                  entity.ob.pos.y + move.y)
-        entity.Position.data.r = atan2(move.y, move.x) - pi/2.
+        entity.Position.data.r = atan2(move.y, move.x) + pi/2.
         return -1 / 20.

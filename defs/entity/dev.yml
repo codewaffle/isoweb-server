@@ -1,10 +1,8 @@
 meatbag:
   components:
   - class: CharacterController
-  - class: Mesh
-    model: models/quad.json
-    material:
-      map: sprites/player.png
+  - class: Sprite
+    sprite: sprites/player.png
   - class: SimpleWander
     velocity: 5.0
 
@@ -15,10 +13,8 @@ large_stick:
 
 rock:
   components:
-  - class: Mesh
-    model: models/quad.json
-    material:
-      map: sprites/small_rock.png
+  - class: Sprite
+    sprite: sprites/small_rock.png
   - class: Melee
     damage: 1
   - class: Hammer
@@ -52,19 +48,12 @@ tree:
   components:
   - class: Foliage
   - class: Choppable
-  - class: Mesh
-    type: SkinnedMesh
-    model: models/quad.json
-    scale: 2.0
-    z: 2.0
-    material:
-      map: sprites/blobby_tree_bush_thing.png
+  - class: Sprite
+    sprite: sprites/blobby_tree_bush_thing.png
 
 crate:
   components:
-  - class: Mesh
-    model: models/quad.json
-    material:
-      map: sprites/bad_crate.png
+  - class: Sprite
+    sprite: sprites/bad_crate.png
   - class: Container
     capacity: 125
