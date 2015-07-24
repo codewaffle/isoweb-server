@@ -10,10 +10,10 @@ from component import c
 
 import packet_types
 
-packet_header = struct.Struct('>H')
+packet_header = struct.Struct('>b')
 move_to = struct.Struct('>ff')
 
-pong = struct.Struct('>HdHd')
+pong = struct.Struct('>bdHd')
 ping = struct.Struct('>H')
 
 
@@ -47,7 +47,7 @@ class PlayerWebsocket(object):
         packet_type,  = packet_header.unpack_from(data, 0)
 
         if packet_type == packet_types.PING:
-            num, = ping.unpack_from(data, 2)
+            num, = ping.unpack_from(data, 1)
             self.send(pong.pack(packet_types.PONG, clock(), num, now))
             return True
 

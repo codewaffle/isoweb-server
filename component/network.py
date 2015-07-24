@@ -51,7 +51,7 @@ class NetworkViewer(BaseComponent):
 
             if packet_fmt:
                 # entity update header
-                packet_fmt = ['>HdII'] + packet_fmt + ['H']
+                packet_fmt = ['>bdII'] + packet_fmt + ['H']
                 packet_data = [packet_types.ENTITY_UPDATE, clock(), ref.island_id, ref.id] + packet_data + [0]
 
                 # SEND
