@@ -1,5 +1,5 @@
 from functools import partial
-from math import atan2, pi
+from math import atan2, pi, sin, cos
 from random import random
 from time import time, clock
 from component import BaseComponent
@@ -27,7 +27,7 @@ class Crawler(BaseComponent):
 
 class Interactive(BaseComponent):
     data = {
-        'hit_area': 'Circle(0, 0, 33)'
+        'hit_area': 'Circle(0, 0, 50)'
     }
 
     @classmethod
@@ -70,4 +70,28 @@ class SimpleWander(BaseComponent):
         entity.Position.teleport(entity.ob.pos.x + move.x,
                                  entity.ob.pos.y + move.y)
         entity.Position.data.r = atan2(move.y, move.x) + pi/2.
+        return -1 / 20.
+
+
+class Spiraler(BaseComponent):
+    data = {
+        'velocity': 1.0,
+    }
+
+    @classmethod
+    def initialize(cls, entity, data):
+        data.velocity = 2. + random() * 2.
+        entity.scheduler.schedule(at=clock() + 2.0, func=entity.Spiraler.update)
+        data.clock = 0
+
+    @classmethod
+    def update(cls, entity, data, dt):
+        dt = 1/20.
+        data.clock += dt
+
+        entity.Position.teleport(
+            sin(data.clock) * data.clock,
+            cos(data.clock) * data.clock
+        )
+
         return -1 / 20.
