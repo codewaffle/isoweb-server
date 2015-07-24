@@ -1,0 +1,61 @@
+meatbag:
+  components:
+  - class: CharacterController
+  - class: Sprite
+    sprite: sprites/player.png
+  - class: SimpleWander
+    velocity: 5.0
+
+large_stick:
+  components:
+  - class: Melee
+    damage: 1
+
+rock:
+  components:
+  - class: Sprite
+    sprite: sprites/small_rock.png
+  - class: Melee
+    damage: 1
+  - class: Hammer
+    tier: 1
+
+sharp_rock:
+  components:
+  - class: Melee
+    damage: 2
+  - class: Chopper
+    tier: 1
+  - class: Craftable
+    ingredients:
+    - rock
+    tools:
+    - Hammer.tier: 1
+
+stone_axe:
+  components:
+  - class: Equippable
+  - class: Melee
+    damage: 3
+  - class: Chopper
+    tier: 3
+  - class: Craftable
+    ingredients:
+    - sharp_rock
+    - large_stick
+
+tree:
+  components:
+  - class: Foliage
+  - class: Choppable
+  - class: Sprite
+    sprite: sprites/blobby_tree_bush_thing.png
+  - class: Interactive
+
+crate:
+  components:
+  - class: Sprite
+    sprite: sprites/bad_crate.png
+  - class: Container
+    capacity: 125
+  - class: Interactive

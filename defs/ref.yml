@@ -1,0 +1,19 @@
+entity:
+  name: name of the entity
+  description: description, in english
+  density: bulk density, in kg / L
+  volume: volume, in liters
+  mass: mass, in kg
+  flags:
+    buildable: must be placed into the world upon creation - cannot be carried around. campfires, etc.
+    craftable: if the recipe is known, components may be combined to craft this item. It will be placed in the crafter's inventory.
+    flammable: can catch fire
+    anchored: immovable. immobile. trees, boulders, etc.
+    bulk: continuous or bulk material - sand, dirt, wood (not bulk IRL but for game purposes why not), etc.
+    liquid: sloshy
+  components: |
+    a list of components that make up this object (and are required to craft it if craftable).
+    'tool actions', such as chop, sew, cut can be listed here - the number will probably indicate
+    minimum level of that tool required to perform the craft. Not sure.
+  provides: a map of tool-services this item provides, such as cut, chop, sew - paired with how well this tool can perform the job.
+  controllers: a list of controllers I guess.
