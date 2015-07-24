@@ -13,7 +13,7 @@ import packet_types
 packet_header = struct.Struct('>b')
 move_to = struct.Struct('>ff')
 
-pong = struct.Struct('>bdHd')
+pong = struct.Struct('>bfHd')
 ping = struct.Struct('>H')
 
 
