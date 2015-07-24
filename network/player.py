@@ -10,10 +10,10 @@ from component import c
 
 import packet_types
 
-packet_header = struct.Struct('>b')
+packet_header = struct.Struct('>B')
 move_to = struct.Struct('>ff')
 
-pong = struct.Struct('>bfHd')
+pong = struct.Struct('>BfHd')
 ping = struct.Struct('>H')
 
 
