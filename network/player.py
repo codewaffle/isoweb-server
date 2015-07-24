@@ -2,6 +2,7 @@ import random
 import struct
 from time import clock
 import gevent
+import gevent.queue
 
 from geventwebsocket import WebSocketError
 import logbook
@@ -20,18 +21,20 @@ ping = struct.Struct('>H')
 class PlayerWebsocket(object):
     def __init__(self, ws):
         self.entity = None
-
         self.ws = ws
         self.island = None
         self.log = logbook.Logger('PlayerSocket({})'.format(str(id(self))))
+        self.packet_queue = gevent.queue.Queue()
 
     def on_connect(self, island):
         self.log.debug('on_connect')
         self.island = island
         self.handle_login()
 
+        gevent.spawn(self.send_handler)
+
         while self.recv():
-            gevent.sleep()
+            gevent.sleep(0.001)
 
         self.handle_logout()
 
@@ -55,15 +58,29 @@ class PlayerWebsocket(object):
         return False
 
     def send(self, data):
-        if self.ws is None:
-            return
+        self.packet_queue.put(data)
 
-        # DEBUG?
-        try:
-            self.ws.send(data, binary=True)
-        except WebSocketError:
-            self.ws = None
-            return self.on_disconnect()
+    def send_handler(self):
+        pkt = []
+        get = self.packet_queue.get
+        empty = self.packet_queue.empty
+
+        while self.ws is not None:
+            try:
+                while not empty():
+                    pkt.append(get())
+
+                if pkt:
+                    self.ws.send(''.join(pkt) + '\0', binary=True)
+                    pkt = []
+            except WebSocketError:
+                self.ws = None
+                print 'failed send'
+                return self.on_disconnect()
+
+            gevent.sleep(1/100.)
+
+        return self.on_disconnect()
 
     def handle_login(self):
         # assign player to island, send initial bla bla bla
