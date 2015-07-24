@@ -51,8 +51,8 @@ class NetworkViewer(BaseComponent):
 
             if packet_fmt:
                 # entity update header
-                packet_fmt = ['>HdII'] + packet_fmt + ['H']
-                packet_data = [packet_types.ENTITY_UPDATE, clock(), ref.island_id, ref.id] + packet_data + [0]
+                packet_fmt = ['>BfI'] + packet_fmt + ['B']
+                packet_data = [packet_types.ENTITY_UPDATE, clock(), ref.id] + packet_data + [0]
 
                 # SEND
                 packet = struct.pack(''.join(packet_fmt), *packet_data)
@@ -82,7 +82,7 @@ def string_replicator(func, attr_name):
     def inner():
         res = str(func())
         res_len = len(res)
-        return 'HB{}sH{}s'.format(name_len, res_len), [packet_types.STRING_UPDATE, name_len, attr_name, res_len, res]
+        return 'BB{}sH{}s'.format(name_len, res_len), [packet_types.STRING_UPDATE, name_len, attr_name, res_len, res]
 
     return inner
 
@@ -92,6 +92,6 @@ def float_replicator(func, attr_name):
 
     def inner():
         res = float(func())
-        return 'HB{}sf'.format(name_len), [packet_types.FLOAT_UPDATE, name_len, attr_name, res]
+        return 'BB{}sf'.format(name_len), [packet_types.FLOAT_UPDATE, name_len, attr_name, res]
 
     return inner

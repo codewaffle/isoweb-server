@@ -50,7 +50,7 @@ for x in range(100):
 
 for x2 in range(12):
     e = island.spawn('meatbag', {
-        c.Position: {'x': -256. + random.random() * 512., 'y': -256. + random.random() * 512.},
+        c.Position: {'x': -64. + random.random() * 128., 'y': -64. + random.random() * 128.},
         c.NetworkManager: {},
         c.SimpleWander: {
             'velocity': 7.5

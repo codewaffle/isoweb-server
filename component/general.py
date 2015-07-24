@@ -47,7 +47,7 @@ class Position(BaseComponent):
 
     @classmethod
     def snapshot(cls, entity, data):
-        return 'Hfff', (packet_types.POSITION_UPDATE, data.x, data.y, data.r)
+        return 'Bfff', (packet_types.POSITION_UPDATE, data.x, data.y, data.r)
 
     @classmethod
     def teleport(cls, entity, data, x, y):
