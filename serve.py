@@ -48,15 +48,18 @@ for x in range(100):
     ent.Position.data.r = 2.*pi * random.random()
     ent.Position.data.z = ent.Sprite.data.scale / 2.
 
-for x2 in range(12):
-    e = island.spawn('meatbag', {
-        c.Position: {'x': -64. + random.random() * 128., 'y': -64. + random.random() * 128.},
-        c.NetworkManager: {},
-        c.SimpleWander: {
-            'velocity': 7.5
-        }
-    })
 
+def spawn_meatbags():
+    for x2 in range(250):
+        e = island.spawn('meatbag', {
+            c.Position: {'x': -64. + random.random() * 128., 'y': -64. + random.random() * 128.},
+            c.NetworkManager: {},
+            c.Spiraler: {
+                'velocity': 7.5
+            }
+        })
+        gevent.sleep(0.15)
+gevent.spawn(spawn_meatbags)
 
 for x3 in range(50):
     e = island.spawn('rock', {
