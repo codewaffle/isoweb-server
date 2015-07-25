@@ -53,9 +53,18 @@ class PlayerWebsocket(object):
             num, = ping.unpack_from(data, 1)
             self.send(pong.pack(packet_types.PONG, clock(), num, now))
             return True
+        elif packet_type == packet_types.CMD_MOVE:
+            pass
+        elif packet_type == packet_types.CMD_CONTEXTUAL:
+            pass
+        elif packet_type == packet_types.CMD_MENU_REQ:
+            pass
+        elif packet_type == packet_types.CMD_MENU_EXEC:
+            pass
+        else:
+            logbook.warn('Unknown packet type: {0}', packet_type)
 
-        logbook.warn('Unknown packet type: {0}', packet_type)
-        return False
+        return True
 
     def send(self, data):
         self.packet_queue.put(data)
@@ -91,7 +100,7 @@ class PlayerWebsocket(object):
             c.NetworkManager: {}
         })
 
-        self.send(struct.pack('>BI', packet_types.DO_ASSIGN_CONTROL, self.entity.id))
+        self.send(struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id))
 
     def handle_logout(self):
         pass
