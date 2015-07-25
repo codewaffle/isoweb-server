@@ -91,6 +91,8 @@ class PlayerWebsocket(object):
             c.NetworkManager: {}
         })
 
+        self.send(struct.pack('>HI', packet_types.DO_ASSIGN_CONTROL, self.entity.id))
+
     def handle_logout(self):
         pass
 
