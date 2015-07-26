@@ -12,6 +12,14 @@ class ControllerComponent(BaseComponent):
     }
 
     @component_method
+    def controller_initialize(self):
+        self.data.queue = []
+
+    @component_method
+    def initialize(self):
+        self.controller_initialize()
+
+    @component_method
     def handle_menu_req_position(self, pos):
         pass
 
@@ -66,6 +74,32 @@ class ControllerComponent(BaseComponent):
             # one thing to do? do it.
             ctx_menu.values()[0][1](self.entityref)
 
+    @component_method
+    def update_queue(self, dt):
+        q = self.data.queue
+        try:
+            func, args = q[0]
+        except IndexError:
+            return
+
+        ret = func(*args)
+
+        if ret is None:  # return None = move to next task
+            q.pop(0)
+        elif ret is False:  # False = abort queue
+            del self.data.queue[:]
+        else:
+            return ret
+
+    @component_method
+    def queue_task(self, task, args, overwrite=False):
+        if not self.data.queue:
+            self.entity.schedule(self.update_queue)
+
+        if overwrite:
+            self.data.queue = [(task, args)]
+        else:
+            self.data.queue.append((task, args))
 
 
 class MeatbagController(ControllerComponent):
@@ -76,24 +110,27 @@ class MeatbagController(ControllerComponent):
     @component_method
     def initialize(self):
         self.entity.controller = self.entity.MeatbagController
-        self.entity.cache.moveTo = None
+        self.controller_initialize()
 
     @component_method
     def handle_context_position(self, pos):
         # i don't know if this will ever be something other than 'move here'...
         # could use this for item actions (e.g. activate a shovel and then intercept context position to dig... dumb?)
         # but this will probably be handled by the client.. (activate shovel -> ask for target?).. don't know.
-        if self.entity.cache.moveTo is None:
-            self.entity.scheduler.schedule(func=self.entity.MeatbagController.update_move)
-            self.entity.cache.moveTo = pos
+
+        self.move_to(pos, overwrite=True)
 
     @component_method
-    def update_move(self, dt):
+    def move_to(self, pos, overwrite=False):
+        self.queue_task(self.update_move, (pos, ), overwrite)
+
+    @component_method
+    def update_move(self, pos):
         dt = 1/20.
-        t = self.entity.cache.moveTo
+        t = pos
 
         if t is None:
-            return
+            return False
 
         move_diff = t - self.entity.pos
         dist = move_diff.magnitude
@@ -104,7 +141,7 @@ class MeatbagController(ControllerComponent):
         if dist < move_amt:
             self.entity.Position.teleport(t)
 
-            return
+            return None
         else:
             self.entity.Position.teleport(self.entity.pos.lerp(t, move_amt / dist))
 

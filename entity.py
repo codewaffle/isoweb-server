@@ -88,6 +88,9 @@ class Entity(object):
         # return memoized component proxy
         return getattr(self.entity_def, item).bind(self)
 
+    def schedule(self, task):
+        self.scheduler.schedule(func=task)
+
     def has_component(self, key):
         return key in self.components
 
