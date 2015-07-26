@@ -38,7 +38,7 @@ island.log_handler = ws_zmq_handler
 island.start()
 
 # spawn a buncha treez
-for x in range(0):
+for x in range(130):
     ent = island.spawn('tree', {
         c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
         c.NetworkManager: {},
@@ -100,8 +100,8 @@ web_server = pywsgi.WSGIServer(
     create_app()
 )
 
-logbook.info('starting webserver on :{0}', web_server.server_port)
-web_server.start()
+# logbook.info('starting webserver on :{0}', web_server.server_port)
+# web_server.start()
 
 logbook.info('starting websocket on :{0}', ws_server.server_port)
 ws_server.start()
