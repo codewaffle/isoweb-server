@@ -28,7 +28,6 @@ class Choppable(MenuComponent):
 
     @component_method
     def chop(self, chopper):
-        print "HELP I AM BEING CHOPPED BY", chopper
         chopper.controller.set_queue([
             chopper.controller.move_near_task(self.entity.pos, 3),
             (self.do_chop, (chopper, ))
@@ -36,6 +35,7 @@ class Choppable(MenuComponent):
 
     @component_method
     def do_chop(self, chopper):
+        self.entity.destroy()
         for x in range(randint(1, 3)):
             self.island.spawn('log', pos=self.pos + Vector2.random_inside(4.0), rot=uniform(0, pi*2.0))
 

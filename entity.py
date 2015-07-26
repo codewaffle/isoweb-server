@@ -10,6 +10,7 @@ class EntityReference(object):
     def __init__(self, entity):
         self.__dict__.update({
             'entity': entity,
+            'id': entity.id,
             'valid': True
         })
 
@@ -20,7 +21,10 @@ class EntityReference(object):
         raise RuntimeError("NO WAY JEEZE STOP IT")
 
     def __repr__(self):
-        return 'EntityReference({})'.format(self.id)
+        try:
+            return 'EntityReference({})'.format(self.id)
+        except AttributeError:
+            return 'EntityReference(None)'
 
 class ObFlags:
     REPLICATE = 1
@@ -163,7 +167,12 @@ class Entity(object):
 
     def destroy(self):
         # reset Reference
-        self.reference.entity = None
-        self.reference.valid = False
+        self.reference.__dict__.update({
+            'entity': None,
+            'valid': False
+        })
+        self.ob.flags = 0
+        from component.general import EntityOb
+        self.ob = EntityOb(self)
         del self._memo_cache
         self._memo_cache = {}
