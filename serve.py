@@ -37,48 +37,24 @@ island = Island()
 island.log_handler = ws_zmq_handler
 island.start()
 
-# spawn a buncha treez
-for x in range(130):
-    ent = island.spawn('tree', {
-        c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
-        c.NetworkManager: {},
-        #c.Crawler: {}
-    })
-    ent.Sprite.data.scale = 1.5 + random.random()
-    ent.Position.data.r = 2.*pi * random.random()
-    ent.Position.data.z = ent.Sprite.data.scale / 2.
 
+def spawn_crap(name, num, scalebase=1.0, modscale=0.0):
+    for x in range(num):
+        ent = island.spawn(name, {
+            c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
+            c.NetworkManager: {},
+        })
+        if modscale:
+            ent.Sprite.data.scale = scalebase + random.random() * modscale
+            ent.Position.data.z = ent.Sprite.data.scale / 2.
 
-def spawn_meatbags():
-    while True:
-        gevent.sleep(5)
-        for x2 in range(510):
-            e = island.spawn('meatbag', {
-                c.Position: {'x': -64. + random.random() * 128., 'y': -64. + random.random() * 128.},
-                c.NetworkManager: {},
-                c.Spiraler: {
-                    'velocity': 7.5
-                }
-            })
-            gevent.sleep(0.15)
-        gevent.sleep(15)
-# gevent.spawn(spawn_meatbags)
+        ent.Position.data.r = 2.*pi * random.random()
 
-for x3 in range(50):
-    e = island.spawn('rock', {
-        c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
-        c.NetworkManager: {}
-    })
-    e.Sprite.data.scale = 1.5 + random.random()
-    e.Position.data.r = 2. * pi * random.random()
-
-for x4 in range(5):
-    e = island.spawn('crate', {
-        c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
-        c.NetworkManager: {}
-    })
-    # e.Mesh.data.scale = 1.5 + random.random()
-    e.Position.data.r = 2. * pi * random.random()
+spawn_crap('tree', 100, scalebase=1.5, modscale=1.0)
+spawn_crap('rock', 20, scalebase=1.0, modscale=4.0)
+spawn_crap('crate', 10)
+spawn_crap('log', 15)
+spawn_crap('stone_axe', 5)
 
 def ws_app(env, start):
     if env['PATH_INFO'] == '/player':

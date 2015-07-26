@@ -41,6 +41,9 @@ stone_axe:
     ingredients:
     - sharp_rock
     - large_stick
+  - class: Sprite
+    sprite: sprites/stone_axe.png
+
 
 tree:
   components:
@@ -49,6 +52,11 @@ tree:
   - class: Sprite
     sprite: sprites/blobby_tree_bush_thing.png
   - class: Interactive
+
+log:
+  components:
+    - class: Sprite
+      sprite: sprites/log.png
 
 crate:
   components:
