@@ -8,7 +8,7 @@ from component.network import string_replicator
 
 class Interactive(BaseComponent):
     data = {
-        'hit_area': 'Circle(0, 0, 50)'
+        'hit_area': 'Circle(0, 0, 100)'
     }
 
     @component_method

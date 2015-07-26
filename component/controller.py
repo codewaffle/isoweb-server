@@ -64,7 +64,7 @@ class ControllerComponent(BaseComponent):
             return
         else:
             # one thing to do? do it.
-            ctx_menu.values()[0](self.entityref)
+            ctx_menu.values()[0][1](self.entityref)
 
 
 
