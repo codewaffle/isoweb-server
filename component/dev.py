@@ -26,3 +26,11 @@ class Choppable(MenuComponent):
     @component_method
     def chop(self, chopper):
         print "HELP I AM BEING CHOPPED BY", chopper
+        chopper.controller.set_queue([
+            chopper.controller.move_near_task(self.entity.pos, 3),
+            (self.do_chop, (chopper, ))
+        ])
+
+    @component_method
+    def do_chop(self, chopper):
+        print "CHOP CHOP CHOP", chopper

@@ -86,20 +86,26 @@ class ControllerComponent(BaseComponent):
 
         if ret is None:  # return None = move to next task
             q.pop(0)
+            if len(q) > 0:
+                return -1/20.
         elif ret is False:  # False = abort queue
             del self.data.queue[:]
         else:
             return ret
 
     @component_method
-    def queue_task(self, task, args, overwrite=False):
+    def set_queue(self, new_queue):
+        if new_queue and not self.data.queue:
+            self.entity.schedule(self.update_queue)
+
+        self.data.queue = new_queue
+
+    @component_method
+    def queue_task(self, task, args):
         if not self.data.queue:
             self.entity.schedule(self.update_queue)
 
-        if overwrite:
-            self.data.queue = [(task, args)]
-        else:
-            self.data.queue.append((task, args))
+        self.data.queue.append((task, args))
 
 
 class MeatbagController(ControllerComponent):
@@ -118,18 +124,22 @@ class MeatbagController(ControllerComponent):
         # could use this for item actions (e.g. activate a shovel and then intercept context position to dig... dumb?)
         # but this will probably be handled by the client.. (activate shovel -> ask for target?).. don't know.
 
-        self.move_to(pos, overwrite=True)
+        self.set_queue([
+            (self.do_move_to, (pos, ))
+        ])
 
     @component_method
-    def move_to(self, pos, overwrite=False):
-        self.queue_task(self.update_move, (pos, ), overwrite)
+    def move_near_task(self, pos, dist=1):
+        near_pos = pos + (self.entity.pos - pos).normalized * dist
+        return self.do_move_to, (near_pos, )
 
     @component_method
-    def update_move(self, pos):
+    def do_move_to(self, pos):
         dt = 1/20.
         t = pos
 
         if t is None:
+            print 'ff'
             return False
 
         move_diff = t - self.entity.pos
@@ -140,6 +150,7 @@ class MeatbagController(ControllerComponent):
 
         if dist < move_amt:
             self.entity.Position.teleport(t)
+            print 'done'
 
             return None
         else:
