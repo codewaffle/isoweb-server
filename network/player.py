@@ -51,11 +51,12 @@ class PlayerWebsocket(object):
 
         if packet_type == packet_types.PING:
             num, = ping.unpack_from(data, 1)
-            self.send(pong.pack(packet_types.PONG, clock(), num, now))
+            # bounce ping back immediately
+            self.ws.send(pong.pack(packet_types.PONG, clock(), num, now) + '\0', binary=True)
             return True
-        elif packet_type == packet_types.CMD_MOVE:
+        elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
             pass
-        elif packet_type == packet_types.CMD_CONTEXTUAL:
+        elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
             pass
         elif packet_type == packet_types.CMD_MENU_REQ:
             pass
