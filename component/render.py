@@ -1,6 +1,8 @@
 from functools import partial
-from time import time, clock
+from time import clock
+
 from component import BaseComponent
+from component.base import component_method
 from component.network import string_replicator, float_replicator
 
 
@@ -15,12 +17,12 @@ class Mesh(BaseComponent):
         }
     }
 
-    @classmethod
-    def initialize(cls, entity, data):
-        entity.snapshots[float_replicator(partial(getattr, data, 'scale'), 'scale')] = clock()
-        entity.snapshots[float_replicator(partial(getattr, data, 'z'), 'z')] = clock()
-        entity.snapshots[string_replicator(partial(getattr, data, 'model'), 'model')] = clock()
-        entity.snapshots[string_replicator(partial(data.material.get, 'map'), 'map')] = clock()
+    @component_method
+    def initialize(self):
+        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'scale'), 'scale')] = clock()
+        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'z'), 'z')] = clock()
+        self.entity.snapshots[string_replicator(partial(getattr, self.data, 'model'), 'model')] = clock()
+        self.entity.snapshots[string_replicator(partial(self.data.material.get, 'map'), 'map')] = clock()
 
 
 class Sprite(BaseComponent):
@@ -34,10 +36,10 @@ class Sprite(BaseComponent):
         },
     }
 
-    @classmethod
-    def initialize(cls, entity, data):
-        entity.snapshots[float_replicator(partial(getattr, data, 'scale'), 'scale')] = clock()
-        entity.snapshots[float_replicator(partial(getattr, data, 'z'), 'z')] = clock()
-        entity.snapshots[float_replicator(partial(data['anchor'].get, 'x'), 'anchor_x')] = clock()
-        entity.snapshots[float_replicator(partial(data['anchor'].get, 'y'), 'anchor_y')] = clock()
-        entity.snapshots[string_replicator(partial(getattr, data, 'sprite'), 'sprite')] = clock()
+    @component_method
+    def initialize(self):
+        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'scale'), 'scale')] = clock()
+        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'z'), 'z')] = clock()
+        self.entity.snapshots[float_replicator(partial(self.data['anchor'].get, 'x'), 'anchor_x')] = clock()
+        self.entity.snapshots[float_replicator(partial(self.data['anchor'].get, 'y'), 'anchor_y')] = clock()
+        self.entity.snapshots[string_replicator(partial(getattr, self.data, 'sprite'), 'sprite')] = clock()

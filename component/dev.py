@@ -2,6 +2,7 @@ from functools import partial
 from time import clock
 
 from component import BaseComponent
+from component.base import component_method
 from component.network import string_replicator
 
 
@@ -10,8 +11,8 @@ class Interactive(BaseComponent):
         'hit_area': 'Circle(0, 0, 50)'
     }
 
-    @classmethod
-    def initialize(cls, entity, data):
-        entity.snapshots[string_replicator(partial(getattr, data, 'hit_area'), 'hit_area')] = clock()
+    @component_method
+    def initialize(self):
+        self.entity.snapshots[string_replicator(partial(getattr, self.data, 'hit_area'), 'hit_area')] = clock()
 
 

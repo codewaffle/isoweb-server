@@ -30,6 +30,7 @@ class Entity(object):
 
     _frozen = False
     _controller = None
+    _menu_providers = None
 
     def __init__(self, entity_def):
         from component.general import EntityOb
@@ -43,10 +44,18 @@ class Entity(object):
         self.id = id(self)  # this will be generated in a better manner as well..
 
         # this is a name/DataProxy dict.
+        self.menu_providers = set()
         self.component_data = {}
         self.snapshots = {}
         self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
+
+    @property
+    def menu_provider(self):
+        if self._menu_providers is None:
+            self._menu_providers = set()
+
+        return self._menu_providers
 
     @property
     def controller(self):
@@ -101,3 +110,15 @@ class Entity(object):
                 ret.append(ss_func())
 
         return ret
+
+    def get_menu(self, user):
+        # users use menus, I guess..
+        menu = []
+
+        if self._menu_providers is None:
+            return []
+
+        for mp in self.menu_providers:
+            menu.extend(mp.get_menu(user))
+
+        return menu

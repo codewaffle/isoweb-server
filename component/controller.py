@@ -1,66 +1,68 @@
 from math import atan2, pi
 from component import BaseComponent
+from component.base import component_method
 
 
 class CharacterController(BaseComponent):
-    @classmethod
-    def handle_menu_req_position(cls, entity, data, pos):
+    @component_method
+    def handle_menu_req_position(self, pos):
         pass
 
-    @classmethod
-    def handle_menu_req_entity(cls, entity, data, pos):
-        pass
+    @component_method
+    def handle_menu_req_entity(self, ent):
+        menu = ent.get_menu(self.entity)
 
-    @classmethod
-    def handle_context_position(cls, entity, data, pos):
+    @component_method
+    def handle_context_position(self, pos):
         raise NotImplemented
 
-    @classmethod
-    def handle_context_entity(cls, entity, data, pos):
+    @component_method
+    def handle_context_entity(self, pos):
         raise NotImplemented
 
 
 class MeatbagController(CharacterController):
     data = {
-        'move_speed': 2.0
+        'move_speed': 3.0
     }
 
-    @classmethod
-    def initialize(cls, entity, data):
-        entity.controller = entity.MeatbagController
-        entity.cache.moveTo = None
+    @component_method
+    def initialize(self):
+        self.entity.controller = self.entity.MeatbagController
+        self.entity.cache.moveTo = None
 
-    @classmethod
-    def handle_context_position(cls, entity, data, pos):
+    @component_method
+    def handle_context_position(self, pos):
         # i don't know if this will ever be something other than 'move here'...
         # could use this for item actions (e.g. activate a shovel and then intercept context position to dig... dumb?)
         # but this will probably be handled by the client.. (activate shovel -> ask for target?).. don't know.
-        if entity.cache.moveTo is None:
-            entity.scheduler.schedule(func=entity.MeatbagController.update_move)
-        entity.cache.moveTo = pos
+        if self.entity.cache.moveTo is None:
+            self.entity.scheduler.schedule(func=self.entity.MeatbagController.update_move)
+            self.entity.cache.moveTo = pos
 
-    @classmethod
-    def handle_context_entity(cls, entity, data, pos):
+    @component_method
+    def handle_context_entity(self, pos):
         pass
 
-    @classmethod
-    def update_move(cls, entity, data, dt):
+    @component_method
+    def update_move(self, dt):
         dt = 1/20.
-        t = entity.cache.moveTo
+        t = self.entity.cache.moveTo
 
         if t is None:
             return
 
-        move_diff = t - entity.pos
+        move_diff = t - self.entity.pos
         dist = move_diff.magnitude
-        move_amt = data.move_speed * dt
+        move_amt = self.data.move_speed * dt
 
-        entity.Position.data.r = atan2(move_diff.y, move_diff.x) + pi / 2.
+        self.entity.Position.data.r = atan2(move_diff.y, move_diff.x) + pi / 2.
 
         if dist < move_amt:
-            entity.Position.teleport(t)
+            self.entity.Position.teleport(t)
+
             return
         else:
-            entity.Position.teleport(entity.pos.lerp(t, move_amt / dist))
+            self.entity.Position.teleport(self.entity.pos.lerp(t, move_amt / dist))
 
             return dt * -1.

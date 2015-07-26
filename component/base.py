@@ -1,4 +1,4 @@
-from functools import partial
+from functools import partial, wraps
 
 from util import memoize
 
@@ -52,28 +52,40 @@ class ComponentProxy(object):
     def __getattr__(self, item):
         return partial(
             getattr(self.cls, item),
-            self.entity,
-            self.data
+            self
         )
 
     @memoize
     def __repr__(self):
         return '{}({})'.format(self.cls.__name__, self.entity)
 
+def component_method(f):
+    @wraps(f)
+    def wrapper(cls, *a, **kw):
+        return f(*a, **kw)
+
+    return classmethod(wrapper)
 
 class BaseComponent(object):
     data = {}
 
-    @classmethod
-    def initialize(cls, entity, data):
+    @component_method
+    def initialize(self):
         pass
 
-    @classmethod
-    def yield_actions(cls, entity, data, actor, target):
-        if False:
-            yield  # this is on purpose! do not remove.
+    @property
+    def entity(self):
+        # This is just a placeholder to keep idea silent about our magical redirection going on.
+        # if this ever gets called outside of ComponentProxy then something is broke.
+        raise NotImplemented
 
     @classmethod
     # not memoized - memoize on accessor! classmethods never ever garbage collect.
     def bind(cls, entity, bind_def=True):
         return ComponentProxy(cls, entity, bind_def)
+
+
+class MenuComponent(object):
+    pass
+
+
