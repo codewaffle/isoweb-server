@@ -34,6 +34,10 @@ class ComponentProxy(object):
         self.bind_def = bind_def
 
     @property
+    def island(self):
+        return self.entity.island
+
+    @property
     @memoize
     def data(self):
         try:
@@ -76,6 +80,7 @@ class BaseComponent(object):
 
     entity = NotImplemented
     entityref = NotImplemented
+    island = NotImplemented
 
     @classmethod
     # not memoized - memoize on accessor! classmethods never ever garbage collect.
