@@ -43,7 +43,7 @@ island.start()
 
 def spawn_crap(name, num, scalebase=1.0, modscale=0.0):
     for x in range(num):
-        ent = island.spawn(name, pos=Vector2.random_inside(120))
+        ent = island.spawn(name, pos=Vector2.random_inside(30))
 
         if modscale:
             ent.Sprite.data.scale = scalebase + random.random() * modscale
@@ -51,10 +51,10 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0):
 
         ent.Position.data.r = 2.*pi * random.random()
 
-spawn_crap('tree', 100, scalebase=1.5, modscale=1.0)
-spawn_crap('rock', 20, scalebase=1.0, modscale=4.0)
+spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
+spawn_crap('rock', 10, scalebase=1.0, modscale=4.0)
 spawn_crap('crate', 10)
-spawn_crap('log', 15)
+# spawn_crap('log', 15)
 spawn_crap('stone_axe', 5)
 
 def ws_app(env, start):

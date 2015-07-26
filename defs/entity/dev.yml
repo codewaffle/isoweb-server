@@ -55,8 +55,9 @@ tree:
 
 log:
   components:
-    - class: Sprite
-      sprite: sprites/log.png
+  - class: Sprite
+    sprite: sprites/log.png
+  - class: Draggable
 
 crate:
   components:
@@ -65,3 +66,5 @@ crate:
   - class: Container
     capacity: 125
   - class: Interactive
+  - class: Draggable
+

@@ -38,6 +38,10 @@ class ComponentProxy(object):
         return self.entity.island
 
     @property
+    def pos(self):
+        return self.entity.pos
+
+    @property
     @memoize
     def data(self):
         try:
@@ -78,9 +82,11 @@ class BaseComponent(object):
     def initialize(self):
         pass
 
+    # these are mostly to shut up pycharm/idea
     entity = NotImplemented
     entityref = NotImplemented
     island = NotImplemented
+    pos = NotImplemented
 
     @classmethod
     # not memoized - memoize on accessor! classmethods never ever garbage collect.
