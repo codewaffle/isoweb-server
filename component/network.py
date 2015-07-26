@@ -25,9 +25,17 @@ class NetworkViewer(BaseComponent):
 
         visible = self.entity.Position.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
 
-        # cur = set(cache.keys())
-        # exit = cur - visible
-        # enter = visible - cur
+        for ref in (set(cache.keys()) - visible):
+            if ref.valid is False:  # destroyed/invalidated
+                print 'destroying', ref
+                self.data.socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
+            else:  # hide dynamic/moving entities, stop updating static ones
+                print 'hiding', ref
+                self.data.socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
+
+            del cache[ref]
+
+        enter = visible - set(cache.keys())
 
         # loop through previously-and-still-visible entities and only process those that are due.
         # entities that were not previously visible but cached can still sit around in the cache and only get
@@ -60,9 +68,8 @@ class NetworkViewer(BaseComponent):
                 # print repr(packet)
                 self.data.socket.send(packet)
 
-        # TODO : cleanup old entities?
-        # TODO : send the 'go invisible' packet here.. at some point we'll flush it from cache and
-        # TODO : also tell the client to flush it
+        for ref in enter:
+            self.data.socket.send(struct.pack('>BfI', packet_types.ENTITY_SHOW, clock(), ref.id))
 
         # update @ 20hz
         return -1/20.

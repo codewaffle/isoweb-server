@@ -160,3 +160,10 @@ class Entity(object):
 
             if data:
                 data[1](user)
+
+    def destroy(self):
+        # reset Reference
+        self.reference.entity = None
+        self.reference.valid = False
+        del self._memo_cache
+        self._memo_cache = {}
