@@ -1,6 +1,6 @@
 meatbag:
   components:
-  - class: CharacterController
+  - class: MeatbagController
   - class: Sprite
     sprite: sprites/player.png
 

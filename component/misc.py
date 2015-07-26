@@ -7,8 +7,7 @@ class EquipmentUser(BaseComponent):
 class Chopper(BaseComponent):
     pass
 
-class Choppable(BaseComponent):
-    pass
+
 
 class Containable(BaseComponent):
     pass

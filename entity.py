@@ -19,6 +19,9 @@ class EntityReference(object):
     def __setattr__(self, key, value):
         raise RuntimeError("NO WAY JEEZE STOP IT")
 
+    def __repr__(self):
+        return 'EntityReference({})'.format(self.id)
+
 class ObFlags:
     REPLICATE = 1
 
@@ -30,6 +33,7 @@ class Entity(object):
 
     _frozen = False
     _controller = None
+    _menu_providers = None
 
     def __init__(self, entity_def):
         from component.general import EntityOb
@@ -43,10 +47,18 @@ class Entity(object):
         self.id = id(self)  # this will be generated in a better manner as well..
 
         # this is a name/DataProxy dict.
+        self._menu_providers = set()
         self.component_data = {}
         self.snapshots = {}
         self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
+
+    @property
+    def menu_providers(self):
+        if self._menu_providers is None:
+            self._menu_providers = set()
+
+        return self._menu_providers
 
     @property
     def controller(self):
@@ -101,3 +113,47 @@ class Entity(object):
                 ret.append(ss_func())
 
         return ret
+
+    def get_menu(self, user):
+        # users use menus, I guess..
+        menu = {}
+
+        if self._menu_providers is None:
+            return {}
+
+        for mp in self.menu_providers:
+            menu.update(mp.get_menu(user))
+
+        return menu
+
+    def get_context_menu(self, user):
+        max_i = 0
+        menu = None
+
+        for a, mi in self.get_menu(user).items():
+            if a.startswith('!'):
+                i = 1
+                while a[i] == '!':
+                    i += 1
+
+                if i < max_i:
+                    continue
+                elif i == max_i:
+                    menu[a] = mi
+                if i > max_i:
+                    max_i = i
+                    menu = {a: mi}
+
+        return menu
+
+    def do_menu(self, user, action):
+        if not self._menu_providers:
+            return False
+
+        for mp in self.menu_providers:
+            menu = mp.get_menu(user)
+
+            data = menu.get(action, None)
+
+            if data:
+                data[1](user)

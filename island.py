@@ -11,6 +11,7 @@ class Island(Greenlet):
         super(Island, self).__init__()
         self.scheduler = Scheduler()
         self.entities = set()
+        self.entities_by_id = {}
         self.quadtree = Quadtree()
 
     def _run(self):
@@ -27,6 +28,7 @@ class Island(Greenlet):
             entdef = definition_from_key(entdef)
 
         ent = Entity(entdef)
+        self.entities_by_id[ent.id] = ent.reference
 
         if isinstance(components, list):
             for comp_class in components:
@@ -41,3 +43,6 @@ class Island(Greenlet):
         ent._frozen = True
         ent.initialize()
         return ent.reference
+
+    def get_entity(self, ent_id):
+        return self.entities_by_id[ent_id]

@@ -1,4 +1,4 @@
-from functools import partial
+from functools import partial, wraps
 
 from util import memoize
 
@@ -30,6 +30,7 @@ class ComponentProxy(object):
         self._memo_cache = {}
         self.cls = cls
         self.entity = entity
+        self.entityref = entity.reference
         self.bind_def = bind_def
 
     @property
@@ -52,28 +53,45 @@ class ComponentProxy(object):
     def __getattr__(self, item):
         return partial(
             getattr(self.cls, item),
-            self.entity,
-            self.data
+            self
         )
 
     @memoize
     def __repr__(self):
         return '{}({})'.format(self.cls.__name__, self.entity)
 
+def component_method(f):
+    @wraps(f)
+    def wrapper(cls, *a, **kw):
+        return f(*a, **kw)
+
+    return classmethod(wrapper)
 
 class BaseComponent(object):
     data = {}
 
-    @classmethod
-    def initialize(cls, entity, data):
+    @component_method
+    def initialize(self):
         pass
 
-    @classmethod
-    def yield_actions(cls, entity, data, actor, target):
-        if False:
-            yield  # this is on purpose! do not remove.
+    entity = NotImplemented
+    entityref = NotImplemented
 
     @classmethod
     # not memoized - memoize on accessor! classmethods never ever garbage collect.
     def bind(cls, entity, bind_def=True):
         return ComponentProxy(cls, entity, bind_def)
+
+
+class MenuComponent(BaseComponent):
+    @component_method
+    def initialize(self):
+        self.initialize_menu()
+
+    @component_method
+    def initialize_menu(self):
+        self.entity.menu_providers.add(self)
+
+    @component_method
+    def get_menu(self, ent):
+        raise NotImplemented

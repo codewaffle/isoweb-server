@@ -1,6 +1,7 @@
 import struct
 from time import time, clock
 from component import BaseComponent
+from component.base import component_method
 from entity import ObFlags
 import packet_types
 
@@ -11,18 +12,18 @@ class NetworkViewer(BaseComponent):
         'visibility_radius': 300
     }
 
-    @classmethod
-    def initialize(cls, entity, data):
-        entity.cache.network_viewer = {}
-        entity.scheduler.schedule(func=entity.NetworkViewer.update)
+    @component_method
+    def initialize(self):
+        self.entity.cache.network_viewer = {}
+        self.entity.scheduler.schedule(func=self.entity.NetworkViewer.update)
 
-    @classmethod
-    def update(cls, entity, data, dt):
+    @component_method
+    def update(self, dt):
         now = clock()
 
-        cache = entity.cache.network_viewer
+        cache = self.entity.cache.network_viewer
 
-        visible = entity.Position.find_nearby(data.visibility_radius, flags=ObFlags.REPLICATE)
+        visible = self.entity.Position.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
 
         # cur = set(cache.keys())
         # exit = cur - visible
@@ -57,7 +58,7 @@ class NetworkViewer(BaseComponent):
                 # SEND
                 packet = struct.pack(''.join(packet_fmt), *packet_data)
                 # print repr(packet)
-                data.socket.send(packet)
+                self.data.socket.send(packet)
 
         # TODO : cleanup old entities?
         # TODO : send the 'go invisible' packet here.. at some point we'll flush it from cache and
@@ -71,9 +72,9 @@ class NetworkManager(BaseComponent):
     """
     Lives on any entity that has a network representation.. responsible for stuff.
     """
-    @classmethod
-    def initialize(cls, entity, data):
-        entity.ob.flags |= ObFlags.REPLICATE
+    @component_method
+    def initialize(self):
+        self.entity.ob.flags |= ObFlags.REPLICATE
 
 
 def string_replicator(func, attr_name):
