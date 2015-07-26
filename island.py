@@ -1,4 +1,5 @@
 from gevent import Greenlet
+from component import c
 from entity import Entity
 from entitydef import definition_from_key
 from mathx import Quadtree
@@ -23,7 +24,7 @@ class Island(Greenlet):
         # print 'updated in', dt
         return 1/20.
 
-    def spawn(self, entdef, components=None):
+    def spawn(self, entdef, components=None, pos=None, rot=None):
         if isinstance(entdef, basestring):
             entdef = definition_from_key(entdef)
 
@@ -36,6 +37,9 @@ class Island(Greenlet):
         elif isinstance(components, dict):
             for comp_class, data in components.items():
                 ent.add_component(comp_class, initialize=False, **data)
+
+        if pos is not None:
+            ent.add_component(c.Position, {'x': pos.x, 'y': pos.y, 'r': rot or 0})
 
         self.entities.add(ent)
         ent.island = self
