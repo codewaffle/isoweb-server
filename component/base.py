@@ -85,7 +85,15 @@ class BaseComponent(object):
         return ComponentProxy(cls, entity, bind_def)
 
 
-class MenuComponent(object):
-    pass
+class MenuComponent(BaseComponent):
+    @component_method
+    def initialize(self):
+        self.initialize_menu()
 
+    @component_method
+    def initialize_menu(self):
+        self.entity.menu_providers.add(self)
 
+    @component_method
+    def get_menu(self, ent):
+        raise NotImplemented

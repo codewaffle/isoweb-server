@@ -3,7 +3,7 @@ from component import BaseComponent
 from component.base import component_method
 
 
-class CharacterController(BaseComponent):
+class ControllerComponent(BaseComponent):
     @component_method
     def handle_menu_req_position(self, pos):
         pass
@@ -11,6 +11,13 @@ class CharacterController(BaseComponent):
     @component_method
     def handle_menu_req_entity(self, ent):
         menu = ent.get_menu(self.entity)
+        print ent
+        print menu
+
+    @component_method
+    def handle_menu_exec_entity(self, ent, action):
+        print 'menu exec'
+        pass
 
     @component_method
     def handle_context_position(self, pos):
@@ -21,7 +28,7 @@ class CharacterController(BaseComponent):
         raise NotImplemented
 
 
-class MeatbagController(CharacterController):
+class MeatbagController(ControllerComponent):
     data = {
         'move_speed': 3.0
     }
@@ -41,8 +48,18 @@ class MeatbagController(CharacterController):
             self.entity.cache.moveTo = pos
 
     @component_method
-    def handle_context_entity(self, pos):
-        pass
+    def handle_context_entity(self, ent):
+        ctx_menu = ent.get_context_menu(self.entity)
+
+        if not ctx_menu:
+            return
+
+        if len(ctx_menu) > 1:
+            # send the truncated menu
+            return
+        else:
+            # one thing to do? do it.
+            ctx_menu.values()[0](self.entity)
 
     @component_method
     def update_move(self, dt):

@@ -19,6 +19,9 @@ class EntityReference(object):
     def __setattr__(self, key, value):
         raise RuntimeError("NO WAY JEEZE STOP IT")
 
+    def __repr__(self):
+        return 'EntityReference({})'.format(self.id)
+
 class ObFlags:
     REPLICATE = 1
 
@@ -44,14 +47,14 @@ class Entity(object):
         self.id = id(self)  # this will be generated in a better manner as well..
 
         # this is a name/DataProxy dict.
-        self.menu_providers = set()
+        self._menu_providers = set()
         self.component_data = {}
         self.snapshots = {}
         self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
 
     @property
-    def menu_provider(self):
+    def menu_providers(self):
         if self._menu_providers is None:
             self._menu_providers = set()
 
@@ -113,12 +116,44 @@ class Entity(object):
 
     def get_menu(self, user):
         # users use menus, I guess..
-        menu = []
+        menu = {}
 
         if self._menu_providers is None:
-            return []
+            return {}
 
         for mp in self.menu_providers:
-            menu.extend(mp.get_menu(user))
+            menu.update(mp.get_menu(user))
 
         return menu
+
+    def get_context_menu(self, user):
+        max_i = 0
+        menu = None
+
+        for a, func in self.get_menu(user).items():
+            if a.startswith('!'):
+                i = 1
+                while a[i] == '!':
+                    i += 1
+
+                if i < max_i:
+                    continue
+                elif i == max_i:
+                    menu[a] = func
+                if i > max_i:
+                    max_i = i
+                    menu = {a: func}
+
+        return menu
+
+    def do_menu(self, user, action):
+        if not self._menu_providers:
+            return False
+
+        for mp in self.menu_providers:
+            menu = mp.get_menu(user)
+
+            func = menu.get(action, None)
+
+            if func:
+                func(user)

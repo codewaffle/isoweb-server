@@ -59,15 +59,21 @@ class PlayerWebsocket(object):
             x, y = struct.unpack_from('>ff', data, 1)
             self.entity.controller.handle_context_position(Vector2(x, y))
         elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
-            pass
+            ent_id, = struct.unpack_from('>I', data, 1)
+            ent = self.entity.island.get_entity(ent_id)
+            self.entity.controller.handle_context_entity(ent)
         elif packet_type == packet_types.CMD_MENU_REQ_ENTITY:
-            pass
+            ent_id, = struct.unpack_from('>I', data, 1)
+            ent = self.entity.island.get_entity(ent_id)
+            self.entity.controller.handle_menu_req_entity(ent)
         elif packet_type == packet_types.CMD_MENU_EXEC_ENTITY:
-            pass
+            ent_id, = struct.unpack_from('>I', data, 1)
+            ent = self.entity.island.get_entity(ent_id)
+            self.entity.controller.handle_menu_exec_entity(ent)
         elif packet_type == packet_types.CMD_MENU_REQ_POSITION:
-            pass
+            print 'menreq pos'
         elif packet_type == packet_types.CMD_MENU_EXEC_POSITION:
-            pass
+            print 'menexec pos'
         else:
             logbook.warn('Unknown packet type: {0}', packet_type)
 
