@@ -40,7 +40,7 @@ class Island(Greenlet):
                 ent.add_component(comp_class, initialize=False, **data)
 
         if pos is not None:
-            ent.add_component(c.Position, {'x': pos.x, 'y': pos.y, 'r': rot or 0})
+            ent.add_component(c.Position, initialize=False, x=pos.x, y=pos.y, r=rot or 0)
 
         self.entities.add(ent)
         ent.island = self
