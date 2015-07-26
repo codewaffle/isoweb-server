@@ -76,5 +76,9 @@ cdef class Vector2:
         return self
 
     @classmethod
-    def random(cls):
+    def random_unit(cls):
         return Vector2(uniform(-1.0, 1.0), uniform(-1.0, 1.0)).normalize()
+
+    @classmethod
+    def random_inside(cls, radius=1.0):
+        return cls.random_unit().mul(uniform(0.0, radius))

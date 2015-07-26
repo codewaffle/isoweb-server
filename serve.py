@@ -1,10 +1,13 @@
-from math import pi
-import random
 from gevent.monkey import patch_all
-
 patch_all(ssl=False)
 from pyximport import pyximport
 pyximport.install()
+
+
+from math import pi
+import random
+from mathx import Vector2
+
 
 from logbook.queues import ZeroMQHandler
 
@@ -40,9 +43,8 @@ island.start()
 
 def spawn_crap(name, num, scalebase=1.0, modscale=0.0):
     for x in range(num):
-        ent = island.spawn(name, {
-            c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
-        })
+        ent = island.spawn(name, pos=Vector2.random_inside(120))
+
         if modscale:
             ent.Sprite.data.scale = scalebase + random.random() * modscale
             ent.Position.data.z = ent.Sprite.data.scale / 2.
