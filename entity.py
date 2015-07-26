@@ -29,6 +29,7 @@ class Entity(object):
     """
 
     _frozen = False
+    _controller = None
 
     def __init__(self, entity_def):
         from component.general import EntityOb
@@ -44,7 +45,19 @@ class Entity(object):
         # this is a name/DataProxy dict.
         self.component_data = {}
         self.snapshots = {}
+        self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
+
+    @property
+    def controller(self):
+        return self._controller
+
+    @controller.setter
+    def controller(self, val):
+        if val is None and self._controller is not None:
+            del self._controller
+        else:
+            self._controller = val
 
     @property
     def components(self):

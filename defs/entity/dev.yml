@@ -3,8 +3,6 @@ meatbag:
   - class: CharacterController
   - class: Sprite
     sprite: sprites/player.png
-  - class: SimpleWander
-    velocity: 5.0
 
 large_stick:
   components:

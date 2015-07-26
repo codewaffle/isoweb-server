@@ -8,6 +8,7 @@ from geventwebsocket import WebSocketError
 import logbook
 import time
 from component import c
+from mathx.vector2 import Vector2
 
 import packet_types
 
@@ -55,12 +56,17 @@ class PlayerWebsocket(object):
             self.ws.send(pong.pack(packet_types.PONG, clock(), num, now) + '\0', binary=True)
             return True
         elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
-            pass
+            x, y = struct.unpack_from('>ff', data, 1)
+            self.entity.controller.handle_context_position(Vector2(x, y))
         elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
             pass
-        elif packet_type == packet_types.CMD_MENU_REQ:
+        elif packet_type == packet_types.CMD_MENU_REQ_ENTITY:
             pass
-        elif packet_type == packet_types.CMD_MENU_EXEC:
+        elif packet_type == packet_types.CMD_MENU_EXEC_ENTITY:
+            pass
+        elif packet_type == packet_types.CMD_MENU_REQ_POSITION:
+            pass
+        elif packet_type == packet_types.CMD_MENU_EXEC_POSITION:
             pass
         else:
             logbook.warn('Unknown packet type: {0}', packet_type)
@@ -88,7 +94,7 @@ class PlayerWebsocket(object):
                 print 'failed send'
                 return self.on_disconnect()
 
-            gevent.sleep(1/100.)
+            gevent.sleep(1/1000.)
 
         return self.on_disconnect()
 
@@ -98,7 +104,8 @@ class PlayerWebsocket(object):
         self.entity = self.island.spawn('meatbag', {
             c.Position: {'x': -10 + random.random() * 20., 'y': -10 + random.random() * 20.},
             c.NetworkViewer: {'socket': self},
-            c.NetworkManager: {}
+            c.NetworkManager: {},
+            c.MeatbagController: {}
         })
 
         self.send(struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id))

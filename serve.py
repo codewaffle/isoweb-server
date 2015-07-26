@@ -38,7 +38,7 @@ island.log_handler = ws_zmq_handler
 island.start()
 
 # spawn a buncha treez
-for x in range(100):
+for x in range(0):
     ent = island.spawn('tree', {
         c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
         c.NetworkManager: {},
@@ -50,16 +50,19 @@ for x in range(100):
 
 
 def spawn_meatbags():
-    for x2 in range(250):
-        e = island.spawn('meatbag', {
-            c.Position: {'x': -64. + random.random() * 128., 'y': -64. + random.random() * 128.},
-            c.NetworkManager: {},
-            c.Spiraler: {
-                'velocity': 7.5
-            }
-        })
-        gevent.sleep(0.15)
-gevent.spawn(spawn_meatbags)
+    while True:
+        gevent.sleep(5)
+        for x2 in range(510):
+            e = island.spawn('meatbag', {
+                c.Position: {'x': -64. + random.random() * 128., 'y': -64. + random.random() * 128.},
+                c.NetworkManager: {},
+                c.Spiraler: {
+                    'velocity': 7.5
+                }
+            })
+            gevent.sleep(0.15)
+        gevent.sleep(15)
+# gevent.spawn(spawn_meatbags)
 
 for x3 in range(50):
     e = island.spawn('rock', {

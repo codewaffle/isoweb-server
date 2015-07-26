@@ -40,7 +40,7 @@ class Position(BaseComponent):
         ob = entity.ob
         ob.pos.x = data.x or random() - 0.5
         ob.pos.y = data.y or random() - 0.5
-
+        entity.pos = ob.pos
         entity.island.quadtree.insert(ob)
 
         entity.snapshots[entity.Position.snapshot] = 0
@@ -50,9 +50,13 @@ class Position(BaseComponent):
         return 'Bfff', (packet_types.POSITION_UPDATE, data.x, data.y, data.r)
 
     @classmethod
-    def teleport(cls, entity, data, x, y):
-        data.x = x
-        data.y = y
+    def teleport(cls, entity, data, x, y=None):
+        if y is None and isinstance(x, Vector2):
+            data.x = x.x
+            data.y = x.y
+        else:
+            data.x = x
+            data.y = y
         cls._update(entity, data)
 
     @classmethod

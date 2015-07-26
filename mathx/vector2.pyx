@@ -39,3 +39,12 @@ cdef class Vector2:
     @property
     def normalized(self):
         return self / self.magnitude
+
+    def lerp(self, other, alpha):
+        return Vector2(self.x + (other.x - self.x) * alpha, self.y + (other.y - self.y) * alpha)
+
+    def inplace_lerp(self, other, alpha):
+        self.x += (other.x - self.x) * alpha
+        self.y += (other.y - self.y) * alpha
+
+        return self
