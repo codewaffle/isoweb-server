@@ -68,15 +68,6 @@ class NetworkViewer(BaseComponent):
         return -1/20.
 
 
-class NetworkManager(BaseComponent):
-    """
-    Lives on any entity that has a network representation.. responsible for stuff.
-    """
-    @component_method
-    def initialize(self):
-        self.entity.ob.flags |= ObFlags.REPLICATE
-
-
 def string_replicator(func, attr_name):
     name_len = len(attr_name)
 

@@ -42,7 +42,6 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0):
     for x in range(num):
         ent = island.spawn(name, {
             c.Position: {'x': -60. + random.random() * 120., 'y': -60. + random.random() * 120.},
-            c.NetworkManager: {},
         })
         if modscale:
             ent.Sprite.data.scale = scalebase + random.random() * modscale

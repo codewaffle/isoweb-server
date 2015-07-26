@@ -1,6 +1,6 @@
 from gevent import Greenlet
 from component import c
-from entity import Entity
+from entity import Entity, ObFlags
 from entitydef import definition_from_key
 from mathx import Quadtree
 
@@ -24,11 +24,12 @@ class Island(Greenlet):
         # print 'updated in', dt
         return 1/20.
 
-    def spawn(self, entdef, components=None, pos=None, rot=None):
+    def spawn(self, entdef, components=None, pos=None, rot=None, ob_flags=ObFlags.REPLICATE):
         if isinstance(entdef, basestring):
             entdef = definition_from_key(entdef)
 
         ent = Entity(entdef)
+        ent.ob.flags = ob_flags
         self.entities_by_id[ent.id] = ent.reference
 
         if isinstance(components, list):

@@ -110,7 +110,6 @@ class PlayerWebsocket(object):
         self.entity = self.island.spawn('meatbag', {
             c.Position: {'x': -10 + random.random() * 20., 'y': -10 + random.random() * 20.},
             c.NetworkViewer: {'socket': self},
-            c.NetworkManager: {},
             c.MeatbagController: {'socket': self}
         })
 
