@@ -30,6 +30,7 @@ class ComponentProxy(object):
         self._memo_cache = {}
         self.cls = cls
         self.entity = entity
+        self.entityref = entity.reference
         self.bind_def = bind_def
 
     @property
@@ -73,11 +74,8 @@ class BaseComponent(object):
     def initialize(self):
         pass
 
-    @property
-    def entity(self):
-        # This is just a placeholder to keep idea silent about our magical redirection going on.
-        # if this ever gets called outside of ComponentProxy then something is broke.
-        raise NotImplemented
+    entity = NotImplemented
+    entityref = NotImplemented
 
     @classmethod
     # not memoized - memoize on accessor! classmethods never ever garbage collect.

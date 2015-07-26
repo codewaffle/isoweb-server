@@ -1,31 +1,71 @@
 from math import atan2, pi
+import struct
+from time import clock
 from component import BaseComponent
 from component.base import component_method
+import packet_types
 
 
 class ControllerComponent(BaseComponent):
+    data = {
+        'socket': None
+    }
+
     @component_method
     def handle_menu_req_position(self, pos):
         pass
 
     @component_method
     def handle_menu_req_entity(self, ent):
-        menu = ent.get_menu(self.entity)
-        print ent
-        print menu
+        menu = ent.get_menu(self.entityref)
+
+        if not menu:
+            return
+
+        # send menu
+        fmt = ['>BfIB']
+        data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(menu)]
+
+        for kw, (desc, func) in menu.items():
+            fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
+            data.extend([len(kw), kw, len(desc), desc])
+
+        self.data.socket.send(struct.pack(''.join(fmt), *data))
 
     @component_method
     def handle_menu_exec_entity(self, ent, action):
-        print 'menu exec'
-        pass
+        menu = ent.get_menu(self.entityref)
+        func = menu.get(action, None)
+
+        if func:
+            func(self.entityref)
 
     @component_method
     def handle_context_position(self, pos):
         raise NotImplemented
 
     @component_method
-    def handle_context_entity(self, pos):
-        raise NotImplemented
+    def handle_context_entity(self, ent):
+        ctx_menu = ent.get_context_menu(self.entityref)
+
+        if not ctx_menu:
+            return
+
+        if len(ctx_menu) > 1:
+            # send the truncated menu
+            fmt = ['>BfIB']
+            data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(ctx_menu)]
+
+            for kw, (desc, func) in ctx_menu.items():
+                fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
+                data.extend([len(kw), kw, len(desc), desc])
+
+            self.data.socket.send(struct.pack(''.join(fmt), *data))
+            return
+        else:
+            # one thing to do? do it.
+            ctx_menu.values()[0](self.entityref)
+
 
 
 class MeatbagController(ControllerComponent):
@@ -46,20 +86,6 @@ class MeatbagController(ControllerComponent):
         if self.entity.cache.moveTo is None:
             self.entity.scheduler.schedule(func=self.entity.MeatbagController.update_move)
             self.entity.cache.moveTo = pos
-
-    @component_method
-    def handle_context_entity(self, ent):
-        ctx_menu = ent.get_context_menu(self.entity)
-
-        if not ctx_menu:
-            return
-
-        if len(ctx_menu) > 1:
-            # send the truncated menu
-            return
-        else:
-            # one thing to do? do it.
-            ctx_menu.values()[0](self.entity)
 
     @component_method
     def update_move(self, dt):

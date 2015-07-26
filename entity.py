@@ -130,7 +130,7 @@ class Entity(object):
         max_i = 0
         menu = None
 
-        for a, func in self.get_menu(user).items():
+        for a, mi in self.get_menu(user).items():
             if a.startswith('!'):
                 i = 1
                 while a[i] == '!':
@@ -139,10 +139,10 @@ class Entity(object):
                 if i < max_i:
                     continue
                 elif i == max_i:
-                    menu[a] = func
+                    menu[a] = mi
                 if i > max_i:
                     max_i = i
-                    menu = {a: func}
+                    menu = {a: mi}
 
         return menu
 
@@ -153,7 +153,7 @@ class Entity(object):
         for mp in self.menu_providers:
             menu = mp.get_menu(user)
 
-            func = menu.get(action, None)
+            data = menu.get(action, None)
 
-            if func:
-                func(user)
+            if data:
+                data[1](user)

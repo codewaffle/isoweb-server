@@ -111,7 +111,7 @@ class PlayerWebsocket(object):
             c.Position: {'x': -10 + random.random() * 20., 'y': -10 + random.random() * 20.},
             c.NetworkViewer: {'socket': self},
             c.NetworkManager: {},
-            c.MeatbagController: {}
+            c.MeatbagController: {'socket': self}
         })
 
         self.send(struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id))

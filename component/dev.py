@@ -20,7 +20,7 @@ class Choppable(MenuComponent):
     @component_method
     def get_menu(self, ent):
         return {
-            '!chop': self.chop
+            '!chop': ('Chop with bare hands', self.chop)
         }
 
     @component_method
