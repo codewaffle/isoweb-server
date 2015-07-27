@@ -32,6 +32,7 @@ class ComponentProxy(object):
         self.entity = entity
         self.entityref = entity.reference
         self.bind_def = bind_def
+        self.cache = {}
 
     @property
     def island(self):
@@ -68,6 +69,9 @@ class ComponentProxy(object):
     def __repr__(self):
         return '{}({})'.format(self.cls.__name__, self.entity)
 
+    def schedule(self, task):
+        return self.entityref.schedule(task)
+
 def component_method(f):
     @wraps(f)
     def wrapper(cls, *a, **kw):
@@ -87,6 +91,10 @@ class BaseComponent(object):
     entityref = NotImplemented
     island = NotImplemented
     pos = NotImplemented
+    cache = NotImplemented
+
+    def schedule(self, task):
+        raise NotImplemented
 
     @classmethod
     # not memoized - memoize on accessor! classmethods never ever garbage collect.

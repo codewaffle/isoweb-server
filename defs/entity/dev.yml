@@ -3,6 +3,7 @@ meatbag:
   - class: MeatbagController
   - class: Sprite
     sprite: sprites/player.png
+  - class: Dragger
 
 large_stick:
   components:
@@ -12,7 +13,7 @@ large_stick:
 rock:
   components:
   - class: Sprite
-    sprite: sprites/small_rock.png
+    sprite: sprites/new/rock.png
   - class: Melee
     damage: 1
   - class: Hammer
@@ -29,6 +30,10 @@ sharp_rock:
     - rock
     tools:
     - Hammer.tier: 1
+
+land_vehicle:
+  components:
+  - class: TileMap
 
 stone_axe:
   components:
@@ -50,7 +55,15 @@ tree:
   - class: Foliage
   - class: Choppable
   - class: Sprite
-    sprite: sprites/blobby_tree_bush_thing.png
+    sprite: sprites/new/tree_oak.png
+  - class: Interactive
+
+evergreen:
+  components:
+  - class: Foliage
+  - class: Choppable
+  - class: Sprite
+    sprite: sprites/new/tree_pine.png
   - class: Interactive
 
 log:
@@ -58,6 +71,7 @@ log:
   - class: Sprite
     sprite: sprites/log.png
   - class: Draggable
+  - class: Interactive
 
 crate:
   components:

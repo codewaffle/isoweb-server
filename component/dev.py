@@ -30,14 +30,27 @@ class Choppable(MenuComponent):
     def chop(self, chopper):
         chopper.controller.set_queue([
             chopper.controller.move_near_task(self.entity.pos, 3),
-            (self.do_chop, (chopper, ))
+            (self.do_chop, (chopper,))
         ])
 
     @component_method
     def do_chop(self, chopper):
         self.entity.destroy()
         for x in range(randint(1, 3)):
-            self.island.spawn('log', pos=self.pos + Vector2.random_inside(4.0), rot=uniform(0, pi*2.0))
+            self.island.spawn('log', pos=self.pos + Vector2.random_inside(4.0), rot=uniform(0, pi * 2.0))
+
+
+class Dragger(BaseComponent):
+    @component_method
+    def initialize(self):
+        self.cache.update({
+            'contribution': Vector2(),
+            'draggable': None
+        })
+
+    @component_method
+    def get_drag_force(self):
+        return 50.0
 
 
 class Draggable(MenuComponent):
@@ -48,18 +61,79 @@ class Draggable(MenuComponent):
     }
 
     @component_method
+    def initialize(self):
+        self.initialize_menu()
+        self.cache['draggers'] = set()
+        self.cache['scheduled'] = False
+
+    @component_method
     def get_menu(self, ent):
+        if ent in self.cache['draggers']:
+            return {
+                '!stop_dragging': ('Stop dragging', self.stop_drag)
+            }
+
         return {
-            'drag': ('Start dragging', self.drag)
+            '!drag': ('Start dragging', self.drag)
         }
 
     @component_method
     def drag(self, dragger):
         dragger.controller.set_queue([
-            dragger.controller.move_near_task()
+            dragger.controller.move_near_task(self.drag_handle_near(dragger.pos), 2.0),
+            (self.do_drag, (dragger,))
         ])
-        print 'okies'
+
+    @component_method
+    def stop_drag(self, dragger):
+        try:
+            self.cache['draggers'].remove(dragger)
+        except KeyError:
+            pass
+
 
     @component_method
     def drag_handle_near(self, pos):
-        pass
+        return self.pos
+
+    @component_method
+    def do_drag(self, dragger):
+        self.cache['draggers'].add(dragger)
+
+        if not self.cache['scheduled']:
+            self.start_schedule()
+
+    @component_method
+    def start_schedule(self):
+        self.cache['scheduled'] = True
+        self.schedule(self.update)
+
+    @component_method
+    def update(self, _):
+        if not self.cache['draggers']:
+            self.cache['scheduled'] = False
+            return
+
+        dt = 1/20.
+        drag_force = Vector2()
+
+        # reel in draggables and apply their drag force
+
+        for d in self.cache['draggers']:
+            diff = (d.pos - self.pos)
+            dist = diff.magnitude
+            dragdir = diff / dist
+
+            if dist > 1.5:
+                dist_diff = dist - 1.5
+                d.Position.teleport(d.pos - dragdir * dist_diff * 0.5)
+                drag_force.add(dragdir * dist_diff * d.Dragger.get_drag_force() * 0.5)
+                #drag_force.add(dragdir * (dist - 1.0) * d.Dragger.get_drag_force())
+
+        self.entity.Position.teleport(self.pos + drag_force * dt)
+
+        return -1 / 20.
+
+
+class TileMap(BaseComponent):
+    pass
