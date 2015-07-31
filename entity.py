@@ -1,3 +1,4 @@
+from math import atan2, pi
 from util import memoize, AttributeDict
 
 
@@ -176,3 +177,6 @@ class Entity(object):
         self.ob = EntityOb(self)
         del self._memo_cache
         self._memo_cache = {}
+
+    def look(self, look_dir):
+        self.Position.data.r = atan2(look_dir.y, look_dir.x) + pi / 2.

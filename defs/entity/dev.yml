@@ -82,3 +82,7 @@ crate:
   - class: Interactive
   - class: Draggable
 
+campfire:
+  components:
+  - class: Sprite
+    sprite:

@@ -36,7 +36,7 @@ class Scheduler(Greenlet):
                     else:  # negative reschedule supports fixed clock rate.
                         queue.put((t - res, now, f, a, k))
 
-            sleep(.001)
+            sleep(0)
 
     def schedule(self, at=None, wait=None, func=None, args=None, kwargs=None):
         # print 'scheduled', at, func, args, kwargs

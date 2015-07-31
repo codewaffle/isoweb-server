@@ -50,7 +50,7 @@ class Dragger(BaseComponent):
 
     @component_method
     def get_drag_force(self):
-        return 50.0
+        return 5.0
 
 
 class Draggable(MenuComponent):
@@ -91,7 +91,6 @@ class Draggable(MenuComponent):
         except KeyError:
             pass
 
-
     @component_method
     def drag_handle_near(self, pos):
         return self.pos
@@ -128,9 +127,10 @@ class Draggable(MenuComponent):
                 dist_diff = dist - 1.5
                 d.Position.teleport(d.pos - dragdir * dist_diff * 0.5)
                 drag_force.add(dragdir * dist_diff * d.Dragger.get_drag_force() * 0.5)
-                #drag_force.add(dragdir * (dist - 1.0) * d.Dragger.get_drag_force())
 
         self.entity.Position.teleport(self.pos + drag_force * dt)
+        # TODO : uncomment this when rotation bugs are sorted out.
+        # self.entity.look(drag_force)
 
         return -1 / 20.
 

@@ -52,7 +52,8 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
         if rot:
             ent.Position.data.r = 2.*pi * random.random()
 
-spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
+spawn_crap('tree', 1, scalebase=1.5, modscale=1.0)
+#spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
 spawn_crap('rock', 10, scalebase=1.0, modscale=4.0)
 spawn_crap('crate', 10, rot=True)
 # spawn_crap('log', 15)
