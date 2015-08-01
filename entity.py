@@ -235,7 +235,11 @@ class Entity(object):
     def persistent_data(self):
         def public(cd):
             return {k: v for k,v in cd.items() if not k.startswith('_')}
-        return {k: public(v) for k,v in self.component_data.items()}
+
+        def persistable(cd):
+            return {k: v for k, v in cd.items() if v or k not in self.component_data.keys()}
+
+        return persistable({k: public(v) for k, v in self.component_data.items()})
 
     def save_data(self, cur):
         try:
