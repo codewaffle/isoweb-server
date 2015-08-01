@@ -158,18 +158,6 @@ class Entity(object):
         else:
             return None
 
-    def do_menu(self, user, action):
-        if not self._menu_providers:
-            return False
-
-        for mp in self.menu_providers:
-            menu = mp.get_menu(user)
-
-            data = menu.get(action, None)
-
-            if data:
-                data[1](user)
-
     def destroy(self):
         # reset Reference
         self.reference.__dict__.update({
