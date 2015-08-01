@@ -5,7 +5,8 @@ import component
 
 
 class EntityDef(object):
-    def __init__(self, data):
+    def __init__(self, data, key):
+        self.key = key
         self.component_data = {}
         self.components = set()
 
@@ -51,7 +52,7 @@ def load_defs():
         for fn in files:
             if fnmatch.fnmatch(fn, '*.yml'):
                 for def_key, data in load(os.path.join(root, fn)).iteritems():
-                    _defs[def_key] = EntityDef(data)
+                    _defs[def_key] = EntityDef(data, def_key)
 
 def definition_from_key(def_key):
     return _defs[def_key]
