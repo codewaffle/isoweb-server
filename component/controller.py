@@ -9,12 +9,12 @@ import packet_types
 
 class ControllerComponent(BaseComponent):
     data = {
-        'socket': None
+        '_socket': None
     }
 
     @component_method
     def controller_initialize(self):
-        self.data.queue = []
+        self.data._queue = []
 
     @component_method
     def initialize(self):
@@ -39,7 +39,7 @@ class ControllerComponent(BaseComponent):
             fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
             data.extend([len(kw), kw, len(desc), desc])
 
-        self.data.socket.send(struct.pack(''.join(fmt), *data))
+        self.data._socket.send(struct.pack(''.join(fmt), *data))
 
     @component_method
     def handle_menu_exec_entity(self, ent, action):
@@ -68,7 +68,7 @@ class ControllerComponent(BaseComponent):
                 fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
                 data.extend([len(kw), kw, len(desc), desc])
 
-            self.data.socket.send(struct.pack(''.join(fmt), *data))
+            self.data._socket.send(struct.pack(''.join(fmt), *data))
             return
 
     @component_method
@@ -86,23 +86,23 @@ class ControllerComponent(BaseComponent):
             if len(q) > 0:
                 return -1/20.
         elif ret is False:  # False = abort queue
-            del self.data.queue[:]
+            del self.data._queue[:]
         else:
             return ret
 
     @component_method
     def set_queue(self, new_queue):
-        if new_queue and not self.data.queue:
+        if new_queue and not self.data._queue:
             self.entity.schedule(self.update_queue)
 
-        self.data.queue = new_queue
+        self.data._queue = new_queue
 
     @component_method
     def queue_task(self, task, args):
-        if not self.data.queue:
+        if not self.data._queue:
             self.entity.schedule(self.update_queue)
 
-        self.data.queue.append((task, args))
+        self.data._queue.append((task, args))
 
 
 class MeatbagController(ControllerComponent):

@@ -86,6 +86,11 @@ class BaseComponent(object):
     def initialize(self):
         pass
 
+    @component_method
+    def destroy(self):
+         # TODO : remove component from entity.
+        pass
+
     # these are mostly to shut up pycharm/idea
     entity = NotImplemented
     entityref = NotImplemented

@@ -8,7 +8,7 @@ import packet_types
 
 class NetworkViewer(BaseComponent):
     data = {
-        'socket': None,
+        '_socket': None,
         'visibility_radius': 300
     }
 
@@ -19,6 +19,10 @@ class NetworkViewer(BaseComponent):
 
     @component_method
     def update(self):
+        if not self.data._socket:
+            self.destroy()
+            return
+
         now = clock()
 
         cache = self.entity.cache.network_viewer
@@ -28,10 +32,10 @@ class NetworkViewer(BaseComponent):
         for ref in (set(cache.keys()) - visible):
             if ref.valid is False:  # destroyed/invalidated
                 print 'destroying', ref
-                self.data.socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
+                self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
             else:  # hide dynamic/moving entities, stop updating static ones
                 print 'hiding', ref
-                self.data.socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
+                self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
 
             del cache[ref]
 
@@ -66,10 +70,10 @@ class NetworkViewer(BaseComponent):
                 # SEND
                 packet = struct.pack(''.join(packet_fmt), *packet_data)
                 # print repr(packet)
-                self.data.socket.send(packet)
+                self.data._socket.send(packet)
 
         for ref in enter:
-            self.data.socket.send(struct.pack('>BfI', packet_types.ENTITY_SHOW, clock(), ref.id))
+            self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_SHOW, clock(), ref.id))
 
         # update @ 20hz
         return -1/20.

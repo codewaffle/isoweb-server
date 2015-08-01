@@ -66,7 +66,6 @@ class PlayerWebsocket(object):
         elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
             ent_id, = struct.unpack_from('>I', data, 1)
             ent = self.entity.island.get_entity(ent_id)
-            
             self.entity.controller.handle_context_entity(ent)
         elif packet_type == packet_types.CMD_MENU_REQ_ENTITY:
             ent_id, = struct.unpack_from('>I', data, 1)
@@ -117,8 +116,8 @@ class PlayerWebsocket(object):
         # assign player to island, send initial bla bla bla
 
         self.entity = self.island.spawn('meatbag', {
-            c.NetworkViewer: {'socket': self},
-            c.MeatbagController: {'socket': self}
+            c.NetworkViewer: {'_socket': self},
+            c.MeatbagController: {'_socket': self}
         }, pos=Vector2.random_inside(15.0))
 
         self.send(struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id))
