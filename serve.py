@@ -33,7 +33,10 @@ def reset_db():
         pass
 
     os.mkdir(DB_DIR)
-# reset_db()
+    return True
+
+respawn = False
+# respawn = reset_db()
 
 
 from entitydef import load_defs
@@ -74,6 +77,9 @@ def spawn_all():
     spawn_crap('crate', 10, rot=True)
     # spawn_crap('log', 15)
     spawn_crap('stone_axe', 5, rot=True)
+
+if respawn:
+    spawn_all()
 
 def ws_app(env, start):
     if env['PATH_INFO'] == '/player':
