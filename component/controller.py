@@ -3,6 +3,7 @@ import struct
 from time import clock
 from component import BaseComponent
 from component.base import component_method
+from menu import MultipleDefaultMenuItems
 import packet_types
 
 
@@ -34,7 +35,7 @@ class ControllerComponent(BaseComponent):
         fmt = ['>BfIB']
         data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(menu)]
 
-        for kw, (desc, func) in menu.items():
+        for kw, (desc, func) in menu:
             fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
             data.extend([len(kw), kw, len(desc), desc])
 
@@ -43,10 +44,7 @@ class ControllerComponent(BaseComponent):
     @component_method
     def handle_menu_exec_entity(self, ent, action):
         menu = ent.get_menu(self.entityref)
-        func = menu.get(action, None)
-
-        if func:
-            func[1](self.entityref)
+        menu.execute(action, self.entityref)
 
     @component_method
     def handle_context_position(self, pos):
@@ -59,20 +57,19 @@ class ControllerComponent(BaseComponent):
         if not ctx_menu:
             return
 
-        if len(ctx_menu) > 1:
+        try:
+            ctx_menu.execute_default(self.entityref)
+        except MultipleDefaultMenuItems:
             # send the truncated menu
             fmt = ['>BfIB']
             data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(ctx_menu)]
 
-            for kw, (desc, func) in ctx_menu.items():
+            for kw, (desc, func) in ctx_menu:
                 fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
                 data.extend([len(kw), kw, len(desc), desc])
 
             self.data.socket.send(struct.pack(''.join(fmt), *data))
             return
-        else:
-            # one thing to do? do it.
-            ctx_menu.values()[0][1](self.entityref)
 
     @component_method
     def update_queue(self, dt):

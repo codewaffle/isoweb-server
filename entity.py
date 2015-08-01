@@ -1,4 +1,5 @@
 from math import atan2, pi
+from menu import Menu
 from util import memoize, AttributeDict
 
 
@@ -124,7 +125,7 @@ class Entity(object):
 
     def get_menu(self, user):
         # users use menus, I guess..
-        menu = {}
+        menu = Menu()
 
         if self._menu_providers is None:
             return {}
@@ -135,10 +136,10 @@ class Entity(object):
         return menu
 
     def get_context_menu(self, user):
-        max_i = 0
+        max_i = -1
         menu = None
 
-        for a, mi in self.get_menu(user).items():
+        for a, mi in self.get_menu(user):
             if a.startswith('!'):
                 i = 1
                 while a[i] == '!':
@@ -152,7 +153,10 @@ class Entity(object):
                     max_i = i
                     menu = {a: mi}
 
-        return menu
+        if menu:
+            return Menu.from_dict(menu)
+        else:
+            return None
 
     def do_menu(self, user, action):
         if not self._menu_providers:
@@ -180,3 +184,11 @@ class Entity(object):
 
     def look(self, look_dir):
         self.Position.data.r = atan2(look_dir.y, look_dir.x) + pi / 2.
+
+    def freeze(self):
+        # loop over components, packaging them into frozensets
+        # then, pack those into another frozenset
+        # then, destroy this entity and return that frozenset.
+
+        # the frozenset-of-sets entities should be usable as dictionary keys (and also serializable to disk!)
+        pass
