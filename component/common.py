@@ -57,7 +57,7 @@ class Draggable(MenuComponent):
         self.schedule(self.update)
 
     @component_method
-    def update(self, _):
+    def update(self):
         if not self.cache['draggers']:
             self.cache['scheduled'] = False
             return

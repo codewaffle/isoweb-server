@@ -18,7 +18,7 @@ class NetworkViewer(BaseComponent):
         self.entity.scheduler.schedule(func=self.entity.NetworkViewer.update)
 
     @component_method
-    def update(self, dt):
+    def update(self):
         now = clock()
 
         cache = self.entity.cache.network_viewer

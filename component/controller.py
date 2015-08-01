@@ -72,8 +72,8 @@ class ControllerComponent(BaseComponent):
             return
 
     @component_method
-    def update_queue(self, dt):
-        q = self.data.queue
+    def update_queue(self):
+        q = self.data._queue
         try:
             func, args = q[0]
         except IndexError:

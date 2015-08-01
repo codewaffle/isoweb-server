@@ -17,12 +17,8 @@ class Island(Greenlet):
 
     def _run(self):
         self.scheduler.start()
-        self.scheduler.schedule(func=self.update)
         self.scheduler.join()
 
-    def update(self, dt):
-        # print 'updated in', dt
-        return 1/20.
 
     def spawn(self, entdef, components=None, pos=None, rot=None, ob_flags=ObFlags.REPLICATE):
         if isinstance(entdef, basestring):

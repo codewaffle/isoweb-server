@@ -22,13 +22,13 @@ class Scheduler(Greenlet):
 
                 if a is not None:
                     if k is not None:
-                        res = f(d, *a, **k)
+                        res = f(*a, **k)
                     else:
-                        res = f(d, *a)
+                        res = f(*a)
                 elif k is not None:
-                    res = f(d, **k)
+                    res = f(**k)
                 else:
-                    res = f(d)
+                    res = f()
 
                 if res:
                     if res > 0:
