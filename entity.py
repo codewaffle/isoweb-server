@@ -1,4 +1,5 @@
 from math import atan2, pi
+import ujson
 from menu import Menu
 from util import memoize, AttributeDict
 
@@ -32,6 +33,21 @@ class ObFlags:
     REPLICATE = 1
 
 
+class SnapshotContainer(dict):
+    def __init__(self, ent, dirty_set):
+        super(SnapshotContainer, self).__init__()
+        self._ent = ent
+        self._dirty_set = dirty_set
+
+    def __setitem__(self, key, value):
+        super(SnapshotContainer, self).__setitem__(key, value)
+        self._dirty_set.add(self._ent)
+
+
+def next_id():
+    pass
+
+
 class Entity(object):
     """
     an Entity is a bag of component data that points to an EntityDef.
@@ -41,23 +57,26 @@ class Entity(object):
     _controller = None
     _menu_providers = None
 
-    def __init__(self, entity_def):
+    def __init__(self, ent_id):
         from component.general import EntityOb
 
         self._memo_cache = {}  # for @memoize
         self.cache = AttributeDict()
-        self.entity_def = entity_def
         self.island = None
         self.island_id = 0  # TODO : this will eventually be tied to the island that spawned this entity..
-        # TODO cont: i think 4 billion entities generated per island should be enough. we can spawn subentities somehow if needed.
-        self.id = id(self)  # this will be generated in a better manner as well..
-
-        # this is a name/DataProxy dict.
+        self.id = ent_id
+        self.entity_def = None
         self._menu_providers = set()
         self.component_data = {}
-        self.snapshots = {}
+        self.snapshots = None
         self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
+
+    def set_island(self, island):
+        self.island = island
+        self.snapshots = SnapshotContainer(self, island.dirty_set)
+        island.entities_by_id[self.id] = self.reference
+        island.entities.add(self)
 
     @property
     def menu_providers(self):
@@ -94,6 +113,9 @@ class Entity(object):
         # return memoized component proxy
         return getattr(self.entity_def, item).bind(self)
 
+    def __getitem__(self, item):
+        return self.__getattr__(item)
+
     def schedule(self, task):
         self.scheduler.schedule(func=task)
 
@@ -109,6 +131,34 @@ class Entity(object):
             comp.initialize()
 
         return comp
+
+    def add_components(self, components, initialize=True):
+        if isinstance(components, (list, tuple)):
+            for comp_class in components:
+                self.add_component(comp_class, initialize=initialize)
+        elif isinstance(components, dict):
+            for comp_class, data in components.items():
+                self.add_component(comp_class, initialize=initialize, **data)
+        else:
+            raise ValueError('Components is not valid')
+
+    def update_components(self, components):
+        """
+        Update existing components and create new ones for missings.
+        """
+        from component import c
+
+        kset = set(components.keys())
+        to_update = self.components & set(components.keys())
+        to_create = kset - to_update
+
+        for comp in to_update:
+            getattr(self, comp).data.update(components[comp])
+
+        to_init = [self.add_component(getattr(c, comp), initialize=False, **components[comp]) for comp in to_create]
+
+        for comp in to_init:
+            comp.initialize()
 
     @property
     @memoize
@@ -180,3 +230,23 @@ class Entity(object):
 
         # the frozenset-of-sets entities should be usable as dictionary keys (and also serializable to disk!)
         pass
+
+    @property
+    def persistent_data(self):
+        def public(cd):
+            return {k: v for k,v in cd.items() if not k.startswith('_')}
+        return {k: public(v) for k,v in self.component_data.items()}
+
+    def save_data(self, cur):
+        try:
+            data = {
+                'id': self.id,
+                'entitydef': self.entity_def.key,
+                'ob_flags': self.ob.flags,
+                'components': self.persistent_data
+            }
+
+            cur.put('ent-{}'.format(self.id), ujson.dumps(data, double_precision=3))
+        except Exception as E:
+            print 'wtf'
+            raise

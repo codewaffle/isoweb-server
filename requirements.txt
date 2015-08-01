@@ -5,3 +5,4 @@ numpy==1.9.1
 ujson==1.33
 cython==0.22.1
 logbook==0.9.1
+lmdb==0.86

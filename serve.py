@@ -1,4 +1,6 @@
 from gevent.monkey import patch_all
+from config import DB_DIR
+
 patch_all(ssl=False)
 from pyximport import pyximport
 pyximport.install()
@@ -21,6 +23,19 @@ logbook.default_handler.level = logbook.DEBUG
 from network.player import PlayerWebsocket
 
 
+def reset_db():
+    logbook.warn("Resetting Database")
+    import shutil, os
+
+    try:
+        shutil.rmtree(DB_DIR)
+    except:
+        pass
+
+    os.mkdir(DB_DIR)
+# reset_db()
+
+
 from entitydef import load_defs
 load_defs()
 
@@ -36,7 +51,7 @@ from web.app import create_app
 
 ws_zmq_handler = ZeroMQHandler('tcp://127.0.0.1:9009', bubble=True)
 
-island = Island()
+island = Island(0)
 island.log_handler = ws_zmq_handler
 island.start()
 
@@ -52,12 +67,13 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
         if rot:
             ent.Position.data.r = 2.*pi * random.random()
 
-spawn_crap('tree', 1, scalebase=1.5, modscale=1.0)
-#spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
-spawn_crap('rock', 10, scalebase=1.0, modscale=4.0)
-spawn_crap('crate', 10, rot=True)
-# spawn_crap('log', 15)
-spawn_crap('stone_axe', 5, rot=True)
+def spawn_all():
+    spawn_crap('tree', 1, scalebase=1.5, modscale=1.0)
+    #spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
+    spawn_crap('rock', 10, scalebase=1.0, modscale=4.0)
+    spawn_crap('crate', 10, rot=True)
+    # spawn_crap('log', 15)
+    spawn_crap('stone_axe', 5, rot=True)
 
 def ws_app(env, start):
     if env['PATH_INFO'] == '/player':
