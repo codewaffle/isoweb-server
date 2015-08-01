@@ -46,7 +46,7 @@ class ControllerComponent(BaseComponent):
         func = menu.get(action, None)
 
         if func:
-            func(self.entityref)
+            func[1](self.entityref)
 
     @component_method
     def handle_context_position(self, pos):
