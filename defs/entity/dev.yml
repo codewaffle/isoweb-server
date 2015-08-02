@@ -86,6 +86,21 @@ log:
   - class: Draggable
   - class: Interactive
   - class: Containable
+  - class: Choppable
+    label: Chop into firewood x16
+    output_def: firewood
+    output_count: 16
+
+firewood:
+  components:
+  - class: Physical
+    volume: 12.5
+    mass: 10
+  - class: Sprite
+    sprite: sprites/log.png
+    scale: 0.2
+  - class: Interactive
+  - class: Containable
 
 crate:
   components:

@@ -20,10 +20,16 @@ class Interactive(BaseComponent):
 
 
 class Choppable(MenuComponent):
+    data = {
+        'label': 'Chop!',
+        'output_def': 'log',
+        'output_count': 1
+    }
+
     @component_method
     def get_menu(self, ent):
         return {
-            '!chop': ('Chop with bare hands', self.chop)
+            '!chop': (self.data.label, self.chop)
         }
 
     @component_method
@@ -36,9 +42,8 @@ class Choppable(MenuComponent):
     @component_method
     def do_chop(self, chopper):
         self.entity.destroy()
-        for x in range(randint(1, 3)):
-            self.island.spawn('log', pos=self.pos + Vector2.random_inside(4.0), rot=uniform(0, pi * 2.0))
-
+        for x in range(self.data.output_count):
+            self.island.spawn(self.output_def, pos=self.pos + Vector2.random_inside(4.0), rot=uniform(0, pi * 2.0))
 
 class Dragger(BaseComponent):
     @component_method
