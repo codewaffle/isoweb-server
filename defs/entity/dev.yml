@@ -82,6 +82,15 @@ crate:
   - class: Interactive
   - class: Draggable
 
+backpack:
+  components:
+  - class: Sprite
+    sprite: sprites/backpack.png
+  - class: Container
+    capacity: 80
+  - class: Interactive
+  - class: Draggable
+
 campfire:
   components:
   - class: Sprite

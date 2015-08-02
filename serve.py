@@ -74,7 +74,8 @@ def spawn_all():
     spawn_crap('tree', 1, scalebase=1.5, modscale=1.0)
     #spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
     spawn_crap('rock', 10, scalebase=1.0, modscale=4.0)
-    spawn_crap('crate', 10, rot=True)
+    spawn_crap('crate', 2, rot=True)
+    spawn_crap('backpack', 4, rot=True)
     # spawn_crap('log', 15)
     spawn_crap('stone_axe', 5, rot=True)
 
