@@ -22,4 +22,4 @@ cdef class NodeItem:
 cdef class Quadtree:
     cdef public Node root
     cdef query_aabb(self, AABB aabb, int flags)
-    cpdef query_aabb_ents(self, AABB aabb, set exclude, int flags)
+    cpdef query_aabb_ents(self, AABB aabb, set exclude, int flags, set components)

@@ -200,10 +200,18 @@ cdef class Quadtree:
         self.root.q_aabb(aabb, result, flags)
         return result
 
-    cpdef query_aabb_ents(self, AABB aabb, set exclude, int flags):
+    cpdef query_aabb_ents(self, AABB aabb, set exclude, int flags, set components):
         cdef set result = {i.ent for i in self.query_aabb(aabb, flags)}
 
         if exclude:
             result -= exclude
 
-        return result
+        if components:
+            filtered = set()
+            for e in result:
+                if e.components & components == components:
+                    filtered.add(e)
+
+            return filtered
+        else:
+            return result

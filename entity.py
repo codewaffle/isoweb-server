@@ -236,6 +236,9 @@ class Entity(object):
         # the frozenset-of-sets entities should be usable as dictionary keys (and also serializable to disk!)
         pass
 
+    def find_nearby(self, radius, exclude=True, flags=0, components=None):
+        return self.Position.find_nearby(radius, exclude, flags, components)
+
     @property
     def persistent_data(self):
         def public(cd):

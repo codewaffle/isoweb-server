@@ -62,14 +62,14 @@ class Position(BaseComponent):
         self._update()
 
     @component_method
-    def find_nearby(self, radius, exclude=True, flags=0):
+    def find_nearby(self, radius, exclude=True, flags=0, components=None):
         Position.q_aabb.center.update(self.entity.ob.pos)
         Position.q_aabb.hwidth = Position.q_aabb.hheight = radius
 
         if exclude is True:
             exclude = {self.entity}
 
-        return self.entity.island.quadtree.query_aabb_ents(Position.q_aabb, exclude, flags)
+        return self.entity.island.quadtree.query_aabb_ents(Position.q_aabb, exclude, flags, components)
 
     @component_method
     def get_pos(self, copy=False):
