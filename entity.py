@@ -2,6 +2,7 @@ from math import atan2, pi
 import ujson
 from menu import Menu
 from util import memoize, AttributeDict
+import util
 
 
 class EntityReference(object):
@@ -234,7 +235,7 @@ class Entity(object):
         # then, destroy this entity and return that frozenset.
 
         # the frozenset-of-sets entities should be usable as dictionary keys (and also serializable to disk!)
-        pass
+        print util.freeze_dict(self.persistent_data)
 
     def find_nearby(self, radius, exclude=True, flags=0, components=None):
         return self.Position.find_nearby(radius, exclude, flags, components)
@@ -250,6 +251,7 @@ class Entity(object):
         return persistable({k: public(v) for k, v in self.component_data.items()})
 
     def save_data(self, cur):
+        self.freeze()
         try:
             data = {
                 'id': self.id,

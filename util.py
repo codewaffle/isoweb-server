@@ -91,3 +91,12 @@ class AttributeDict(dict):
 
     def __setattr__(self, key, value):
         self[key] = value
+
+
+def freeze_dict(d):
+    def _filter(val):
+        if isinstance(val, dict):
+            return freeze_dict(val)
+        return val
+
+    return frozenset(((k, _filter(v)) for k, v in d.items()))
