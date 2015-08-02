@@ -7,18 +7,8 @@ class EquipmentUser(BaseComponent):
 class Chopper(BaseComponent):
     pass
 
-
-
-class Containable(BaseComponent):
-    pass
-
 class Equippable(BaseComponent):
     pass
-
-class Container(BaseComponent):
-    data = {
-        'capacity': 0
-    }
 
 class Melee(BaseComponent):
     pass

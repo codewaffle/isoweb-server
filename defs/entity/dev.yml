@@ -20,6 +20,7 @@ rock:
     damage: 1
   - class: Hammer
     tier: 1
+  - class: Containable
 
 sharp_rock:
   components:
@@ -33,6 +34,7 @@ sharp_rock:
     - rock
     tools:
     - Hammer.tier: 1
+  - class: Containable
 
 land_vehicle:
   components:
@@ -52,6 +54,8 @@ stone_axe:
     - large_stick
   - class: Sprite
     sprite: sprites/stone_axe.png
+  - class: Containable
+  - class: Interactive
 
 
 tree:
@@ -75,18 +79,23 @@ evergreen:
 log:
   components:
   - class: Physical
+    volume: 200
+    mass: 160
   - class: Sprite
     sprite: sprites/log.png
   - class: Draggable
   - class: Interactive
+  - class: Containable
 
 crate:
   components:
   - class: Physical
+    volume: 1000
+    mass: 5
   - class: Sprite
     sprite: sprites/bad_crate.png
   - class: Container
-    capacity: 125
+    capacity: 950
   - class: Interactive
   - class: Draggable
 
@@ -97,6 +106,7 @@ backpack:
     sprite: sprites/backpack.png
   - class: Container
     capacity: 80
+    expandable: true # expandable - volume of container will expand up to initial size + capacity
   - class: Interactive
   - class: Draggable
   - class: Wearable

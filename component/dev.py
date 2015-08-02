@@ -57,16 +57,7 @@ class TileMap(BaseComponent):
     pass
 
 
-class Container(MenuComponent):
-    @component_method
-    def get_menu(self, ent):
-        return {
-            '!view': ('View contents (noop)', self.view_contents)
-        }
 
-    @component_method
-    def view_contents(self, ent):
-        print ent, 'tried to view contents.'
 
 
 class Physical(BaseComponent):
