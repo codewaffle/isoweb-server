@@ -242,7 +242,7 @@ class Entity(object):
             return {k: v for k,v in cd.items() if not k.startswith('_')}
 
         def persistable(cd):
-            return {k: v for k, v in cd.items() if v or k not in self.component_data.keys()}
+            return {k: v for k, v in cd.items() if v or k not in self.entity_def.components}
 
         return persistable({k: public(v) for k, v in self.component_data.items()})
 
@@ -254,7 +254,6 @@ class Entity(object):
                 'ob_flags': self.ob.flags,
                 'components': self.persistent_data
             }
-
             cur.put('ent-{}'.format(self.id), ujson.dumps(data, double_precision=3))
         except Exception as E:
             print 'wtf'
