@@ -77,5 +77,5 @@ class Physical(BaseComponent):
 
     @component_method
     def initialize(self):
-        self.entity.snapshots[float_replicator(partial(self.data.get, 'mass'), 'mass')] = 0
-        self.entity.snapshots[float_replicator(partial(self.data.get, 'volume'), 'volume')] = 0
+        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'mass'), 'mass')] = 0
+        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'volume'), 'volume')] = 0
