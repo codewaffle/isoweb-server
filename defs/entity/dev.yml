@@ -7,11 +7,13 @@ meatbag:
 
 large_stick:
   components:
+  - class: Physical
   - class: Melee
     damage: 1
 
 rock:
   components:
+  - class: Physical
   - class: Sprite
     sprite: sprites/new/rock.png
   - class: Melee
@@ -21,6 +23,7 @@ rock:
 
 sharp_rock:
   components:
+  - class: Physical
   - class: Melee
     damage: 2
   - class: Chopper
@@ -37,6 +40,7 @@ land_vehicle:
 
 stone_axe:
   components:
+  - class: Physical
   - class: Equippable
   - class: Melee
     damage: 3
@@ -52,6 +56,7 @@ stone_axe:
 
 tree:
   components:
+  - class: Physical
   - class: Foliage
   - class: Choppable
   - class: Sprite
@@ -60,6 +65,7 @@ tree:
 
 evergreen:
   components:
+  - class: Physical
   - class: Foliage
   - class: Choppable
   - class: Sprite
@@ -68,6 +74,7 @@ evergreen:
 
 log:
   components:
+  - class: Physical
   - class: Sprite
     sprite: sprites/log.png
   - class: Draggable
@@ -75,6 +82,7 @@ log:
 
 crate:
   components:
+  - class: Physical
   - class: Sprite
     sprite: sprites/bad_crate.png
   - class: Container
@@ -84,6 +92,7 @@ crate:
 
 backpack:
   components:
+  - class: Physical
   - class: Sprite
     sprite: sprites/backpack.png
   - class: Container
@@ -96,5 +105,6 @@ backpack:
 
 campfire:
   components:
+  - class: Physical
   - class: Sprite
     sprite:

@@ -5,7 +5,7 @@ from time import clock
 
 from component import BaseComponent
 from component.base import component_method, MenuComponent
-from component.network import string_replicator
+from component.network import string_replicator, float_replicator
 from mathx.vector2 import Vector2
 
 
@@ -67,3 +67,15 @@ class Container(MenuComponent):
     @component_method
     def view_contents(self, ent):
         print ent, 'tried to view contents.'
+
+
+class Physical(BaseComponent):
+    data = {
+        'mass': 1.0,
+        'volume': 1.0
+    }
+
+    @component_method
+    def initialize(self):
+        self.entity.snapshots[float_replicator(partial(self.data.get, 'mass'), 'mass')] = 0
+        self.entity.snapshots[float_replicator(partial(self.data.get, 'volume'), 'volume')] = 0
