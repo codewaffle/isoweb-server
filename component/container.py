@@ -27,3 +27,5 @@ class Containable(MenuComponent):
         for ent in self.entity.find_nearby(5, components={'Container'}):
             print 'containable', ent
 
+        return {}
+
