@@ -90,6 +90,9 @@ backpack:
     capacity: 80
   - class: Interactive
   - class: Draggable
+  - class: Wearable
+    slot: back
+    layer: outer
 
 campfire:
   components:

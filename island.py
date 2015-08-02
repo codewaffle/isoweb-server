@@ -58,13 +58,13 @@ class Island(Greenlet):
         self.max_entity_id += 1
         return self.max_entity_id
 
-    def spawn(self, entdef, components=None, pos=None, rot=None, ob_flags=ObFlags.REPLICATE):
+    def spawn(self, entdef, components=None, pos=None, rot=None, replicate=True):
         if isinstance(entdef, basestring):
             entdef = definition_from_key(entdef)
 
         ent = Entity(self.next_entity_id())
         ent.entity_def = entdef
-        ent.ob.flags = ob_flags
+        ent.ob.flags = 0
         ent.set_island(self)
 
         if components:
@@ -72,6 +72,9 @@ class Island(Greenlet):
 
         if pos is not None:
             ent.add_component(c.Position, initialize=False, x=pos.x, y=pos.y, r=rot or 0)
+
+        if replicate:
+            ent.add_component(c.Replicated, initialize=False)
 
         ent._frozen = True
         ent.initialize()

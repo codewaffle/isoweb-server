@@ -23,7 +23,7 @@ class Draggable(MenuComponent):
             }
 
         return {
-            '!drag': ('Start dragging', self.drag)
+            'drag': ('Start dragging', self.drag)
         }
 
     @component_method

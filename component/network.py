@@ -1,3 +1,4 @@
+from functools import partial
 import struct
 from time import time, clock
 from component import BaseComponent
@@ -77,6 +78,12 @@ class NetworkViewer(BaseComponent):
 
         # update @ 20hz
         return -1/20.
+
+class Replicated(BaseComponent):
+    @component_method
+    def initialize(self):
+        self.entity.ob.flags |= ObFlags.REPLICATE
+        self.entity.snapshots[string_replicator(partial(getattr, self.entity, 'name'), 'name')] = 0
 
 
 def string_replicator(func, attr_name):

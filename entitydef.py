@@ -1,12 +1,15 @@
 import os
 import fnmatch
+from inflect import engine
 from component.base import DataProxy
 import component
 
+inflect = engine()
 
 class EntityDef(object):
     def __init__(self, data, key):
         self.key = key
+        self.name = key.replace('_', ' ')
         self.component_data = {}
         self.components = set()
 

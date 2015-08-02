@@ -52,7 +52,7 @@ class Entity(object):
     """
     an Entity is a bag of component data that points to an EntityDef.
     """
-
+    _name = None
     _frozen = False
     _controller = None
     _menu_providers = None
@@ -71,6 +71,11 @@ class Entity(object):
         self.snapshots = None
         self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
+
+    @property
+    def name(self):
+        if self._name is None:
+            return self.entity_def.name
 
     def set_island(self, island):
         self.island = island
