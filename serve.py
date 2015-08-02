@@ -1,9 +1,9 @@
 from gevent.monkey import patch_all
-from config import DB_DIR
 
 patch_all(ssl=False)
 from pyximport import pyximport
 pyximport.install()
+from config import DB_DIR
 
 
 from math import pi
