@@ -222,6 +222,7 @@ class Entity(object):
         })
         self.ob.flags = 0
         from component.general import EntityOb
+        self.ob.remove()
         self.ob = EntityOb(self)
         del self._memo_cache
         self._memo_cache = {}

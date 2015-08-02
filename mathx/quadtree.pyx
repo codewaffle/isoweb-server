@@ -187,6 +187,9 @@ cdef class NodeItem:
             self.node.remove(self)
             node.insert(self)
 
+    def remove(self):
+        self.node.remove(self)
+
 
 cdef class Quadtree:
     def __init__(self):
