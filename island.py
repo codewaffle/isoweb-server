@@ -5,7 +5,7 @@ import ujson
 import logbook
 from component import c
 from config import DB_DIR
-from entity import Entity, ObFlags, SnapshotContainer
+from entity import Entity, ObFlags, SnapshotContainer, EntityReference
 from entitydef import definition_from_key
 from mathx import Quadtree
 
@@ -15,6 +15,7 @@ from scheduler import Scheduler
 class Island(Greenlet):
     def __init__(self, island_id):
         super(Island, self).__init__()
+        self._delete_set = set()
         self.island_id = island_id
         self.scheduler = Scheduler()
         self.entities = set()
@@ -37,6 +38,10 @@ class Island(Greenlet):
     @property
     def dirty_set(self):
         return self._dirty_set
+    
+    @property
+    def delete_set(self):
+        return self._delete_set
 
     def load_data(self, cursor):
         data = ujson.loads(cursor.get('island_data', "{}"))
@@ -85,7 +90,11 @@ class Island(Greenlet):
 
     def save_snapshot(self):
         self.log.debug('Saving snapshot to db')
+
         start = clock()
+
+        self.dirty_set.difference_update(self.delete_set)
+
         with self.db.begin(write=True) as tx:
             cur = tx.cursor()
 
@@ -94,10 +103,14 @@ class Island(Greenlet):
             for ent in self.dirty_set:
                 ent.save_data(cur)
 
-            self.dirty_set.clear()
-        self.log.info('Saved snapshot in {} seconds', clock() - start)
+            for ent in self.delete_set:
+                tx.delete(ent.db_key)
 
-        return -5.0
+            self.log.info('Snapshot: saved={} deleted={} elapsed={}', len(self.dirty_set), len(self.delete_set), clock() - start)
+            self.dirty_set.clear()
+            self.delete_set.clear()
+
+        return 5.0
 
     def load_entities(self, cur):
         self.log.debug('Loading entities from db')
@@ -117,3 +130,18 @@ class Island(Greenlet):
                 ent._frozen = True
                 ent.initialize()
         self.log.info('Loaded entities in {} seconds', clock() - start)
+
+    def destroy_entity(self, ent):
+        # reset Reference
+        if isinstance(ent, EntityReference):
+            ent = ent.entity
+
+        ent.reference.__dict__.update({
+            'entity': None,
+            'valid': False
+        })
+
+        ent.ob.remove()
+        ent.ob = None
+        del ent._memo_cache
+        self.delete_set.add(ent)

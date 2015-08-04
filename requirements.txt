@@ -7,3 +7,4 @@ cython==0.22.1
 logbook==0.9.1
 lmdb==0.86
 inflect==0.2.5
+sortedcontainers==0.9.6

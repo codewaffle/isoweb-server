@@ -215,17 +215,7 @@ class Entity(object):
             return None
 
     def destroy(self):
-        # reset Reference
-        self.reference.__dict__.update({
-            'entity': None,
-            'valid': False
-        })
-        self.ob.flags = 0
-        from component.general import EntityOb
-        self.ob.remove()
-        self.ob = EntityOb(self)
-        del self._memo_cache
-        self._memo_cache = {}
+        self.island.destroy_entity(self)
 
     def look(self, look_dir):
         self.Position.data.r = atan2(look_dir.y, look_dir.x) + pi / 2.
@@ -251,6 +241,10 @@ class Entity(object):
 
         return persistable({k: public(v) for k, v in self.component_data.items()})
 
+    @property
+    def db_key(self):
+        return 'ent-{}'.format(self.id)
+
     def save_data(self, cur):
         self.freeze()
         try:
@@ -260,7 +254,7 @@ class Entity(object):
                 'ob_flags': self.ob.flags,
                 'components': self.persistent_data
             }
-            cur.put('ent-{}'.format(self.id), ujson.dumps(data, double_precision=3))
+            cur.put(self.db_key, ujson.dumps(data, double_precision=3))
         except Exception as E:
             print 'wtf'
             raise

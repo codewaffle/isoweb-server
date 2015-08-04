@@ -71,13 +71,13 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
             ent.Position.data.r = 2.*pi * random.random()
 
 def spawn_all():
-    spawn_crap('tree', 1, scalebase=1.5, modscale=1.0)
+    spawn_crap('tree', 3, scalebase=1.5, modscale=1.0)
     #spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
-    spawn_crap('rock', 10, scalebase=1.0, modscale=4.0)
-    spawn_crap('crate', 2, rot=True)
-    spawn_crap('backpack', 4, rot=True)
+    spawn_crap('rock', 3, scalebase=1.0, modscale=4.0)
+    spawn_crap('crate', 3, rot=True)
+    spawn_crap('backpack', 3, rot=True)
     # spawn_crap('log', 15)
-    spawn_crap('stone_axe', 5, rot=True)
+    spawn_crap('stone_axe', 1, rot=True)
 
 if respawn:
     spawn_all()
