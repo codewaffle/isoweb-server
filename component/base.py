@@ -72,9 +72,13 @@ class ComponentProxy(object):
     def schedule(self, task):
         return self.entityref.schedule(task)
 
+current_component_class = None
+
 def component_method(f):
     @wraps(f)
     def wrapper(cls, *a, **kw):
+        global current_component_class
+        current_component_class = cls
         return f(*a, **kw)
 
     return classmethod(wrapper)
@@ -88,8 +92,7 @@ class BaseComponent(object):
 
     @component_method
     def destroy(self):
-         # TODO : remove component from entity.
-        pass
+        del self.entity.component_data[current_component_class.__name__]
 
     # these are mostly to shut up pycharm/idea
     entity = NotImplemented
