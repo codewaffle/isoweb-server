@@ -89,8 +89,6 @@ class Island(Greenlet):
         return self.entities_by_id[ent_id]
 
     def save_snapshot(self):
-        self.log.debug('Saving snapshot to db')
-
         start = clock()
 
         self.dirty_set.difference_update(self.delete_set)
