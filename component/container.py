@@ -1,3 +1,4 @@
+from functools import partial
 from component.base import MenuComponent, component_method
 
 
@@ -23,9 +24,16 @@ class Containable(MenuComponent):
         # do not compare to containers near ent at call because ent may be in range of containers that this is not
         # probably also do visibility check against world containers
 
-        # for now just find all containers near me
-        for ent in self.entity.find_nearby(5, components={'Container'}):
-            print 'containable', ent
+        ret = {}
 
-        return {}
+        # for now just find all containers near the containable
+        for container in self.entity.find_nearby(5, components={'Container'}):
+            ret['put_{}'.format(container.id)] = ('Put in {}'.format(container.name), partial(self.put_in, container))
 
+        return ret
+
+    @component_method
+    def put_in(self, ent, container):
+        self.entity.destroy()
+        print 'putin on the ritz'
+        pass
