@@ -67,6 +67,7 @@ tree:
   - class: Choppable
   - class: Sprite
     sprite: sprites/new/tree_oak.png
+    scale: 3.0
   - class: Interactive
 
 evergreen:
