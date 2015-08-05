@@ -4,6 +4,8 @@ meatbag:
   - class: Sprite
     sprite: sprites/player.png
   - class: Dragger
+  - class: Container
+    capacity: 950
 
 large_stick:
   components:

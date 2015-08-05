@@ -38,11 +38,10 @@ class SnapshotContainer(dict):
     def __init__(self, ent, dirty_set):
         super(SnapshotContainer, self).__init__()
         self._ent = ent
-        self._dirty_set = dirty_set
 
     def __setitem__(self, key, value):
         super(SnapshotContainer, self).__setitem__(key, value)
-        self._dirty_set.add(self._ent)
+        self._ent.set_dirty()
 
 
 def next_id():
@@ -72,6 +71,18 @@ class Entity(object):
         self.snapshots = None
         self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
+        self.dirty = False
+
+    def set_dirty(self):
+        if not self.dirty:
+            self.dirty = True
+            self.island.dirty_set.add(self)
+
+    def set_clean(self, remove=False):
+        self.dirty = False
+
+        if remove:
+            self.island.dirty_set.remove(self)
 
     @property
     def name(self):
@@ -221,12 +232,8 @@ class Entity(object):
         self.Position.data.r = atan2(look_dir.y, look_dir.x) + pi / 2.
 
     def freeze(self):
-        # loop over components, packaging them into frozensets
-        # then, pack those into another frozenset
-        # then, destroy this entity and return that frozenset.
-
-        # the frozenset-of-sets entities should be usable as dictionary keys (and also serializable to disk!)
-        print util.freeze_dict(self.persistent_data)
+        result = self.entity_def.name, util.freeze_dict(self.persistent_data)
+        return result
 
     def find_nearby(self, radius, exclude=True, flags=0, components=None):
         return self.Position.find_nearby(radius, exclude, flags, components)
@@ -246,7 +253,6 @@ class Entity(object):
         return 'ent-{}'.format(self.id)
 
     def save_data(self, cur):
-        self.freeze()
         try:
             data = {
                 'id': self.id,
@@ -258,3 +264,6 @@ class Entity(object):
         except Exception as E:
             print 'wtf'
             raise
+
+        self.dirty = False
+
