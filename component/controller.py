@@ -98,11 +98,11 @@ class ControllerComponent(BaseComponent):
 
     @component_method
     def show_container(self, container):
-        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_SHOW, container.id))
+        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_SHOW, clock(), container.id))
 
     @component_method
     def hide_container(self, container):
-        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_HIDE, container.id))
+        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_HIDE, clock(), container.id))
 
     @component_method
     def handle_hide_container(self, container):
