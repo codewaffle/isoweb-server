@@ -3,6 +3,7 @@ import struct
 from time import clock
 from component import BaseComponent
 from component.base import component_method
+import entitydef
 from menu import MultipleDefaultMenuItems
 import packet_types
 
@@ -70,6 +71,30 @@ class ControllerComponent(BaseComponent):
 
             self.data._socket.send(struct.pack(''.join(fmt), *data))
             return
+
+    @component_method
+    def handle_update_container(self, container):
+
+        fmt = ['>BfIH']
+        dat = [packet_types.CONTAINER_UPDATE, clock(), container.id, len(container.Container.data.contents)]
+
+        for idx, c in container.Container.data.contents.iteritems():
+            entdef = entitydef.definition_from_key(c[0][0])
+            fmt.append('HHffB{}sB{}s'.format(len(entdef.name), len(entdef.component_data['Sprite'].sprite)))
+
+            dat.extend([
+                idx,
+                c[1],
+                1,
+                1,
+                len(entdef.name),
+                entdef.name,
+                len(entdef.component_data['Sprite'].sprite),
+                entdef.component_data['Sprite'].sprite
+            ])
+
+        packed = struct.pack(''.join(fmt), *dat)
+        self.data._socket.send(packed)
 
     @component_method
     def update_queue(self):
