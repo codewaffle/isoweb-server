@@ -92,7 +92,10 @@ class BaseComponent(object):
 
     @component_method
     def destroy(self):
-        del self.entity.component_data[current_component_class.__name__]
+        try:
+            del self.entity.component_data[current_component_class.__name__]
+        except KeyError:
+            pass
 
     # these are mostly to shut up pycharm/idea
     entity = NotImplemented

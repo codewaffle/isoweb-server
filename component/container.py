@@ -1,6 +1,7 @@
 from collections import defaultdict
 from functools import partial
 from component.base import MenuComponent, component_method
+from util import refreeze
 
 
 class Container(MenuComponent):
@@ -11,9 +12,10 @@ class Container(MenuComponent):
     @component_method
     def initialize(self):
         self.initialize_menu()
-        self.data.contents = {}
-        self.data._registry = {}
-        self.data._max = 0
+        self.data.contents = {int(k): [refreeze(v[0]), v[1]] for k, v in self.data.contents.items()}
+        self.data._registry = {v[0]: k for k,v in self.data.contents.items()}
+
+        self.data._max = max(self.data.contents.keys() + [0])
 
     @component_method
     def get_menu(self, ent):
@@ -39,15 +41,21 @@ class Container(MenuComponent):
 
         frozen = target.freeze()
 
+        self.add_frozen(frozen)
+
+        target.destroy()
+
+
+    @component_method
+    def add_frozen(self, frozen):
         try:
             idx = self.data._registry[frozen]
         except KeyError:
             idx = self.data._registry[frozen] = self.next_idx()
-            self.data.contents[idx] = ['type', frozen, 0]
+            self.data.contents[idx] = [frozen, 0]
 
-        self.data.contents[idx][2] += 1
+        self.data.contents[idx][1] += 1
 
-        target.destroy()
         self.entity.set_dirty()
 
     @component_method

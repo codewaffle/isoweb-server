@@ -246,7 +246,7 @@ class Entity(object):
         def persistable(cd):
             return {k: v for k, v in cd.items() if v or k not in self.entity_def.components}
 
-        return persistable({k: public(v) for k, v in self.component_data.items()})
+        return persistable({k: public(v) for k, v in self.component_data.items() if k not in ('NetworkViewer', )})
 
     @property
     def db_key(self):

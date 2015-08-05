@@ -100,3 +100,11 @@ def freeze_dict(d):
         return val
 
     return frozenset(((k, _filter(v)) for k, v in d.items()))
+
+def refreeze(obj):
+    def _filter(x):
+        if isinstance(x, (list, tuple, set)):
+            return refreeze(x)
+        return x
+
+    return frozenset(_filter(x) for x in obj)
