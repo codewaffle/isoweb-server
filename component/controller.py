@@ -73,14 +73,14 @@ class ControllerComponent(BaseComponent):
             return
 
     @component_method
-    def handle_update_container(self, container):
+    def update_container(self, container):
 
         fmt = ['>BfIH']
         dat = [packet_types.CONTAINER_UPDATE, clock(), container.id, len(container.Container.data.contents)]
 
         for idx, c in container.Container.data.contents.iteritems():
             entdef = entitydef.definition_from_key(c[0][0])
-            fmt.append('HHffB{}sB{}s'.format(len(entdef.name), len(entdef.component_data['Sprite'].sprite)))
+            fmt.append('HIffB{}sB{}s'.format(len(entdef.name), len(entdef.component_data['Sprite'].sprite)))
 
             dat.extend([
                 idx,
@@ -95,6 +95,18 @@ class ControllerComponent(BaseComponent):
 
         packed = struct.pack(''.join(fmt), *dat)
         self.data._socket.send(packed)
+
+    @component_method
+    def show_container(self, container):
+        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_SHOW, container.id))
+
+    @component_method
+    def hide_container(self, container):
+        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_HIDE, container.id))
+
+    @component_method
+    def handle_hide_container(self, container):
+        print 'player requested that we hide container:', container
 
     @component_method
     def update_queue(self):

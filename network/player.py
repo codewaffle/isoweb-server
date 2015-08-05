@@ -82,6 +82,10 @@ class PlayerWebsocket(object):
             print 'menreq pos'
         elif packet_type == packet_types.CMD_MENU_EXEC_POSITION:
             print 'menexec pos'
+        elif packet_types == packet_types.CONTAINER_HIDE:
+            ent_id, = struct.unpack_from('>I', data, 1)
+            ent = self.entity.island.get_entity(ent_id)
+            self.entity.controller.handle_hide_container(ent)
         else:
             logbook.warn('Unknown packet type: {0}', packet_type)
 

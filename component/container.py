@@ -26,7 +26,8 @@ class Container(MenuComponent):
     @component_method
     def view_contents(self, ent):
         print ent, 'tried to view contents.'
-        ent.controller.handle_update_container(self.entity)
+        ent.controller.update_container(self.entity)
+        ent.controller.show_container(self.entity)
 
     @component_method
     def put(self, target, putter=None):
