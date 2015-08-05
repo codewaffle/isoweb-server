@@ -29,7 +29,7 @@ class Draggable(MenuComponent):
     @component_method
     def drag(self, dragger):
         dragger.controller.set_queue([
-            dragger.controller.move_near_task(self.drag_handle_near(dragger.pos), 2.0),
+            dragger.controller.move_near_task(self.drag_handle_near(dragger.pos), 0.5),
             (self.do_drag, (dragger,))
         ])
 
@@ -72,8 +72,8 @@ class Draggable(MenuComponent):
             dist = diff.magnitude
             dragdir = diff / dist
 
-            if dist > 1.5:
-                dist_diff = dist - 1.5
+            if dist > 0.5:
+                dist_diff = dist - 0.5
                 d.Position.teleport(d.pos - dragdir * dist_diff * 0.5)
                 drag_force.add(dragdir * dist_diff * d.Dragger.get_drag_force() * 0.5)
 

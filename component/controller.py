@@ -126,7 +126,7 @@ class MeatbagController(ControllerComponent):
         ])
 
     @component_method
-    def move_near_task(self, pos, dist=1):
+    def move_near_task(self, pos, dist=0.5):
         near_pos = pos + (self.entity.pos - pos).normalized * dist
         return self.do_move_to, (near_pos, )
 

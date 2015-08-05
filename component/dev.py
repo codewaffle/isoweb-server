@@ -35,7 +35,7 @@ class Choppable(MenuComponent):
     @component_method
     def chop(self, chopper):
         chopper.controller.set_queue([
-            chopper.controller.move_near_task(self.entity.pos, 3),
+            chopper.controller.move_near_task(self.entity.pos, 0.0),
             (self.do_chop, (chopper,))
         ])
 
@@ -43,7 +43,7 @@ class Choppable(MenuComponent):
     def do_chop(self, chopper):
         self.entity.destroy()
         for x in range(self.data.output_count):
-            self.island.spawn(self.data.output_def, pos=self.pos + Vector2.random_inside(4.0), rot=uniform(0, pi * 2.0))
+            self.island.spawn(self.data.output_def, pos=self.pos + Vector2.random_inside(0.2), rot=uniform(0, pi * 2.0))
 
 class Dragger(BaseComponent):
     @component_method

@@ -118,7 +118,7 @@ class PlayerWebsocket(object):
         self.entity = self.island.spawn('meatbag', {
             c.NetworkViewer: {'_socket': self},
             c.MeatbagController: {'_socket': self}
-        }, pos=Vector2.random_inside(15.0))
+        }, pos=Vector2.random_inside(5.0))
 
         self.send(struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id))
 
