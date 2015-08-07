@@ -8,3 +8,4 @@ logbook==0.9.1
 lmdb==0.86
 inflect==0.2.5
 sortedcontainers==0.9.6
+ghalton==0.6

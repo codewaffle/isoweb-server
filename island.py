@@ -56,7 +56,7 @@ class Island(Greenlet):
 
     def _run(self):
         self.scheduler.start()
-        self.scheduler.schedule(func=self.save_snapshot)
+        # self.scheduler.schedule(func=self.save_snapshot)
         self.scheduler.join()
 
     def next_entity_id(self):

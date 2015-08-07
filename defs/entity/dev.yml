@@ -6,6 +6,7 @@ meatbag:
   - class: Dragger
   - class: Container
     capacity: 950
+  - class: Interactive
 
 large_stick:
   components:
@@ -13,11 +14,16 @@ large_stick:
   - class: Melee
     damage: 1
 
+rock_deposit:
+  components:
+  - class: Sprite
+    sprite: sprites/assets_td/rock1.png
+
 rock:
   components:
   - class: Physical
   - class: Sprite
-    sprite: sprites/new/rock.png
+    sprite: sprites/assets_td/rock2.png
   - class: Melee
     damage: 1
   - class: Hammer
@@ -62,22 +68,17 @@ stone_axe:
 
 tree:
   components:
-  - class: Physical
-  - class: Foliage
   - class: Choppable
   - class: Sprite
-    sprite: sprites/new/tree_oak.png
-    scale: 3.0
+    sprite: sprites/assets_td/tree1.png
+    scale: 4
   - class: Interactive
 
-evergreen:
+tree_stump:
   components:
-  - class: Physical
-  - class: Foliage
-  - class: Choppable
   - class: Sprite
-    sprite: sprites/new/tree_pine.png
-  - class: Interactive
+    scale: 4
+    sprite: sprites/assets_td/stump1.png
 
 log:
   components:
@@ -111,7 +112,7 @@ crate:
     volume: 1000
     mass: 5
   - class: Sprite
-    sprite: sprites/bad_crate.png
+    sprite: sprites/assets_td/crate1.png
   - class: Container
     capacity: 950
   - class: Interactive

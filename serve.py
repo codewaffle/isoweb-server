@@ -1,4 +1,5 @@
 from gevent.monkey import patch_all
+import ghalton
 
 patch_all(ssl=False)
 from pyximport import pyximport
@@ -6,7 +7,7 @@ pyximport.install()
 from config import DB_DIR
 
 
-from math import pi
+from math import pi, cos, sin, exp
 import random
 from mathx import Vector2
 
@@ -71,20 +72,30 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
             ent.Position.data.r = 2.*pi * random.random()
 
 def spawn_all():
+
     #gevent.sleep(5)
-    for x in range(-5, 5):
-        for y in range(-5, 5):
-            t = island.spawn('tree', pos=Vector2(x, y)*3)
-            gevent.sleep(0.05)
+    #for x in range(-50, 50):
+        #for y in range(-50, 50):
+        #    t = island.spawn('tree', pos=Vector2(x, y)*8)
+        #gevent.sleep(0.05)
 
+    # spawn_crap('tree', 3, scalebase=1.5, modscale=1.0)
+    # spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
+    # spawn_crap('rock', 3, scalebase=1.0, modscale=4.0)
 
-    #spawn_crap('tree', 3, scalebase=1.5, modscale=1.0)
-    #spawn_crap('tree', 20, scalebase=1.5, modscale=1.0)
-    #spawn_crap('rock', 3, scalebase=1.0, modscale=4.0)
     spawn_crap('crate', 1, rot=True)
     spawn_crap('backpack', 1, rot=True)
+
     # spawn_crap('log', 15)
-    #spawn_crap('stone_axe', 1, rot=True)
+    # spawn_crap('stone_axe', 1, rot=True)
+
+    seq = ghalton.Halton(2)
+    seq.get(2048)
+
+    for x in range(10000):
+        for t in range(100):
+            island.spawn('tree', pos=(Vector2(*seq.get(1)[0])-Vector2(0.5, 0.5))*4096)
+        gevent.sleep(0.1)
 
 if respawn:
     gevent.spawn(spawn_all)

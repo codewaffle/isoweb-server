@@ -10,7 +10,7 @@ import packet_types
 class NetworkViewer(BaseComponent):
     data = {
         '_socket': None,
-        'visibility_radius': 300
+        'visibility_radius': 15
     }
 
     @component_method
@@ -32,10 +32,8 @@ class NetworkViewer(BaseComponent):
 
         for ref in (set(cache.keys()) - visible):
             if ref.valid is False:  # destroyed/invalidated
-                print 'destroying', ref
                 self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
             else:  # hide dynamic/moving entities, stop updating static ones
-                print 'hiding', ref
                 self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
 
             del cache[ref]
