@@ -89,12 +89,14 @@ def spawn_all():
     # spawn_crap('log', 15)
     # spawn_crap('stone_axe', 1, rot=True)
 
+    return
+
     seq = ghalton.Halton(2)
     seq.get(2048)
 
-    for x in range(10000):
+    for x in range(1000):
         for t in range(100):
-            island.spawn('tree', pos=(Vector2(*seq.get(1)[0])-Vector2(0.5, 0.5))*4096)
+            island.spawn('tree', pos=(Vector2(*seq.get(1)[0])-Vector2(0.5, 0.5))*4096).Position.data.r = 2.*pi * random.random()
         gevent.sleep(0.1)
 
 if respawn:

@@ -5,7 +5,7 @@ import ujson
 import logbook
 from component import c
 from config import DB_DIR
-from entity import Entity, ObFlags, SnapshotContainer, EntityReference
+from entity import Entity
 from entitydef import definition_from_key
 from mathx import Quadtree
 
@@ -56,7 +56,7 @@ class Island(Greenlet):
 
     def _run(self):
         self.scheduler.start()
-        # self.scheduler.schedule(func=self.save_snapshot)
+        self.scheduler.schedule(func=self.save_snapshot)
         self.scheduler.join()
 
     def next_entity_id(self):
@@ -83,7 +83,7 @@ class Island(Greenlet):
 
         ent._frozen = True
         ent.initialize()
-        return ent.reference
+        return ent
 
     def get_entity(self, ent_id):
         return self.entities_by_id[ent_id]
@@ -131,14 +131,7 @@ class Island(Greenlet):
 
     def destroy_entity(self, ent):
         # reset Reference
-        if isinstance(ent, EntityReference):
-            ent = ent.entity
-
-        ent.reference.__dict__.update({
-            'entity': None,
-            'valid': False
-        })
-
+        ent.valid = False
         ent.ob.remove()
         ent.ob = None
         del ent._memo_cache

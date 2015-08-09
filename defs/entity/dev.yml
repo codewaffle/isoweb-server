@@ -7,6 +7,7 @@ meatbag:
   - class: Container
     capacity: 950
   - class: Interactive
+  - class: EquipmentUser
 
 large_stick:
   components:
@@ -128,9 +129,8 @@ backpack:
     expandable: true # expandable - volume of container will expand up to initial size + capacity
   - class: Interactive
   - class: Draggable
-  - class: Wearable
-    slot: back
-    layer: outer
+  - class: Equippable
+    slot: backpack
 
 campfire:
   components:

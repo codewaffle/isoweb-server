@@ -1,14 +1,12 @@
 from component import BaseComponent
 
 
-class EquipmentUser(BaseComponent):
-    pass
+
 
 class Chopper(BaseComponent):
     pass
 
-class Equippable(BaseComponent):
-    pass
+
 
 class Melee(BaseComponent):
     pass

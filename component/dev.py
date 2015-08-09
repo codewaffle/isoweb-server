@@ -1,6 +1,6 @@
 from functools import partial
 from math import pi
-from random import randint, uniform
+from random import uniform
 from time import clock
 
 from component import BaseComponent
@@ -44,18 +44,6 @@ class Choppable(MenuComponent):
         self.entity.destroy()
         for x in range(self.data.output_count):
             self.island.spawn(self.data.output_def, pos=self.pos + Vector2.random_inside(0.2), rot=uniform(0, pi * 2.0))
-
-class Dragger(BaseComponent):
-    @component_method
-    def initialize(self):
-        self.cache.update({
-            'contribution': Vector2(),
-            'draggable': None
-        })
-
-    @component_method
-    def get_drag_force(self):
-        return 5.0
 
 
 class TileMap(BaseComponent):

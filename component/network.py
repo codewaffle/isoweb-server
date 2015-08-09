@@ -15,7 +15,7 @@ class NetworkViewer(BaseComponent):
 
     @component_method
     def initialize(self):
-        self.entity.cache.network_viewer = {}
+        self.data._network_viewer = {}
         self.entity.scheduler.schedule(func=self.entity.NetworkViewer.update)
 
     @component_method
@@ -26,7 +26,7 @@ class NetworkViewer(BaseComponent):
 
         now = clock()
 
-        cache = self.entity.cache.network_viewer
+        cache = self.data._network_viewer
 
         visible = self.entity.Position.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
 

@@ -27,7 +27,7 @@ class ControllerComponent(BaseComponent):
 
     @component_method
     def handle_menu_req_entity(self, ent):
-        menu = ent.get_menu(self.entityref)
+        menu = ent.get_menu(self.entity)
 
         if not menu:
             return
@@ -44,8 +44,8 @@ class ControllerComponent(BaseComponent):
 
     @component_method
     def handle_menu_exec_entity(self, ent, action):
-        menu = ent.get_menu(self.entityref)
-        menu.execute(action, self.entityref)
+        menu = ent.get_menu(self.entity)
+        menu.execute(action, self.entity)
 
     @component_method
     def handle_context_position(self, pos):
@@ -53,13 +53,13 @@ class ControllerComponent(BaseComponent):
 
     @component_method
     def handle_context_entity(self, ent):
-        ctx_menu = ent.get_context_menu(self.entityref)
+        ctx_menu = ent.get_context_menu(self.entity)
 
         if not ctx_menu:
             return
 
         try:
-            ctx_menu.execute_default(self.entityref)
+            ctx_menu.execute_default(self.entity)
         except MultipleDefaultMenuItems:
             # send the truncated menu
             fmt = ['>BfIB']

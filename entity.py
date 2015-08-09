@@ -1,34 +1,10 @@
 from math import atan2, pi
 import ujson
+from component.base import BaseComponent
 from menu import Menu
 from util import memoize, AttributeDict
 import util
 
-
-class EntityReference(object):
-    """An invalidate-able reference to an Entity.
-
-    When the Entity is disposed, .valid will be set false and the Entity can be
-    returned to the pool after its memoize has been cleared.. and it will generate a new reference on demand.
-    """
-    def __init__(self, entity):
-        self.__dict__.update({
-            'entity': entity,
-            'id': entity.id,
-            'valid': True
-        })
-
-    def __getattr__(self, item):
-        return getattr(self.entity, item)
-
-    def __setattr__(self, key, value):
-        raise RuntimeError("NO WAY JEEZE STOP IT")
-
-    def __repr__(self):
-        try:
-            return 'EntityReference({})'.format(self.id)
-        except AttributeError:
-            return 'EntityReference(None)'
 
 class ObFlags:
     REPLICATE = 1
@@ -92,7 +68,7 @@ class Entity(object):
     def set_island(self, island):
         self.island = island
         self.snapshots = SnapshotContainer(self, island.dirty_set)
-        island.entities_by_id[self.id] = self.reference
+        island.entities_by_id[self.id] = self
         island.entities.add(self)
 
     @property
@@ -137,7 +113,13 @@ class Entity(object):
         self.scheduler.schedule(func=task)
 
     def has_component(self, key):
-        return key in self.components
+        if isinstance(key, basestring):
+            return key in self.components
+        elif issubclass(key, BaseComponent):
+            return key.__name__ in self.components
+
+    def __contains__(self, item):
+        return self.has_component(item)
 
     def add_component(self, comp_class, initialize=True, **data):
         comp = comp_class.bind(self, False)
@@ -176,11 +158,6 @@ class Entity(object):
 
         for comp in to_init:
             comp.initialize()
-
-    @property
-    @memoize
-    def reference(self):
-        return EntityReference(self)
 
     def changes_after(self, ts):
         ret = []

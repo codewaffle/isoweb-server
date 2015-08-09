@@ -9,7 +9,7 @@ import packet_types
 class EntityOb(NodeItem):
     def __init__(self, ent):
         NodeItem.__init__(self)
-        self.ent = ent.reference
+        self.ent = ent
 
     def __repr__(self):
         return 'EntityOb({})'.format(repr(self.pos))
@@ -62,9 +62,12 @@ class Position(BaseComponent):
         self._update()
 
     @component_method
-    def find_nearby(self, radius, exclude=True, flags=0, components=None):
+    def find_nearby(self, radius, exclude=None, flags=0, components=None):
         Position.q_aabb.center.update(self.entity.ob.pos)
         Position.q_aabb.hwidth = Position.q_aabb.hheight = radius
+
+        if exclude is None:
+            exclude = set()
 
         if exclude is True:
             exclude = {self.entity}

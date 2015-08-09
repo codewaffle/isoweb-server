@@ -30,9 +30,7 @@ class ComponentProxy(object):
         self._memo_cache = {}
         self.cls = cls
         self.entity = entity
-        self.entityref = entity.reference
         self.bind_def = bind_def
-        self.cache = {}
 
     @property
     def island(self):
@@ -70,7 +68,7 @@ class ComponentProxy(object):
         return '{}({})'.format(self.cls.__name__, self.entity)
 
     def schedule(self, task):
-        return self.entityref.schedule(task)
+        return self.entity.schedule(task)
 
 current_component_class = None
 
@@ -99,7 +97,7 @@ class BaseComponent(object):
 
     # these are mostly to shut up pycharm/idea
     entity = NotImplemented
-    entityref = NotImplemented
+    entity = NotImplemented
     island = NotImplemented
     pos = NotImplemented
     cache = NotImplemented
