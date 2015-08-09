@@ -1,3 +1,6 @@
 *.pyc
 *.iml
 .idea/
+mathx/*.pyd
+mathx/*.c
+build/

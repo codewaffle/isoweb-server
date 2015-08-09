@@ -1,21 +1,22 @@
 from math import ceil
+from queue import PriorityQueue
 from time import time, clock
-from gevent import Greenlet, sleep
-from gevent.queue import PriorityQueue
+from twisted.internet.defer import inlineCallbacks
+from util import sleep
 
 
-class Scheduler(Greenlet):
+class Scheduler:
     def __init__(self, resolution=1/40.):
-        super(Scheduler, self).__init__()
         self.resolution = resolution
         self.queue = PriorityQueue()
 
-    def _run(self):
+    @inlineCallbacks
+    def start(self):
         queue = self.queue
 
         while True:
             now = clock()
-            while queue.peek()[0] < now:
+            while queue.queue[0][0] < now:
                 # time desired, time when originally scheduled (used to compute dt), function, args, kwargs.
                 t, s, f, a, k = self.queue.get()
                 d = now - s
@@ -34,9 +35,12 @@ class Scheduler(Greenlet):
                     if res > 0:
                         queue.put((now + res, now, f, a, k))
                     else:  # negative reschedule supports fixed clock rate.
-                        queue.put((t - res, now, f, a, k))
+                        try:
+                            queue.put((t - res, now, f, a, k))
+                        except Exception:
+                            raise
 
-            sleep(0.001)
+            yield sleep(0.01)
 
     def schedule(self, at=None, wait=None, func=None, args=None, kwargs=None):
         # print 'scheduled', at, func, args, kwargs

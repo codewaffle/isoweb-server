@@ -24,7 +24,7 @@ def next_id():
     pass
 
 
-class Entity(object):
+class Entity:
     """
     an Entity is a bag of component data that points to an EntityDef.
     """
@@ -118,7 +118,7 @@ class Entity(object):
         self.scheduler.schedule(func=task)
 
     def has_component(self, key):
-        if isinstance(key, basestring):
+        if isinstance(key, (str, bytes)):
             return key in self.components
         elif issubclass(key, BaseComponent):
             return key.__name__ in self.components
@@ -166,7 +166,7 @@ class Entity(object):
 
     def changes_after(self, ts):
         ret = []
-        for ss_func, ss_time in self.snapshots.iteritems():
+        for ss_func, ss_time in self.snapshots.items():
             if ss_time >= ts:
                 ret.append(ss_func())
 
@@ -189,9 +189,9 @@ class Entity(object):
         menu = None
 
         for a, mi in self.get_menu(user):
-            if a.startswith('!'):
+            if a.startswith(b'!'):
                 i = 1
-                while a[i] == '!':
+                while a[i] == b'!':
                     i += 1
 
                 if i < max_i:
@@ -238,9 +238,8 @@ class Entity(object):
 
         return persistable({k: public(v) for k, v in self.component_data.items() if k not in ('NetworkViewer', )})
 
-    @property
-    def db_key(self):
-        return 'ent-{}'.format(self.id)
+    def get_db_key(self):
+        return 'ent-{}'.format(self.id).encode('utf8')
 
     def save_data(self, cur):
         try:
@@ -250,9 +249,9 @@ class Entity(object):
                 'ob_flags': self.ob.flags,
                 'components': self.persistent_data
             }
-            cur.put(self.db_key, ujson.dumps(data, double_precision=3))
+            cur.put(self.get_db_key(), ujson.dumps(data, double_precision=3).encode('utf8'))
         except Exception as E:
-            print 'wtf'
+            print('wtf')
             raise
 
         self.dirty = False

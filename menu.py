@@ -1,4 +1,7 @@
-class MenuItem(object):
+from util import to_bytes
+
+
+class MenuItem:
     def __init__(self):
         pass
 
@@ -7,7 +10,7 @@ _registry = {}
 class MultipleDefaultMenuItems(RuntimeError):
     pass
 
-class Menu(object):
+class Menu:
     def __init__(self):
         _registry[id(self)] = self
         self.data = {}
@@ -17,11 +20,11 @@ class Menu(object):
         return id(self)
 
     def update(self, data):
-        self.data.update(data)
+        self.data.update({to_bytes(k): v for k,v in data.items()})
 
     def __iter__(self):
-        for x in self.data.iteritems():
-            yield x
+        for k,v in self.data.items():
+            yield (to_bytes(k), v)
 
     def execute(self, action, *args):
         func = self.data.get(action, None)
@@ -33,7 +36,7 @@ class Menu(object):
         if len(self) > 1:
             raise MultipleDefaultMenuItems
         else:
-            self.execute(self.data.keys()[0], *args)
+            self.execute(list(self.data.keys())[0], *args)
 
     @classmethod
     def from_dict(cls, d):

@@ -1,12 +1,10 @@
 import os
 import fnmatch
-from inflect import engine
 from component.base import DataProxy
 import component
 
-inflect = engine()
 
-class EntityDef(object):
+class EntityDef:
     def __init__(self, data, key):
         self.key = key
         self.name = key.replace('_', ' ')
@@ -19,11 +17,11 @@ class EntityDef(object):
             raise RuntimeError
 
     def load_data(self, data):
-        for k, v in data.iteritems():
+        for k, v in data.items():
             if k == 'components':
                 self.load_components(v)
             else:
-                print k, '=', v
+                print(k, '=', v)
                 setattr(self, k, v)
 
     def load_components(self, data):
@@ -54,7 +52,7 @@ def load_defs():
     for root, dirs, files in os.walk('defs/entity'):
         for fn in files:
             if fnmatch.fnmatch(fn, '*.yml'):
-                for def_key, data in load(os.path.join(root, fn)).iteritems():
+                for def_key, data in load(os.path.join(root, fn)).items():
                     _defs[def_key] = EntityDef(data, def_key)
 
 def definition_from_key(def_key):
