@@ -14,7 +14,7 @@ from mathx.vector2 import Vector2
 import packet_types
 from twisted.internet import task, reactor
 from twisted.internet.defer import inlineCallbacks
-from util import sleep
+from util import sleep, to_bytes
 
 packet_header = struct.Struct('>B')
 move_to = struct.Struct('>ff')
@@ -54,6 +54,16 @@ class PlayerWebsocket(WebSocketServerProtocol):
             # bounce ping back immediately
             self.sendMessage(pong.pack(packet_types.PONG, clock(), num, now) + b'\0', isBinary=True)
             return
+        elif packet_type == packet_types.MESSAGE:
+            sender = 'You'
+            message_len, = struct.unpack_from('>H', payload, 1)
+            message, = struct.unpack_from('>{}s'.format(message_len), payload, 3)
+            self.log.debug('{} tried to say "{}"', self, message)
+            reply = struct.pack(
+                '>BfBB{}sH{}s'.format(len(sender), len(message)),
+                *to_bytes([packet_types.MESSAGE, clock(), 1, len(sender), sender, len(message), message])
+            )
+            self.send(reply)
         elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
             x, y = struct.unpack_from('>ff', payload, 1)
             self.log.debug('Move to {}, {}', x, y)
