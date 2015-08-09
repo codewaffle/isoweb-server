@@ -1,5 +1,6 @@
 from time import clock
 from gevent import Greenlet
+from humanfriendly import parse_size
 import lmdb
 import ujson
 import logbook
@@ -26,7 +27,7 @@ class Island(Greenlet):
 
         self.max_entity_id = None
 
-        self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.island_id))
+        self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.island_id), map_size=1024*1024*100)
 
         with self.db.begin() as tx:
             self.load_data(tx.cursor())
