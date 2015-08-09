@@ -217,8 +217,16 @@ class Entity(object):
 
     @property
     def persistent_data(self):
+        def transform(cd):
+            if isinstance(cd, dict):
+                return {k: transform(v) for k,v in cd.items()}
+            elif isinstance(cd, Entity):
+                return cd.id
+            else:
+                return cd
+
         def public(cd):
-            return {k: v for k,v in cd.items() if not k.startswith('_')}
+            return {k: transform(v) for k, v in cd.items() if not k.startswith('_')}
 
         def persistable(cd):
             return {k: v for k, v in cd.items() if v or k not in self.entity_def.components}
