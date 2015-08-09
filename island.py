@@ -100,7 +100,7 @@ class Island:
                 ent.save_data(cur)
 
             for ent in self.delete_set:
-                tx.delete(ent.db_key)
+                tx.delete(ent.get_db_key())
 
             self.log.info('Snapshot: saved={} deleted={} elapsed={}', len(self.dirty_set), len(self.delete_set), clock() - start)
             self.dirty_set.clear()
