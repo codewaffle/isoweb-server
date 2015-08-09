@@ -90,10 +90,15 @@ class BaseComponent(object):
 
     @component_method
     def destroy(self):
+        self.on_destroy()
         try:
             del self.entity.component_data[current_component_class.__name__]
         except KeyError:
             pass
+
+    @component_method
+    def on_destroy(self):
+        pass
 
     # these are mostly to shut up pycharm/idea
     entity = NotImplemented
