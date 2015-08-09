@@ -133,4 +133,5 @@ class Island:
             comp.destroy()
         ent.valid = False
         del ent._memo_cache
+        ent._memo_cache = {}
         self.delete_set.add(ent)

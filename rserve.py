@@ -1,8 +1,12 @@
 import random
 import math
+from config import DB_DIR
+import ghalton
 import logbook
 from logbook.handlers import StderrHandler
 from mathx import Vector2
+from twisted.internet.defer import inlineCallbacks
+from util import sleep
 
 StderrHandler(level=logbook.DEBUG).push_application()
 import logging
@@ -38,9 +42,20 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
         if rot:
             ent.Position.data.r = 2.*math.pi * random.random()
 
+@inlineCallbacks
 def spawn_all():
     spawn_crap('crate', 1, rot=True)
     spawn_crap('backpack', 1, rot=True)
+
+    seq = ghalton.Halton(2)
+    seq.get(2048)
+
+    for x in range(1000):
+        for t in range(1, 100):
+            island.spawn('tree', pos=(Vector2(*seq.get(1)[0])-Vector2(0.5, 0.5))*t*100).Position.data.r = 2.*math.pi * random.random()
+        yield sleep(0.1)
+
+
 spawn_all()
 
 reactor.run()

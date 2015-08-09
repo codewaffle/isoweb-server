@@ -189,9 +189,9 @@ class Entity:
         menu = None
 
         for a, mi in self.get_menu(user):
-            if a.startswith('!'):
+            if a.startswith(b'!'):
                 i = 1
-                while a[i] == '!':
+                while a[i] == b'!':
                     i += 1
 
                 if i < max_i:
