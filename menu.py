@@ -33,7 +33,7 @@ class Menu:
         if len(self) > 1:
             raise MultipleDefaultMenuItems
         else:
-            self.execute(self.data.keys()[0], *args)
+            self.execute(list(self.data.keys())[0], *args)
 
     @classmethod
     def from_dict(cls, d):

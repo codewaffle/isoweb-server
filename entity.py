@@ -118,7 +118,7 @@ class Entity:
         self.scheduler.schedule(func=task)
 
     def has_component(self, key):
-        if isinstance(key, basestring):
+        if isinstance(key, (str, bytes)):
             return key in self.components
         elif issubclass(key, BaseComponent):
             return key.__name__ in self.components
