@@ -1,21 +1,21 @@
+import asyncio
 from math import ceil
-from time import time, clock
-from gevent import Greenlet, sleep
-from gevent.queue import PriorityQueue
+from queue import PriorityQueue
+from time import time, clock, sleep
 
 
-class Scheduler(Greenlet):
+class Scheduler:
     def __init__(self, resolution=1/40.):
         super(Scheduler, self).__init__()
         self.resolution = resolution
         self.queue = PriorityQueue()
 
-    def _run(self):
+    def start(self):
         queue = self.queue
 
         while True:
             now = clock()
-            while queue.peek()[0] < now:
+            while queue.queue[0][0] < now:
                 # time desired, time when originally scheduled (used to compute dt), function, args, kwargs.
                 t, s, f, a, k = self.queue.get()
                 d = now - s
@@ -36,7 +36,8 @@ class Scheduler(Greenlet):
                     else:  # negative reschedule supports fixed clock rate.
                         queue.put((t - res, now, f, a, k))
 
-            sleep(0.001)
+            sleep(0.1)
+            print('.')
 
     def schedule(self, at=None, wait=None, func=None, args=None, kwargs=None):
         # print 'scheduled', at, func, args, kwargs

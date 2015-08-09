@@ -15,7 +15,7 @@ class Container(MenuComponent):
         self.data.contents = {int(k): [refreeze(v[0]), v[1]] for k, v in self.data.contents.items()}
         self.data._registry = {v[0]: k for k,v in self.data.contents.items()}
 
-        self.data._max = max(self.data.contents.keys() + [0])
+        self.data._max = max(list(self.data.contents.keys()) + [0])
 
     @component_method
     def get_menu(self, ent):
@@ -25,7 +25,7 @@ class Container(MenuComponent):
 
     @component_method
     def view_contents(self, ent):
-        print ent, 'tried to view contents.'
+        print(ent, 'tried to view contents.')
         ent.controller.update_container(self.entity)
         ent.controller.show_container(self.entity)
 

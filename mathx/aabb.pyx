@@ -1,4 +1,4 @@
-cimport Vector2
+from mathx cimport Vector2
 from libc.math cimport fabs
 
 cdef class AABB:

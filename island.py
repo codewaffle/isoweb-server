@@ -1,6 +1,4 @@
 from time import clock
-from gevent import Greenlet
-from humanfriendly import parse_size
 import lmdb
 import ujson
 import logbook
@@ -13,9 +11,8 @@ from mathx import Quadtree
 from scheduler import Scheduler
 
 
-class Island(Greenlet):
+class Island:
     def __init__(self, island_id):
-        super(Island, self).__init__()
         self._delete_set = set()
         self.island_id = island_id
         self.scheduler = Scheduler()
@@ -27,7 +24,7 @@ class Island(Greenlet):
 
         self.max_entity_id = None
 
-        self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.island_id), map_size=1024*1024*100)
+        self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.island_id), map_size=1024*1024*64)
 
         with self.db.begin() as tx:
             self.load_data(tx.cursor())
@@ -45,27 +42,27 @@ class Island(Greenlet):
         return self._delete_set
 
     def load_data(self, cursor):
-        data = ujson.loads(cursor.get('island_data', "{}"))
+        d = cursor.get(b'island_data', '{}')
+        data = ujson.loads(d)
         self.max_entity_id = data.get('max_entity_id', 0)
 
         self.load_entities(cursor)
 
     def save_data(self, write_cursor):
-        write_cursor.put('island_data', ujson.dumps({
-            'max_entity_id': self.max_entity_id
-        }))
+        write_cursor.put(b'island_data', ujson.dumps({
+            u'max_entity_id': self.max_entity_id
+        }).encode('utf8'))
 
-    def _run(self):
-        self.scheduler.start()
+    def start(self):
         self.scheduler.schedule(func=self.save_snapshot)
-        self.scheduler.join()
+        self.scheduler.start()
 
     def next_entity_id(self):
         self.max_entity_id += 1
         return self.max_entity_id
 
     def spawn(self, entdef, components=None, pos=None, rot=None, replicate=True):
-        if isinstance(entdef, basestring):
+        if isinstance(entdef, (str, bytes)):
             entdef = definition_from_key(entdef)
 
         ent = Entity(self.next_entity_id())
@@ -114,7 +111,7 @@ class Island(Greenlet):
     def load_entities(self, cur):
         self.log.debug('Loading entities from db')
         start = clock()
-        if cur.set_range('ent-'):
+        if cur.set_range(b'ent-'):
             for key, val in cur:
                 if not key.startswith('ent-'):
                     break

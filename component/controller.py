@@ -78,7 +78,7 @@ class ControllerComponent(BaseComponent):
         fmt = ['>BfIH']
         dat = [packet_types.CONTAINER_UPDATE, clock(), container.id, len(container.Container.data.contents)]
 
-        for idx, c in container.Container.data.contents.iteritems():
+        for idx, c in container.Container.data.contents.items():
             entdef = entitydef.definition_from_key(c[0][0])
             fmt.append('HIffB{}sB{}s'.format(len(entdef.name), len(entdef.component_data['Sprite'].sprite)))
 
@@ -106,7 +106,7 @@ class ControllerComponent(BaseComponent):
 
     @component_method
     def handle_hide_container(self, container):
-        print 'player requested that we hide container:', container
+        print('player requested that we hide container:', container)
 
     @component_method
     def update_queue(self):
@@ -173,7 +173,7 @@ class MeatbagController(ControllerComponent):
         t = pos
 
         if t is None:
-            print 'ff'
+            print('ff')
             return False
 
         move_diff = t - self.entity.pos

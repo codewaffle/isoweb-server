@@ -1,4 +1,4 @@
-class MenuItem(object):
+class MenuItem:
     def __init__(self):
         pass
 
@@ -7,7 +7,7 @@ _registry = {}
 class MultipleDefaultMenuItems(RuntimeError):
     pass
 
-class Menu(object):
+class Menu:
     def __init__(self):
         _registry[id(self)] = self
         self.data = {}
@@ -20,7 +20,7 @@ class Menu(object):
         self.data.update(data)
 
     def __iter__(self):
-        for x in self.data.iteritems():
+        for x in self.data.items():
             yield x
 
     def execute(self, action, *args):

@@ -1,11 +1,9 @@
-flask==0.10.1
-gevent==1.0.2
-gevent-websocket==0.9.5
-numpy==1.9.1
-ujson==1.33
-cython==0.22.1
-logbook==0.9.1
-lmdb==0.86
-inflect==0.2.5
-sortedcontainers==0.9.6
+Cython==0.23
 ghalton==0.6
+Logbook==0.10.1
+PyYAML==3.11
+six==1.9.0
+ujson==1.33
+websockets==2.5
+
+# lmdb==0.86

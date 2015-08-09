@@ -24,7 +24,7 @@ def next_id():
     pass
 
 
-class Entity(object):
+class Entity:
     """
     an Entity is a bag of component data that points to an EntityDef.
     """
@@ -166,7 +166,7 @@ class Entity(object):
 
     def changes_after(self, ts):
         ret = []
-        for ss_func, ss_time in self.snapshots.iteritems():
+        for ss_func, ss_time in self.snapshots.items():
             if ss_time >= ts:
                 ret.append(ss_func())
 
@@ -252,7 +252,7 @@ class Entity(object):
             }
             cur.put(self.db_key, ujson.dumps(data, double_precision=3))
         except Exception as E:
-            print 'wtf'
+            print('wtf')
             raise
 
         self.dirty = False

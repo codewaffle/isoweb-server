@@ -1,5 +1,6 @@
 import collections
 from functools import partial
+from twisted.internet import task, reactor
 
 _class_cache = {}
 
@@ -35,7 +36,7 @@ class OrderedDefaultdict(collections.OrderedDict):
 
     def __reduce__(self):  # optional, for pickle support
         args = (self.default_factory,) if self.default_factory else ()
-        return self.__class__, args, None, None, self.iteritems()
+        return self.__class__, args, None, None, self.items()
 
 def memodict(f):
     """ (FAST) Memoization decorator for a function taking a single argument """
@@ -46,7 +47,7 @@ def memodict(f):
     return memodict().__getitem__
 
 
-class memoize(object):
+class memoize:
     """cache the return value of a method
 
     This class is meant to be used as a decorator of methods. The return value
@@ -56,7 +57,7 @@ class memoize(object):
 
     If a memoized method is invoked directly on its class the result will not
     be cached. Instead the method will be invoked like a static method:
-    class Obj(object):
+    class Obj:
         @memoize
         def add_to(self, arg):
             return self + arg
@@ -108,3 +109,9 @@ def refreeze(obj):
         return x
 
     return frozenset(_filter(x) for x in obj)
+
+def noop():
+    pass
+
+def sleep(seconds, callback=noop):
+    return task.deferLater(reactor, seconds, callback)

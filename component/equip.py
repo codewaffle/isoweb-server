@@ -30,7 +30,7 @@ class Equippable(MenuComponent):
 
     @component_method
     def wear(self, ent):
-        print ent, 'tried to wear'
+        print(ent, 'tried to wear')
         if component.c.Position in ent:
             ent.Position.destroy()
 

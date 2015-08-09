@@ -1,9 +1,9 @@
-from gevent.monkey import patch_all
-import ghalton
+import bootstrap
 
-patch_all(ssl=False)
-from pyximport import pyximport
-pyximport.install()
+import websockets
+import asyncio
+
+
 from config import DB_DIR
 
 
@@ -11,16 +11,8 @@ from math import pi, cos, sin, exp
 import random
 from mathx import Vector2
 
-
-from logbook.queues import ZeroMQHandler
-
-
-import gevent
 import socket
-from geventwebsocket.handler import WebSocketHandler
-from geventwebsocket.server import WebSocketServer
 import logbook
-logbook.default_handler.level = logbook.DEBUG
 from network.player import PlayerWebsocket
 
 
@@ -50,13 +42,7 @@ from island import Island
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-from gevent import pywsgi
-from web.app import create_app
-
-ws_zmq_handler = ZeroMQHandler('tcp://127.0.0.1:9009', bubble=True)
-
 island = Island(0)
-island.log_handler = ws_zmq_handler
 island.start()
 
 
@@ -89,50 +75,36 @@ def spawn_all():
     # spawn_crap('log', 15)
     # spawn_crap('stone_axe', 1, rot=True)
 
-    return
+    # return
 
-    seq = ghalton.Halton(2)
-    seq.get(2048)
+    #seq = ghalton.Halton(2)
+    #seq.get(2048)
 
-    for x in range(1000):
-        for t in range(100):
-            island.spawn('tree', pos=(Vector2(*seq.get(1)[0])-Vector2(0.5, 0.5))*4096).Position.data.r = 2.*pi * random.random()
-        gevent.sleep(0.1)
+    #for x in range(100):
+    #    for t in range(100):
+    #        island.spawn('tree', pos=(Vector2(*seq.get(1)[0])-Vector2(0.5, 0.5))*2048).Position.data.r = 2.*pi * random.random()
 
 if respawn:
-    gevent.spawn(spawn_all)
+    spawn_all()
 
-def ws_app(env, start):
-    if env['PATH_INFO'] == '/player':
-        ws = env['wsgi.websocket']
-        ws.stream.handler.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+@asyncio.coroutine
+def ws_test(ws, path):
+    print(path)
+    ps = PlayerWebsocket(ws)
+    return ps.on_connect(island)
 
-        ps = PlayerWebsocket(ws)
 
-        return ps.on_connect(island)
 
-ws_server = WebSocketServer(
-    ('', 10000),
-    ws_app,
-    handler_class=WebSocketHandler
-)
+#ws_server = websockets.serve(ws_test, port=10000)
 
-web_server = pywsgi.WSGIServer(
-    ("", 9000),
-    create_app()
-)
-
-# logbook.info('starting webserver on :{0}', web_server.server_port)
-# web_server.start()
-
-logbook.info('starting websocket on :{0}', ws_server.server_port)
-ws_server.start()
+#logbook.info('starting websocket')
+#ws_server.start()
 # disable nagle's
-ws_server.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+#ws_server.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
 logbook.info('waiting')
 
 def spawn_things():
     pass
 
-gevent.wait()
+print('reached end')
