@@ -1,3 +1,6 @@
+from util import to_bytes
+
+
 class MenuItem:
     def __init__(self):
         pass
@@ -17,11 +20,11 @@ class Menu:
         return id(self)
 
     def update(self, data):
-        self.data.update(data)
+        self.data.update({to_bytes(k): v for k,v in data.items()})
 
     def __iter__(self):
-        for x in self.data.items():
-            yield x
+        for k,v in self.data.items():
+            yield (to_bytes(k), v)
 
     def execute(self, action, *args):
         func = self.data.get(action, None)

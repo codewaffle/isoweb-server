@@ -20,7 +20,7 @@ cdef class Vector2:
     def __add__(self, other):
         return Vector2(self.x + other.x, self.y + other.y)
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         return Vector2(self.x / other, self.y / other)
 
     def __mul__(self, other):
