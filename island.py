@@ -113,7 +113,7 @@ class Island:
         start = clock()
         if cur.set_range(b'ent-'):
             for key, val in cur:
-                if not key.startswith('ent-'):
+                if not key.startswith(b'ent-'):
                     break
 
                 data = ujson.loads(val)

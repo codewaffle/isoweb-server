@@ -115,3 +115,11 @@ def noop():
 
 def sleep(seconds, callback=noop):
     return task.deferLater(reactor, seconds, callback)
+
+def to_bytes(data):
+    if isinstance(data, list):
+        return [x.encode('utf8') if isinstance(x, str) else x for x in data]
+    elif isinstance(data, str):
+        return data.encode('utf8')
+    else:
+        return data

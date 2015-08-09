@@ -5,6 +5,7 @@ from component import BaseComponent
 from component.base import component_method
 from entity import ObFlags
 import packet_types
+from util import to_bytes
 
 
 class NetworkViewer(BaseComponent):
@@ -67,8 +68,7 @@ class NetworkViewer(BaseComponent):
                 packet_data = [packet_types.ENTITY_UPDATE, clock(), ref.id] + packet_data + [0]
 
                 # SEND
-                packet = struct.pack(''.join(packet_fmt), *packet_data)
-                # print repr(packet)
+                packet = struct.pack(''.join(packet_fmt), *to_bytes(packet_data))
                 self.data._socket.send(packet)
 
         for ref in enter:

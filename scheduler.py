@@ -1,15 +1,16 @@
-import asyncio
 from math import ceil
 from queue import PriorityQueue
-from time import time, clock, sleep
+from time import time, clock
+from twisted.internet.defer import inlineCallbacks
+from util import sleep
 
 
 class Scheduler:
     def __init__(self, resolution=1/40.):
-        super(Scheduler, self).__init__()
         self.resolution = resolution
         self.queue = PriorityQueue()
 
+    @inlineCallbacks
     def start(self):
         queue = self.queue
 
@@ -34,10 +35,12 @@ class Scheduler:
                     if res > 0:
                         queue.put((now + res, now, f, a, k))
                     else:  # negative reschedule supports fixed clock rate.
-                        queue.put((t - res, now, f, a, k))
+                        try:
+                            queue.put((t - res, now, f, a, k))
+                        except Exception:
+                            raise
 
-            sleep(0.1)
-            print('.')
+            yield sleep(0.01)
 
     def schedule(self, at=None, wait=None, func=None, args=None, kwargs=None):
         # print 'scheduled', at, func, args, kwargs

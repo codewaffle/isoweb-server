@@ -6,6 +6,7 @@ from component.base import component_method
 import entitydef
 from menu import MultipleDefaultMenuItems
 import packet_types
+from util import to_bytes
 
 
 class ControllerComponent(BaseComponent):
@@ -40,7 +41,7 @@ class ControllerComponent(BaseComponent):
             fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
             data.extend([len(kw), kw, len(desc), desc])
 
-        self.data._socket.send(struct.pack(''.join(fmt), *data))
+        self.data._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
 
     @component_method
     def handle_menu_exec_entity(self, ent, action):
@@ -93,7 +94,7 @@ class ControllerComponent(BaseComponent):
                 entdef.component_data['Sprite'].sprite
             ])
 
-        packed = struct.pack(''.join(fmt), *dat)
+        packed = struct.pack(''.join(fmt), *to_bytes(dat))
         self.data._socket.send(packed)
 
     @component_method

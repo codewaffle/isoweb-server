@@ -238,9 +238,8 @@ class Entity:
 
         return persistable({k: public(v) for k, v in self.component_data.items() if k not in ('NetworkViewer', )})
 
-    @property
-    def db_key(self):
-        return 'ent-{}'.format(self.id)
+    def get_db_key(self):
+        return 'ent-{}'.format(self.id).encode('utf8')
 
     def save_data(self, cur):
         try:
@@ -250,7 +249,7 @@ class Entity:
                 'ob_flags': self.ob.flags,
                 'components': self.persistent_data
             }
-            cur.put(self.db_key, ujson.dumps(data, double_precision=3))
+            cur.put(self.get_db_key(), ujson.dumps(data, double_precision=3).encode('utf8'))
         except Exception as E:
             print('wtf')
             raise

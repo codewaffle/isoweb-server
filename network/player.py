@@ -32,11 +32,16 @@ class PlayerWebsocket(WebSocketServerProtocol):
         self.packet_queue = Queue()
 
     def onOpen(self):
+        self.log.debug('onOpen()')
         self.send_handler()
 
     #@inlineCallbacks
     def onMessage(self, payload, isBinary):
-        print(hexlify(payload))
+        # self.log.debug('onMessage({})', hexlify(payload))
+
+        if self.island is None:
+            self.island = self.factory.island
+            self.handle_login()
 
         now = clock()
         if payload is None:
@@ -96,9 +101,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
                     pkt.append(get())
 
                 if pkt:
-                    data = b''.join(pkt) + b'\0'
-                    print(hexlify(data))
-                    self.sendMessage(data, isBinary=True)
+                    self.sendMessage(b''.join(pkt) + b'\0', isBinary=True)
                     pkt = []
             except Exception as E:
                 print('failed send')
@@ -106,7 +109,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
                 return
 
             # TODO: gevent sleep
-            yield sleep(1/20)
+            yield sleep(1/1000)
 
         self.on_disconnect()
         return
@@ -119,11 +122,10 @@ class PlayerWebsocket(WebSocketServerProtocol):
             c.MeatbagController: {'_socket': self}
         }, pos=Vector2.random_inside(5.0))
 
-        self.send(struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id))
+        msg = struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id)
 
-    def handle_logout(self):
-        pass
+        self.send(msg)
 
     def on_disconnect(self):
-        self.ws = None
+        self.log.info('on_disconnect')
         print('{} disconnected'.format(self))
