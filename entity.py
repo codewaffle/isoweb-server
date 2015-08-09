@@ -48,6 +48,7 @@ class Entity(object):
         self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
         self.dirty = False
+        self.valid = True
 
     def set_dirty(self):
         if not self.dirty:
@@ -92,6 +93,10 @@ class Entity(object):
     @property
     def components(self):
         return self.entity_def.components | set(self.component_data.keys())
+
+    def component_iter(self):
+        for x in self.components:
+            yield getattr(self, x)
 
     def initialize(self):
         for c in self.components:

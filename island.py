@@ -131,8 +131,8 @@ class Island(Greenlet):
 
     def destroy_entity(self, ent):
         # reset Reference
+        for comp in ent.component_iter():
+            comp.destroy()
         ent.valid = False
-        ent.ob.remove()
-        ent.ob = None
         del ent._memo_cache
         self.delete_set.add(ent)

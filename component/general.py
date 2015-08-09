@@ -36,6 +36,11 @@ class Position(BaseComponent):
         self.entity.snapshots[self.entity.Position.snapshot] = clock()
 
     @component_method
+    def on_destroy(self):
+        self.entity.ob.remove()
+        self.entity.ob = None
+
+    @component_method
     def initialize(self):
         # quadtree junk
         ob = self.entity.ob
