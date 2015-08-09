@@ -1,9 +1,10 @@
+autobahn==0.10.5.post2
 Cython==0.23
 ghalton==0.6
+lmdb==0.86
 Logbook==0.10.1
 PyYAML==3.11
-six==1.9.0
+Twisted==15.3.0
 ujson==1.33
-websockets==2.5
-
-# lmdb==0.86
+wsaccel==0.6.2
+zope.interface==4.1.2
