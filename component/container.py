@@ -12,7 +12,12 @@ class Container(MenuComponent):
     @component_method
     def initialize(self):
         self.initialize_menu()
-        self.data.contents = {int(k): [refreeze(v[0]), v[1]] for k, v in self.data.contents.items()}
+        self.data.contents = {
+            int(k): (
+                (v[0][0], refreeze(v[0][1])), v[1]
+            ) for k, v in self.data.contents.items()
+
+        }
         self.data._registry = {v[0]: k for k,v in self.data.contents.items()}
 
         self.data._max = max(list(self.data.contents.keys()) + [0])
