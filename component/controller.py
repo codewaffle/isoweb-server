@@ -70,7 +70,7 @@ class ControllerComponent(BaseComponent):
                 fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
                 data.extend([len(kw), kw, len(desc), desc])
 
-            self.data._socket.send(struct.pack(''.join(fmt), *data))
+            self.data._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
             return
 
     @component_method
