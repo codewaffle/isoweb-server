@@ -22,6 +22,18 @@ move_to = struct.Struct('>ff')
 pong = struct.Struct('>BfHd')
 ping = struct.Struct('>H')
 
+_chatters = set()
+
+def broadcast(message_from, message):
+    print('[Broadcast] {}: {}'.format(message_from, message))
+    pkt = struct.pack(
+        '>BfBB{}sH{}s'.format(len(message_from), len(message)),
+        *to_bytes([packet_types.MESSAGE, clock(), 1, len(message_from), message_from, len(message), message])
+    )
+
+    for ch in _chatters:
+        ch.send(pkt)
+
 
 class PlayerWebsocket(WebSocketServerProtocol):
     def __init__(self):
@@ -55,15 +67,10 @@ class PlayerWebsocket(WebSocketServerProtocol):
             self.sendMessage(pong.pack(packet_types.PONG, clock(), num, now) + b'\0', isBinary=True)
             return
         elif packet_type == packet_types.MESSAGE:
-            sender = 'You'
             message_len, = struct.unpack_from('>H', payload, 1)
             message, = struct.unpack_from('>{}s'.format(message_len), payload, 3)
-            self.log.debug('{} tried to say "{}"', self, message)
-            reply = struct.pack(
-                '>BfBB{}sH{}s'.format(len(sender), len(message)),
-                *to_bytes([packet_types.MESSAGE, clock(), 1, len(sender), sender, len(message), message])
-            )
-            self.send(reply)
+            broadcast(self.entity.name, message)
+
         elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
             x, y = struct.unpack_from('>ff', payload, 1)
             self.log.debug('Move to {}, {}', x, y)
@@ -136,6 +143,12 @@ class PlayerWebsocket(WebSocketServerProtocol):
 
         self.send(msg)
 
+        _chatters.add(self)
+
+    def onClose(self, wasClean, code, reason):
+        self.on_disconnect()
+
     def on_disconnect(self):
+        _chatters.difference_update({self})
         self.log.info('on_disconnect')
         print('{} disconnected'.format(self))
