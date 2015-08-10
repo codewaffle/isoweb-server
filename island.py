@@ -129,3 +129,4 @@ class Island:
         del ent._memo_cache
         ent._memo_cache = {}
         self.delete_set.add(ent)
+        del Entity._registry[ent.id]

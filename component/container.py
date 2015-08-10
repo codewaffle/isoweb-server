@@ -25,7 +25,7 @@ class Container(MenuComponent):
     @component_method
     def get_menu(self, ent):
         return {
-            '!view': ('View contents (noop)', self.view_contents)
+            '!view': ('View contents (noop)', partial(self.view_contents, ent))
         }
 
     @component_method
@@ -35,7 +35,7 @@ class Container(MenuComponent):
         ent.controller.show_container(self.entity)
 
     @component_method
-    def put(self, target, putter=None):
+    def put(self, target):
         try:
             target.Position.destroy()
         except AttributeError:

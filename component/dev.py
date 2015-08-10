@@ -29,7 +29,7 @@ class Choppable(MenuComponent):
     @component_method
     def get_menu(self, ent):
         return {
-            'chop': (self.data.label, self.chop)
+            'chop': (self.data.label, partial(self.chop, ent))
         }
 
     @component_method

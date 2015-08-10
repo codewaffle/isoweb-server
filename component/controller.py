@@ -46,7 +46,7 @@ class ControllerComponent(BaseComponent):
     @component_method
     def handle_menu_exec_entity(self, ent, action):
         menu = ent.get_menu(self.entity)
-        menu.execute(action, self.entity)
+        menu.execute(action)
 
     @component_method
     def handle_context_position(self, pos):
@@ -60,7 +60,7 @@ class ControllerComponent(BaseComponent):
             return
 
         try:
-            ctx_menu.execute_default(self.entity)
+            ctx_menu.execute_default()
         except MultipleDefaultMenuItems:
             # send the truncated menu
             fmt = ['>BfIB']

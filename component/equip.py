@@ -56,7 +56,7 @@ class EquipmentUser(component.BaseComponent):
         return True
 
     @component_method
-    def equip(self, eq, caller):
+    def equip(self, eq):
         if not self.can_equip(eq):
             return
 

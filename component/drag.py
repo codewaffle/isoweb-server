@@ -1,3 +1,4 @@
+from functools import partial
 from component import BaseComponent
 from component.base import component_method, MenuComponent
 from mathx import Vector2
@@ -35,11 +36,11 @@ class Draggable(MenuComponent):
     def get_menu(self, ent):
         if ent in self.data._cache['draggers']:
             return {
-                '!stop_dragging': ('Stop dragging', self.stop_drag)
+                '!stop_dragging': ('Stop dragging', partial(self.stop_drag, ent))
             }
 
         return {
-            'drag': ('Start dragging', self.drag)
+            'drag': ('Start dragging', partial(self.drag, ent))
         }
 
     @component_method
@@ -52,7 +53,7 @@ class Draggable(MenuComponent):
     @component_method
     def stop_drag(self, dragger):
         try:
-            self.cache['draggers'].remove(dragger)
+            self.data._cache['draggers'].remove(dragger)
         except KeyError:
             pass
 
