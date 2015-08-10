@@ -48,19 +48,16 @@ class Container(MenuComponent):
 
         frozen = target.freeze()
 
-        self.add_frozen(frozen)
-
-        target.destroy()
-
-    @component_method
-    def add_frozen(self, frozen):
         try:
             idx = self.data._registry[frozen]
-        except KeyError:
-            idx = self.data._registry[frozen] = self.next_idx()
-            self.data.contents[idx] = [frozen, 0]
 
-        self.data.contents[idx][1] += 1
+            # we already have a dupe, destroy the original
+            target.destroy()
+            self.data.contents[idx][1] += 1
+        except KeyError:
+            # first entry in the container, keep it alive.
+            idx = self.data._registry[frozen] = self.next_idx()
+            self.data.contents[idx] = [frozen, 1]
 
         self.entity.set_dirty()
 

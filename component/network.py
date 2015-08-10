@@ -81,8 +81,16 @@ class Replicated(BaseComponent):
     @component_method
     def initialize(self):
         self.entity.ob.flags |= ObFlags.REPLICATE
-        self.entity.snapshots[string_replicator(partial(getattr, self.entity, 'name'), 'name')] = 0
+        self.data._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
+        self.entity.snapshots[name_replicator] = 0
 
+    @component_method
+    def on_destroy(self):
+        self.entity.ob.flags &= ~ObFlags.REPLICATE
+        try:
+            del self.entity.snapshots[self.data._name_replicator]
+        except KeyError:
+            pass
 
 def string_replicator(func, attr_name):
     name_len = len(attr_name)

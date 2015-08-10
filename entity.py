@@ -30,7 +30,6 @@ class Entity:
     """
     _registry = {}
     _name = None
-    _frozen = False
     _controller = None
     _menu_providers = None
 

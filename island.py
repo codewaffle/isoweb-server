@@ -78,7 +78,6 @@ class Island:
         if replicate:
             ent.add_component(c.Replicated, initialize=False)
 
-        ent._frozen = True
         ent.initialize()
         return ent
 
@@ -119,7 +118,6 @@ class Island:
                 ent.ob.flags = data['ob_flags']
                 ent.set_island(self)
                 ent.update_components(data.get('components', {}))
-                ent._frozen = True
                 ent.initialize()
         self.log.info('Loaded entities in {} seconds', clock() - start)
 
