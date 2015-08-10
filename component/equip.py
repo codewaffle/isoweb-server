@@ -48,8 +48,7 @@ class EquipmentUser(component.BaseComponent):
 
     @component_method
     def initialize(self):
-        if not self.data.slots:  # copy
-            self.data.slots = {}
+        self.data.slots = {k: self.entity.island.entities_by_id[v] for k, v in self.data.slots.items()}
 
     @component_method
     def can_equip(self, equippable):

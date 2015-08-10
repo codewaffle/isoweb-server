@@ -20,7 +20,8 @@ class Menu:
         return id(self)
 
     def update(self, data):
-        self.data.update({to_bytes(k): v for k,v in data.items()})
+        if data:
+            self.data.update({to_bytes(k): v for k,v in data.items()})
 
     def __iter__(self):
         for k,v in self.data.items():

@@ -125,7 +125,6 @@ class PlayerWebsocket(WebSocketServerProtocol):
                 self.on_disconnect()
                 return
 
-            # TODO: gevent sleep
             yield sleep(1/1000)
 
         self.on_disconnect()
