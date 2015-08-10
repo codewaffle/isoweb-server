@@ -5,6 +5,7 @@ import random
 import struct
 from time import clock
 from autobahn.twisted.websocket import WebSocketServerProtocol
+from entity import Entity
 
 import logbook
 import time
@@ -77,17 +78,17 @@ class PlayerWebsocket(WebSocketServerProtocol):
             self.entity.controller.handle_context_position(Vector2(x, y))
         elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
             ent_id, = struct.unpack_from('>I', payload, 1)
-            ent = self.entity.island.get_entity(ent_id)
+            ent = Entity.get(ent_id)
             self.entity.controller.handle_context_entity(ent)
         elif packet_type == packet_types.CMD_MENU_REQ_ENTITY:
             ent_id, = struct.unpack_from('>I', payload, 1)
-            ent = self.entity.island.get_entity(ent_id)
+            ent = Entity.get(ent_id)
             self.log.info('Requesting menu for {}', ent)
             self.entity.controller.handle_menu_req_entity(ent)
         elif packet_type == packet_types.CMD_MENU_EXEC_ENTITY:
             ent_id, str_len = struct.unpack_from('>IB', payload, 1)
             action, = struct.unpack_from('>{}s'.format(str_len), payload, 6)
-            ent = self.entity.island.get_entity(ent_id)
+            ent = Entity.get(ent_id)
             self.log.info('Executing action `{}` on {}', action, ent)
             self.entity.controller.handle_menu_exec_entity(ent, action)
         elif packet_type == packet_types.CMD_MENU_REQ_POSITION:
@@ -96,7 +97,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
             print('menexec pos')
         elif packet_types == packet_types.CONTAINER_HIDE:
             ent_id, = struct.unpack_from('>I', payload, 1)
-            ent = self.entity.island.get_entity(ent_id)
+            ent = Entity.get(ent_id)
             self.entity.controller.handle_hide_container(ent)
         else:
             logbook.warn('Unknown packet type: {0}', packet_type)

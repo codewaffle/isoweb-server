@@ -17,7 +17,6 @@ class Island:
         self.island_id = island_id
         self.scheduler = Scheduler()
         self.entities = set()
-        self.entities_by_id = {}
         self.quadtree = Quadtree()
         self._dirty_set = set()
         self.log = logbook.Logger('Island({})'.format(island_id))
@@ -82,9 +81,6 @@ class Island:
         ent._frozen = True
         ent.initialize()
         return ent
-
-    def get_entity(self, ent_id):
-        return self.entities_by_id[ent_id]
 
     def save_snapshot(self):
         start = clock()

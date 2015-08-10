@@ -28,6 +28,7 @@ class Entity:
     """
     an Entity is a bag of component data that points to an EntityDef.
     """
+    _registry = {}
     _name = None
     _frozen = False
     _controller = None
@@ -35,6 +36,7 @@ class Entity:
 
     def __init__(self, ent_id):
         from component.general import EntityOb
+        self._registry[ent_id] = self
 
         self._memo_cache = {}  # for @memoize
         self.cache = AttributeDict()
@@ -49,6 +51,10 @@ class Entity:
         self.ob = EntityOb(self)
         self.dirty = False
         self.valid = True
+
+    @classmethod
+    def get(cls, ent_id):
+        return cls._registry[ent_id]
 
     def set_dirty(self):
         if not self.dirty:
@@ -69,7 +75,6 @@ class Entity:
     def set_island(self, island):
         self.island = island
         self.snapshots = SnapshotContainer(self, island.dirty_set)
-        island.entities_by_id[self.id] = self
         island.entities.add(self)
 
     @property

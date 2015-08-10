@@ -1,6 +1,7 @@
 from functools import partial
 import component
 from component.base import MenuComponent, component_method
+from entity import Entity
 
 
 class Equippable(MenuComponent):
@@ -48,7 +49,7 @@ class EquipmentUser(component.BaseComponent):
 
     @component_method
     def initialize(self):
-        self.data.slots = {k: self.entity.island.entities_by_id[v] for k, v in self.data.slots.items()}
+        self.data.slots = {k: Entity.get(v) for k, v in self.data.slots.items()}
 
     @component_method
     def can_equip(self, equippable):
