@@ -38,7 +38,6 @@ class Position(BaseComponent):
     @component_method
     def on_destroy(self):
         self.entity.ob.remove()
-        self.entity.ob = None
 
     @component_method
     def initialize(self):
