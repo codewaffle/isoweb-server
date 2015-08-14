@@ -5,6 +5,9 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     python3-pip
 
+RUN pip3 install Cython==0.23
+RUN pip3 install Twisted==15.3.0
+
 ADD requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN pip3 install -r requirements.txt
