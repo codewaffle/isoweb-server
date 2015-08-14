@@ -82,10 +82,32 @@ def component_method(f):
     return classmethod(wrapper)
 
 class BaseComponent:
-    data = {}
+    data = {
+        'active': True
+    }
 
     @component_method
     def initialize(self):
+        pass
+
+    @component_method
+    def deactivate(self):
+        if self.data.active:
+            self.data.active = False
+            self.on_deactivate()
+
+    @component_method
+    def activate(self):
+        if not self.data.active:
+            self.data.active = True
+            self.on_activate()
+
+    @component_method
+    def on_activate(self):
+        pass
+
+    @component_method
+    def on_deactivate(self):
         pass
 
     @component_method
@@ -101,7 +123,6 @@ class BaseComponent:
         pass
 
     # these are mostly to shut up pycharm/idea
-    entity = NotImplemented
     entity = NotImplemented
     island = NotImplemented
     pos = NotImplemented
