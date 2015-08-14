@@ -12,6 +12,11 @@ class Scheduler:
     def __init__(self, resolution=1/40.):
         self.resolution = resolution
         self.queue = PriorityQueue()
+        self._next_task_id = 0
+
+    def next_task_id(self):
+        self._next_task_id += 1
+        return self._next_task_id
 
     @inlineCallbacks
     def start(self):
@@ -19,13 +24,10 @@ class Scheduler:
 
         while True:
             now = clock()
+
             while queue.queue[0][0] < now:
                 # time desired, time when originally scheduled (used to compute dt), function, args, kwargs.
-                try:
-                    t, s, f, a, k = self.queue.get()
-                except Exception as E:
-                    logger.exception("IGNORING EXCEPTION WHILE GETTING")
-                    print(t,s,f,a,k)
+                t, i, s, f, a, k = self.queue.get()
 
                 d = now - s
 
@@ -41,18 +43,9 @@ class Scheduler:
 
                 if res:
                     if res > 0:
-                        try:
-                            queue.put((now + res, now, f, a, k))
-                        except Exception as E:
-                            logger.exception("IGNORING EXCEPTION WHILE PUTTING #0")
-                            print((now + res, now, f, a, k))
-
+                        queue.put((now + res, i, now, f, a, k))
                     else:  # negative reschedule supports fixed clock rate.
-                        try:
-                            queue.put((t - res, now, f, a, k))
-                        except Exception as E:
-                            logger.exception("IGNORING EXCEPTION WHILE PUTTING #1")
-                            print(t-res, now, f, a, k)
+                        queue.put((t - res, i, now, f, a, k))
 
             yield sleep(0.01)
 
@@ -68,4 +61,4 @@ class Scheduler:
         # snap it to our resolution
         when = ceil(when / self.resolution) * self.resolution
 
-        self.queue.put((when, now, func, args, kwargs))
+        self.queue.put((when, self.next_task_id(), now, func, args, kwargs))
