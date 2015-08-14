@@ -1,6 +1,6 @@
 from functools import partial
 import struct
-from time import time, clock
+from isoweb_time import clock
 from component import BaseComponent
 from component.base import component_method
 from entity import ObFlags

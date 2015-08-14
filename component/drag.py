@@ -1,7 +1,7 @@
 from functools import partial
 from component import BaseComponent
 from component.base import component_method, MenuComponent
-from mathx import Vector2
+from mathx.vector2 import Vector2
 
 
 class Dragger(BaseComponent):

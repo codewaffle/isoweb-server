@@ -1,7 +1,7 @@
 from functools import partial
 from math import pi
 from random import uniform
-from time import clock
+from isoweb_time import clock
 
 from component import BaseComponent
 from component.base import component_method, MenuComponent

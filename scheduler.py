@@ -1,6 +1,6 @@
 from math import ceil
 from queue import PriorityQueue
-from time import time, clock
+from isoweb_time import clock
 from twisted.internet.defer import inlineCallbacks
 from util import sleep
 
@@ -18,7 +18,11 @@ class Scheduler:
             now = clock()
             while queue.queue[0][0] < now:
                 # time desired, time when originally scheduled (used to compute dt), function, args, kwargs.
-                t, s, f, a, k = self.queue.get()
+                try:
+                    t, s, f, a, k = self.queue.get()
+                except Exception as E:
+                    print(t,s,f,a,k)
+                    raise
                 d = now - s
 
                 if a is not None:
@@ -37,7 +41,8 @@ class Scheduler:
                     else:  # negative reschedule supports fixed clock rate.
                         try:
                             queue.put((t - res, now, f, a, k))
-                        except Exception:
+                        except Exception as E:
+                            print(t-res, now, f, a, k)
                             raise
 
             yield sleep(0.01)

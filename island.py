@@ -1,4 +1,4 @@
-from time import clock
+from isoweb_time import clock
 import lmdb
 import ujson
 import logbook
@@ -6,7 +6,7 @@ from component import c
 from config import DB_DIR
 from entity import Entity
 from entitydef import definition_from_key
-from mathx import Quadtree
+from mathx.quadtree import Quadtree
 
 from scheduler import Scheduler
 

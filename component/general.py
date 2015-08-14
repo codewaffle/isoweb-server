@@ -1,8 +1,10 @@
 from random import random
-from time import time, clock
+from isoweb_time import clock
 from component import BaseComponent
 from component.base import component_method
-from mathx import AABB, Vector2, NodeItem
+from mathx.aabb import AABB
+from mathx.quadtree import NodeItem
+from mathx.vector2 import Vector2
 import packet_types
 
 

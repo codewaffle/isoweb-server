@@ -3,7 +3,7 @@ from binascii import hexlify
 from queue import Queue
 import random
 import struct
-from time import clock
+from isoweb_time import clock
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from entity import Entity
 

@@ -1,5 +1,5 @@
 from functools import partial
-from time import clock
+from isoweb_time import clock
 
 from component import BaseComponent
 from component.base import component_method

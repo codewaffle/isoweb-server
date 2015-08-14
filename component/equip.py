@@ -40,7 +40,10 @@ class Equippable(MenuComponent):
 class Equipped(MenuComponent):
     @component_method
     def get_menu(self, ent):
-        pass
+        return {
+            'remove': ('Remove {}'.format(ent.name), partial(ent.EquipmentUser.remove, self))
+        }
+
 
 class EquipmentUser(component.BaseComponent):
     data = {
@@ -67,3 +70,7 @@ class EquipmentUser(component.BaseComponent):
             self.data.slots[slot] = eq.entity
 
         self.entity.add_component(component.c.Equipped)
+
+    @component_method
+    def remove(self, eq):
+        return

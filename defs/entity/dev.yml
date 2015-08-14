@@ -72,13 +72,11 @@ tree:
   - class: Choppable
   - class: Sprite
     sprite: sprites/assets_td/tree1.png
-    scale: 4
   - class: Interactive
 
 tree_stump:
   components:
   - class: Sprite
-    scale: 4
     sprite: sprites/assets_td/stump1.png
 
 log:
@@ -103,7 +101,7 @@ firewood:
     mass: 10
   - class: Sprite
     sprite: sprites/log.png
-    scale: 0.2
+    scale: 0.35
   - class: Interactive
   - class: Containable
 
