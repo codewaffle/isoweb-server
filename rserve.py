@@ -57,7 +57,7 @@ def spawn_all():
     spawn_crap('backpack', 1, rot=True)
 
     for x in range(5000):
-        island.spawn('tree', pos=Vector2(random.uniform(-2000, 2000), random.uniform(-2000, 2000))).Position.data.r = 2.*math.pi * random.random()
+        island.spawn('tree', pos=Vector2(random.uniform(-1000, 1000), random.uniform(-1000, 1000))).Position.data.r = 2.*math.pi * random.random()
 
     """
     seq = ghalton.Halton(2)
