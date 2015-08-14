@@ -1,9 +1,12 @@
 from math import ceil
 from queue import PriorityQueue
 from isoweb_time import clock
+import logbook
 from twisted.internet.defer import inlineCallbacks
 from util import sleep
 
+
+logger = logbook.Logger(__name__)
 
 class Scheduler:
     def __init__(self, resolution=1/40.):
@@ -21,8 +24,9 @@ class Scheduler:
                 try:
                     t, s, f, a, k = self.queue.get()
                 except Exception as E:
+                    logger.exception("IGNORING EXCEPTION WHILE GETTING")
                     print(t,s,f,a,k)
-                    raise
+
                 d = now - s
 
                 if a is not None:
@@ -37,13 +41,18 @@ class Scheduler:
 
                 if res:
                     if res > 0:
-                        queue.put((now + res, now, f, a, k))
+                        try:
+                            queue.put((now + res, now, f, a, k))
+                        except Exception as E:
+                            logger.exception("IGNORING EXCEPTION WHILE PUTTING #0")
+                            print((now + res, now, f, a, k))
+
                     else:  # negative reschedule supports fixed clock rate.
                         try:
                             queue.put((t - res, now, f, a, k))
                         except Exception as E:
+                            logger.exception("IGNORING EXCEPTION WHILE PUTTING #1")
                             print(t-res, now, f, a, k)
-                            raise
 
             yield sleep(0.01)
 
