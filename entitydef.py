@@ -1,12 +1,29 @@
 import os
 import fnmatch
+import xxhash
 from component.base import DataProxy
 import component
 
 
+xx = xxhash.xxh64()
+
 class EntityDef:
+    by_digest = {}
+    by_key = {}
+
     def __init__(self, data, key):
         self.key = key
+
+        xx.reset()
+        xx.update(key)
+        self.digest = xx.digest()
+
+        assert self.key not in EntityDef.by_key
+        EntityDef.by_key[key] = self
+
+        assert self.digest not in EntityDef.by_digest
+        EntityDef.by_digest[self.digest] = self
+
         self.name = key.replace('_', ' ')
         self.component_data = {}
         self.components = set()
@@ -25,7 +42,6 @@ class EntityDef:
                 setattr(self, k, v)
 
     def load_components(self, data):
-
         for c in data:
             comp_name = c.pop('class')
             comp_class = component.get(comp_name)
