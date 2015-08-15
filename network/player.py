@@ -35,6 +35,15 @@ def broadcast(message_from, message):
     for ch in _chatters:
         ch.send(pkt)
 
+def entity_text(ent, message):
+    print('[EntityText] {}: {}'.format(ent, message))
+    pkt = struct.pack(
+        '>BfBIH{}s'.format(len(message)),
+        *to_bytes([packet_types.MESSAGE, clock(), 3, ent.id, len(message), message])
+    )
+
+    for ch in _chatters:
+        ch.send(pkt)
 
 class PlayerWebsocket(WebSocketServerProtocol):
     def __init__(self):
@@ -70,7 +79,8 @@ class PlayerWebsocket(WebSocketServerProtocol):
         elif packet_type == packet_types.MESSAGE:
             message_len, = struct.unpack_from('>H', payload, 1)
             message, = struct.unpack_from('>{}s'.format(message_len), payload, 3)
-            broadcast(self.entity.name, message)
+            #broadcast(self.entity.name, message)
+            entity_text(self.entity, message)
 
         elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
             x, y = struct.unpack_from('>ff', payload, 1)
