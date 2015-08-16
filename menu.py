@@ -33,11 +33,17 @@ class Menu:
         if func:
             func[1](*args)
 
+        self.destroy()
+
     def execute_default(self, *args):
         if len(self) > 1:
             raise MultipleDefaultMenuItems
         else:
             self.execute(list(self.data.keys())[0], *args)
+            self.destroy()
+
+    def destroy(self):
+        del _registry[id(self)]
 
     @classmethod
     def from_dict(cls, d):
