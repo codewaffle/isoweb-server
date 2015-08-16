@@ -55,11 +55,10 @@ class EntityDef:
     @property
     @memoize
     def exports(self):
-        return {
-            comp: self.component_data[comp][k]
+        return dict(e for e in {
+            comp: {k: self.component_data[comp][k] for k in getattr(self, comp).exports}
             for comp in self.components
-            for k in getattr(self, comp).exports
-        }
+        }.items() if e[1])
 
     @property
     @memoize

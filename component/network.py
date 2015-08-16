@@ -104,13 +104,24 @@ class Replicated(BaseComponent):
     def initialize(self):
         self.entity.ob.flags |= ObFlags.REPLICATE
         self.data._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
+
+        self.entity.snapshots[self.get_entitydef_hash] = 0
         self.entity.snapshots[name_replicator] = 0
+
+    @component_method
+    def get_entitydef_hash(self):
+        return 'B4s', (packet_types.ENTITYDEF_HASH_UPDATE, self.entity.entity_def.digest)
 
     @component_method
     def on_destroy(self):
         self.entity.ob.flags &= ~ObFlags.REPLICATE
         try:
             del self.entity.snapshots[self.data._name_replicator]
+        except KeyError:
+            pass
+
+        try:
+            del self.entity.snapshots[self.get_entitydef_hash]
         except KeyError:
             pass
 
