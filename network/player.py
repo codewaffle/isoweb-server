@@ -84,7 +84,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
 
         elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
             x, y = struct.unpack_from('>ff', payload, 1)
-            self.log.debug('Move to {}, {}', x, y)
+            # self.log.debug('Move to {}, {}', x, y)
             self.entity.controller.handle_context_position(Vector2(x, y))
         elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
             ent_id, = struct.unpack_from('>I', payload, 1)

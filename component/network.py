@@ -19,7 +19,8 @@ class NetworkViewer(BaseComponent):
 
     @component_method
     def initialize(self):
-        self.data._network_viewer = {}
+        self.data._current = {}
+        self.data._cache = {}
         self.data._def_cache = set()
         self.entity.scheduler.schedule(func=self.entity.NetworkViewer.update)
 
@@ -31,19 +32,21 @@ class NetworkViewer(BaseComponent):
 
         now = clock()
 
-        cache = self.data._network_viewer
+        current = self.data._current
+        cache = self.data._cache
 
         visible = self.entity.Position.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
 
-        for ref in (set(cache.keys()) - visible):
+        for ref in (set(current.keys()) - visible):
             if ref.valid is False:  # destroyed/invalidated
                 self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
+                del cache[ref]
             else:  # hide dynamic/moving entities, stop updating static ones
                 self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
 
-            del cache[ref]
+            del current[ref]
 
-        enter = visible - set(cache.keys())
+        enter = visible - set(current.keys())
 
         enter_defs = set(e.entity_def for e in enter)
         enter_defs.difference_update(self.data._def_cache)
@@ -65,7 +68,7 @@ class NetworkViewer(BaseComponent):
 
         # loop through previously-and-still-visible entities and only process those that are due.
         # entities that were not previously visible but cached can still sit around in the cache and only get
-        # delta updated! TODO : we need a packet for visibility.
+        # delta updated!
         for ref in visible:
             when, last = cache.get(ref, (now, 0))
 
