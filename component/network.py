@@ -19,7 +19,7 @@ class NetworkViewer(BaseComponent):
 
     @component_method
     def initialize(self):
-        self.data._current = {}
+        self.data._current = set()
         self.data._cache = {}
         self.data._def_cache = set()
         self.entity.scheduler.schedule(func=self.entity.NetworkViewer.update)
@@ -37,16 +37,16 @@ class NetworkViewer(BaseComponent):
 
         visible = self.entity.Position.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
 
-        for ref in (set(current.keys()) - visible):
+        for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated
                 self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
                 del cache[ref]
             else:  # hide dynamic/moving entities, stop updating static ones
                 self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
 
-            del current[ref]
+            current.remove(ref)
 
-        enter = visible - set(current.keys())
+        enter = visible - current
 
         enter_defs = set(e.entity_def for e in enter)
         enter_defs.difference_update(self.data._def_cache)
@@ -98,6 +98,8 @@ class NetworkViewer(BaseComponent):
 
         for ref in enter:
             self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_SHOW, clock(), ref.id))
+
+        current.update(enter)
 
         # update @ 20hz
         return -1/20.
