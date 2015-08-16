@@ -21,6 +21,8 @@ class Position(BaseComponent):
     data = {
         'x': 0.,
         'y': 0.,
+        'vx': 0.,
+        'vy': 0.,
         'r': 1.
     }
 
@@ -54,7 +56,11 @@ class Position(BaseComponent):
 
     @component_method
     def snapshot(self):
-        return 'Bfff', (packet_types.POSITION_UPDATE, self.data.x, self.data.y, self.data.r)
+        return 'Bfffff', (
+            packet_types.POSITION_UPDATE,
+            self.data.x, self.data.y, self.data.r,
+            self.data.vx, self.data.vy
+        )
 
     @component_method
     def teleport(self, x, y=None):

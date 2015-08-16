@@ -169,26 +169,28 @@ class MeatbagController(ControllerComponent):
         return self.do_move_to, (near_pos, )
 
     @component_method
-    def do_move_to(self, pos):
+    def do_move_to(self, dest):
         dt = 1/20.
-        t = pos
 
-        if t is None:
+        if dest is None:
             print('ff')
             return False
 
-        move_diff = t - self.entity.pos
+        move_diff = dest - self.entity.pos
         dist = move_diff.magnitude
         move_amt = self.data.move_speed * dt
 
         self.entity.Position.data.r = atan2(move_diff.y, move_diff.x) + pi / 2.
 
         if dist < move_amt:
-            self.entity.Position.teleport(t)
-            self.entity.island.log.debug('{} arrived at {}', self.entity, t)
+            self.entity.Position.teleport(dest)
+            self.entity.Position.data.vx = self.entity.Position.data.vy = 0
+            self.entity.island.log.debug('{} arrived at {}', self.entity, dest)
 
             return None
         else:
-            self.entity.Position.teleport(self.entity.pos.lerp(t, move_amt / dist))
+            self.entity.Position.teleport(self.entity.pos.lerp(dest, move_amt / dist))
+            self.entity.Position.data.vx = move_diff.x / dist * self.data.move_speed
+            self.entity.Position.data.vy = move_diff.y / dist * self.data.move_speed
 
             return dt * -1.
