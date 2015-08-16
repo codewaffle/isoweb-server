@@ -13,6 +13,7 @@ class Interactive(BaseComponent):
     data = {
         'hit_area': 'Circle(0, 0, 100)'
     }
+    exports = ['hit_area']
 
     @component_method
     def initialize(self):

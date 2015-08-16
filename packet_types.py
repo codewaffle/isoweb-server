@@ -13,6 +13,9 @@ CMD_MENU_EXEC_POSITION = 15
 # commands to the client (pattern deprecated.. functionality grouped together from now on)
 DO_ASSIGN_CONTROL = 51
 
+# entity defs
+ENTITYDEF_UPDATE = 80
+
 # data
 ENTITY_UPDATE = 100
 POSITION_UPDATE = 101

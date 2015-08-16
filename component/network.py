@@ -9,14 +9,18 @@ from util import to_bytes
 
 
 class NetworkViewer(BaseComponent):
+    """
+    Responsible for most of the work of figuring out what the client can see.
+    """
     data = {
         '_socket': None,
-        'visibility_radius': 15
+        'visibility_radius': 20
     }
 
     @component_method
     def initialize(self):
         self.data._network_viewer = {}
+        self.data._def_cache = set()
         self.entity.scheduler.schedule(func=self.entity.NetworkViewer.update)
 
     @component_method
@@ -40,6 +44,24 @@ class NetworkViewer(BaseComponent):
             del cache[ref]
 
         enter = visible - set(cache.keys())
+
+        enter_defs = set(e.entity_def for e in enter)
+        enter_defs.difference_update(self.data._def_cache)
+
+        if enter_defs:
+            for d in enter_defs:
+                packet = struct.pack(
+                    '>Bf4sH{}s'.format(len(d.exports_json)),
+                    packet_types.ENTITYDEF_UPDATE,
+                    clock(),
+                    d.digest,
+                    len(d.exports_json),
+                    d.exports_json
+                )
+
+                # send() bundles the packets up so this should be safe
+                self.data._socket.send(packet)
+            self.data._def_cache.update(enter_defs)
 
         # loop through previously-and-still-visible entities and only process those that are due.
         # entities that were not previously visible but cached can still sit around in the cache and only get

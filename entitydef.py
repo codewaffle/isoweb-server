@@ -1,9 +1,10 @@
 import os
 import fnmatch
 import xxhash
+import ujson
 from component.base import DataProxy
 import component
-
+from util import memoize
 
 xx = xxhash.xxh64()
 
@@ -50,6 +51,20 @@ class EntityDef:
 
             dataproxy = self.component_data[comp_name] = DataProxy(comp_class.data)
             dataproxy.update(c)
+
+    @property
+    @memoize
+    def exports(self):
+        return {
+            comp: self.component_data[comp][k]
+            for comp in self.components
+            for k in getattr(self, comp).exports
+        }
+
+    @property
+    @memoize
+    def exports_json(self):
+        return ujson.dumps(self.exports, double_precision=3).encode('utf8')
 
 _defs = {}
 

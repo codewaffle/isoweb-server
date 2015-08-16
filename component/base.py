@@ -41,7 +41,7 @@ class ComponentProxy:
         return self.entity.pos
 
     @property
-    @memoize
+    @memoize  # the object that is returned is memoized, not any of the data inside
     def data(self):
         try:
             return self.entity.component_data[self.cls.__name__]
@@ -55,6 +55,24 @@ class ComponentProxy:
                     self.cls.data
                 )
             return data
+
+    @property
+    def exports(self):
+        assert self.entity and self.entity.entity_def
+        base = self.def_exports
+
+        return {
+            k: self.data[k]
+            for k in self.cls.exports
+            if self.data[k] != base[k]
+        }
+
+    @property
+    def def_exports(self):
+        return {
+            k: self.entity.entity_def.component_data[self.cls.__name__][k]
+            for k in self.cls.exports
+        }
 
     @memoize
     def __getattr__(self, item):
@@ -85,6 +103,11 @@ class BaseComponent:
     data = {
         'active': True
     }
+
+    exports = []
+
+    def __init__(self):
+        raise RuntimeError("class-only")
 
     @component_method
     def initialize(self):
