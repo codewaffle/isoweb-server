@@ -40,9 +40,9 @@ class Menu:
             raise MultipleDefaultMenuItems
         else:
             self.execute(list(self.data.keys())[0], *args)
-            self.destroy()
 
     def destroy(self):
+        print('destroy', id(self))
         del _registry[id(self)]
 
     @classmethod
