@@ -17,7 +17,7 @@ class EntityDef:
 
         xx.reset()
         xx.update(key)
-        self.digest = xx.digest()
+        self.digest = xx.intdigest()
 
         assert self.key not in EntityDef.by_key
         EntityDef.by_key[key] = self

@@ -54,7 +54,7 @@ class NetworkViewer(BaseComponent):
         if enter_defs:
             for d in enter_defs:
                 packet = struct.pack(
-                    '>Bf4sH{}s'.format(len(d.exports_json)),
+                    '>BfQH{}s'.format(len(d.exports_json)),
                     packet_types.ENTITYDEF_UPDATE,
                     clock(),
                     d.digest,
@@ -115,7 +115,7 @@ class Replicated(BaseComponent):
 
     @component_method
     def get_entitydef_hash(self):
-        return 'B4s', (packet_types.ENTITYDEF_HASH_UPDATE, self.entity.entity_def.digest)
+        return 'BQ', (packet_types.ENTITYDEF_HASH_UPDATE, self.entity.entity_def.digest)
 
     @component_method
     def on_destroy(self):
