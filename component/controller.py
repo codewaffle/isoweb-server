@@ -180,7 +180,7 @@ class MeatbagController(ControllerComponent):
         dist = move_diff.magnitude
         move_amt = self.data.move_speed * dt
 
-        self.entity.Position.data.r = atan2(move_diff.y, move_diff.x) + pi / 2.
+        self.entity.Position.data.r = atan2(move_diff.y, move_diff.x)#  + pi / 2.
 
         if dist < move_amt:
             self.entity.Position.teleport(dest)

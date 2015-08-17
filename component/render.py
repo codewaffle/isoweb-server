@@ -31,3 +31,12 @@ class Sprite(BaseComponent):
     exports = [
         'scale', 'sprite', 'anchor'
     ]
+
+class Spine(BaseComponent):
+    data = {
+        'atlas': 'SPINE_ATLAS_NOT_SET',
+        'character': 'SPINE_CHARACTER_NOT_SET',
+        'scale': 1.0
+    }
+
+    exports = ['atlas', 'character', 'scale']
