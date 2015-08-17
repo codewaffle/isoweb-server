@@ -9,7 +9,7 @@ from util import sleep
 logger = logbook.Logger(__name__)
 
 class Scheduler:
-    def __init__(self, resolution=1/40.):
+    def __init__(self, resolution=1/100.):
         self.resolution = resolution
         self.queue = PriorityQueue()
         self._next_task_id = 0
@@ -47,7 +47,7 @@ class Scheduler:
                     else:  # negative reschedule supports fixed clock rate.
                         queue.put((t - res, i, now, f, a, k))
 
-            yield sleep(0.01)
+            yield sleep(self.resolution/4.)
 
     def schedule(self, at=None, wait=None, func=None, args=None, kwargs=None):
         # print 'scheduled', at, func, args, kwargs

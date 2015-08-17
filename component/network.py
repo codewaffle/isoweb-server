@@ -85,7 +85,7 @@ class NetworkViewer(BaseComponent):
                 packet_data.extend(pdata)
 
             # queue up again based on priority or something.
-            cache[ref] = now + 1/20., now  # for now, just ensure we update faster than the network rate so it's 1:1
+            cache[ref] = now + 1/40., now  # for now, just ensure we update faster than the network rate so it's 1:1
 
             if packet_fmt:
                 # entity update header
