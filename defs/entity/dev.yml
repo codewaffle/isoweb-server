@@ -142,6 +142,6 @@ campfire:
 chicken:
   components:
   - class: Physical
-  #- class: Spine
-  #  character: spine/chicken/chicken.json
-  #  atlas: spine/chicken/chicken.atlas
+  - class: Spine
+    character: spine/chicken/chicken.json
+    atlas: spine/chicken/chicken.atlas
