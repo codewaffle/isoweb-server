@@ -64,3 +64,13 @@ class Physical(BaseComponent):
     def initialize(self):
         self.entity.snapshots[float_replicator(partial(getattr, self.data, 'mass'), 'mass')] = 0
         self.entity.snapshots[float_replicator(partial(getattr, self.data, 'volume'), 'volume')] = 0
+
+
+class Structure(BaseComponent):
+    data = {
+        'tileset': 'default',
+        'size': None,
+        'data': None
+    }
+
+    exports = ['tileset', 'size', 'data']

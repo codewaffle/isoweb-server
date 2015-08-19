@@ -145,3 +145,10 @@ chicken:
   - class: Spine
     character: spine/chicken/chicken.json
     atlas: spine/chicken/chicken.atlas
+
+testhouse:
+  components:
+  - class: Structure
+    tileset: default
+    size: [5,5]
+    data: [0,1,1,1,1,1,1,2,2,1,1,2,2,2,1,1,2,2,2,1,1,1,2,1,1]

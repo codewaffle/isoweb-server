@@ -24,6 +24,7 @@ from entitydef import load_defs
 import os
 spawn = False
 
+
 try:
     os.stat(DB_DIR)
 except OSError:
@@ -58,6 +59,11 @@ def spawn_all():
 
     for x in range(5000):
         island.spawn('tree', pos=Vector2(random.uniform(-128, 128), random.uniform(-128, 128))).Position.data.r = 2.*math.pi * random.random()
+
+    for x in range(5000):
+        island.spawn('chicken', pos=Vector2(random.uniform(-256, 256), random.uniform(-256, 256))).Position.data.r = 2.*math.pi * random.random()
+
+    island.spawn('testhouse', pos=Vector2(0,0))
 
     """
     seq = ghalton.Halton(2)
