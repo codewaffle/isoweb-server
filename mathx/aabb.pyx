@@ -16,16 +16,27 @@ cdef class AABB:
             else:
                 self.hheight = hheight
 
-    cdef intersects(self, AABB other):
+    cdef bint intersects(self, AABB other):
+        # AABBs that are 'touching' do not intersect
         return (fabs(self.center.x - other.center.x) * 2 < (self.hwidth + other.hwidth) * 2) and \
                (fabs(self.center.y - other.center.y) * 2 < (self.hheight + other.hheight) * 2)
 
-    def __add__(self, AABB other):
-        self.center += other
+    cdef bint contains_point(self, Vector2 point):
+        return self.center.x - self.hwidth <= point.x <= self.center.x + self.hwidth and \
+               self.center.y - self.hheight <= point.y <= self.center.y + self.hheight
 
-    def __sub__(self, AABB other):
-        self.center -= other
+    cdef bint contains_aabb(self, AABB other):
+        return self.left() <= other.left() and self.right() >= other.right() and \
+               self.top() <= other.top() and self.bottom() >= other.bottom()
 
-    cdef contains(self, Vector2 point):
-        return self.center.x - self.hwidth < point.x < self.center.x + self.hwidth and \
-               self.center.y - self.hheight < point.y < self.center.y + self.hheight
+    cdef float left(self):
+        return self.center.x - self.hwidth
+
+    cdef float right(self):
+        return self.center.x + self.hwidth
+
+    cdef float top(self):
+        return self.center.y - self.hheight
+
+    cdef float bottom(self):
+        return  self.center.y + self.hheight

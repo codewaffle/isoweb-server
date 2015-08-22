@@ -177,7 +177,7 @@ cdef class NodeItem:
     def update_quadtree(self):
         node = self.node
 
-        while not node.box.contains(self.pos):
+        while not node.box.contains_point(self.pos):
             if node.p is None:
                 node.expand()
             else:
