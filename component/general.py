@@ -17,6 +17,8 @@ class EntityOb(NodeItem):
         return 'EntityOb({})'.format(repr(self.pos))
 
 
+_q_aabb = AABB(Vector2(), 1)
+
 class Position(BaseComponent):
     data = {
         'x': 0.,
@@ -26,14 +28,12 @@ class Position(BaseComponent):
         'r': 1.
     }
 
-    q_aabb = AABB(Vector2(), 1)
-
     @component_method
     def _update(self):
         # update quadtree position
         ob = self.entity.ob
-        ob.pos.x = self.data.x
-        ob.pos.y = self.data.y
+        ob.aabb.center.x = self.data.x
+        ob.aabb.center.y = self.data.y
         ob.update_quadtree()
 
         # update snapshot
@@ -47,9 +47,9 @@ class Position(BaseComponent):
     def initialize(self):
         # quadtree junk
         ob = self.entity.ob
-        ob.pos.x = self.data.x or random() - 0.5
-        ob.pos.y = self.data.y or random() - 0.5
-        self.entity.pos = ob.pos
+        ob.aabb.center.x = self.data.x or random() - 0.5
+        ob.aabb.center.y = self.data.y or random() - 0.5
+        self.entity.pos = ob.aabb.center
         self.entity.island.quadtree.insert(ob)
 
         self.entity.snapshots[self.entity.Position.snapshot] = 0
@@ -75,8 +75,8 @@ class Position(BaseComponent):
 
     @component_method
     def find_nearby(self, radius, exclude=None, flags=0, components=None):
-        Position.q_aabb.center.update(self.entity.ob.pos)
-        Position.q_aabb.hwidth = Position.q_aabb.hheight = radius
+        _q_aabb.center.update(self.entity.ob.aabb.center)
+        _q_aabb.hwidth = _q_aabb.hheight = radius
 
         if exclude is None:
             exclude = set()
@@ -84,11 +84,11 @@ class Position(BaseComponent):
         if exclude is True:
             exclude = {self.entity}
 
-        return self.entity.island.quadtree.query_aabb_ents(Position.q_aabb, exclude, flags, components)
+        return self.entity.island.quadtree.query_aabb_ents(_q_aabb, exclude, flags, components)
 
     @component_method
     def get_pos(self, copy=False):
         if copy:
-            return self.entity.ob.pos.copy()
+            return self.entity.ob.aabb.center.copy()
 
-        return self.entity.ob.pos
+        return self.entity.ob.aabb.center

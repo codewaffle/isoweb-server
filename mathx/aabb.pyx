@@ -40,3 +40,6 @@ cdef class AABB:
 
     cdef float bottom(self):
         return  self.center.y + self.hheight
+
+    def __repr__(self):
+        return 'AABB({}, {}, {})'.format(self.center, self.hwidth, self.hheight)

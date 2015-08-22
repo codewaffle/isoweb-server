@@ -40,17 +40,41 @@ cdef class Node:
             else:
                 return 3
 
-    cdef Node subnode(self, Vector2 point):
+    cdef Node point_subnode(self, Vector2 point):
         if point.y < self.box.center.y:
-            if point.x < self.box.center.x:
+            if point.x <= self.box.center.x:
                 return self.node0
             else:
                 return self.node1
         else:
-            if point.x < self.box.center.x:
+            if point.x <= self.box.center.x:
                 return self.node2
             else:
                 return self.node3
+
+    cdef Node aabb_subnode(self, AABB aabb):
+        if aabb.bottom() <= self.box.center.y:
+            # bottom side is < our centerline, so goes into the top
+            if aabb.right() <= self.box.center.x: # top left
+                return self.node0
+
+            if aabb.left() >= self.box.center.x: # top right
+                return self.node1
+
+            raise RuntimeError('[Top] Could not determine quadrant')
+
+        if aabb.top() >= self.box.center.y:
+            # top side of object is > our centerline, so it goes bottom
+            if aabb.right() <= self.box.center.x: # bottom left
+                return self.node2
+
+            if aabb.left() >= self.box.center.x: # bottom right
+                return self.node3
+
+            raise RuntimeError('[Bottom] Could not determine quadrant')
+
+        # we must be straddling the line or something.. wtf
+        raise RuntimeError('Could not determine quadrant: {} {}'.format(self.box, aabb))
 
 
     cdef subdivide(self, int n=1):
@@ -114,7 +138,7 @@ cdef class Node:
 
     def insert(self, NodeItem item):
         if self.node0:
-            self.subnode(item.pos).insert(item)
+            self.aabb_subnode(item.aabb).insert(item)
             return
 
         self.items.add(item)
@@ -158,7 +182,7 @@ cdef class Node:
             return
 
         if self.items:
-            output |= {i for i in self.items if flags & i.flags == flags and aabb.contains(i.pos)}
+            output |= {i for i in self.items if flags & i.flags == flags and aabb.contains_aabb(i.aabb)}
             return
 
         if self.node0:
@@ -172,12 +196,12 @@ cdef class Node:
 cdef class NodeItem:
     def __init__(self):
         self.node = None
-        self.pos = Vector2(0, 0)
+        self.aabb = AABB(Vector2(0, 0))
 
     def update_quadtree(self):
         node = self.node
 
-        while not node.box.contains_point(self.pos):
+        while not node.box.contains_aabb(self.aabb):
             if node.p is None:
                 node.expand()
             else:

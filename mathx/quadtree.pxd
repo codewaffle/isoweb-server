@@ -12,7 +12,8 @@ cdef class Node:
     cdef public set items
     cdef void q_aabb(self, AABB aabb, set output, int flags)
     cdef int index(self, Vector2 point)
-    cdef Node subnode(self, Vector2 point)
+    cdef Node point_subnode(self, Vector2 point)
+    cdef Node aabb_subnode(self, AABB aabb)
 
 cdef class NodeItem:
     cdef public Node node
