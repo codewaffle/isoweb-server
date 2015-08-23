@@ -25,7 +25,9 @@ class Position(BaseComponent):
         'y': 0.,
         'vx': 0.,
         'vy': 0.,
-        'r': 1.
+        'radius': 0.,
+        'r': 1.,
+        'parent': None,
     }
 
     @component_method
@@ -37,7 +39,11 @@ class Position(BaseComponent):
         ob.update_quadtree()
 
         # update snapshot
-        self.entity.snapshots[self.entity.Position.snapshot] = clock()
+        self.entity.snapshots[self.position_snapshot] = clock()
+
+        if self.data.parent != self.data._parent:
+            self.data._parent = self.data.parent
+            self.entity.snapshots[self.parent_snapshot] = clock()
 
     @component_method
     def on_destroy(self):
@@ -52,15 +58,30 @@ class Position(BaseComponent):
         self.entity.pos = ob.aabb.center
         self.entity.island.quadtree.insert(ob)
 
-        self.entity.snapshots[self.entity.Position.snapshot] = 0
+        self.entity.snapshots[self.position_snapshot] = 0
+        self.entity.snapshots[self.parent_snapshot] = 0
 
     @component_method
-    def snapshot(self):
+    def position_snapshot(self):
         return 'Bfffff', (
             packet_types.POSITION_UPDATE,
             self.data.x, self.data.y, self.data.r,
             self.data.vx, self.data.vy
         )
+
+    @component_method
+    def parent_snapshot(self):
+        return 'BI', (
+            packet_types.PARENT_UPDATE,
+            self.get_parent_id()
+        )
+
+    @component_method
+    def get_parent_id(self):
+        if self.data.parent:
+            return self.data.parent.id
+
+        return 0
 
     @component_method
     def teleport(self, x, y=None):
