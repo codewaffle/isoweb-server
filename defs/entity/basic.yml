@@ -1,0 +1,89 @@
+meatbag:
+  components:
+  - class: MeatbagController
+  #- class: Sprite
+  #  sprite: sprites/player.png
+  - class: Spine
+    character: spine/chicken/chicken.json
+    atlas: spine/chicken/chicken.atlas
+  - class: Dragger
+  - class: Container
+    capacity: 950
+  - class: Interactive
+  - class: EquipmentUser
+
+rock:
+  components:
+  - class: Physical
+  - class: Sprite
+    sprite: sprites/assets_td/rock2.png
+  - class: Melee
+    damage: 1
+  - class: Hammer
+    tier: 1
+  - class: Containable
+
+tree:
+  components:
+  - class: Choppable
+  - class: Sprite
+    sprite: sprites/assets_td/tree1.png
+  - class: Interactive
+
+log:
+  components:
+  - class: Physical
+    volume: 200
+    mass: 160
+  - class: Sprite
+    sprite: sprites/log.png
+  - class: Draggable
+  - class: Interactive
+  - class: Containable
+  - class: Choppable
+    label: Chop into firewood x16
+    output_def: firewood
+    output_count: 16
+
+firewood:
+  components:
+  - class: Physical
+    volume: 12.5
+    mass: 10
+  - class: Sprite
+    sprite: sprites/log.png
+    scale: 0.35
+  - class: Interactive
+  - class: Containable
+
+crate:
+  components:
+  - class: Physical
+    volume: 1000
+    mass: 5
+  - class: Sprite
+    sprite: sprites/assets_td/crate1.png
+  - class: Container
+    capacity: 950
+  - class: Interactive
+  - class: Draggable
+
+backpack:
+  components:
+  - class: Physical
+  - class: Sprite
+    sprite: sprites/backpack.png
+  - class: Container
+    capacity: 80
+    expandable: true # expandable - volume of container will expand up to initial size + capacity
+  - class: Interactive
+  - class: Draggable
+  - class: Equippable
+    slot: backpack
+
+chicken:
+  components:
+  - class: Physical
+  - class: Spine
+    character: spine/chicken/chicken.json
+    atlas: spine/chicken/chicken.atlas
