@@ -184,7 +184,7 @@ cdef class Node:
             return
 
         if self.items:
-            output |= {i for i in self.items if flags & i.flags == flags and aabb.contains_aabb(i.aabb)}
+            output |= {i for i in self.items if flags & i.flags == flags and aabb.intersects(i.aabb)}
 
         if self.node0:
             self.node0.q_aabb(aabb, output, flags)
