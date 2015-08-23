@@ -57,6 +57,7 @@ class Position(BaseComponent):
         ob.aabb.center.y = self.data.y or random() - 0.5
         self.entity.pos = ob.aabb.center
         self.entity.island.quadtree.insert(ob)
+        self.data._parent = self.data.parent
 
         self.entity.snapshots[self.position_snapshot] = 0
         self.entity.snapshots[self.parent_snapshot] = 0
