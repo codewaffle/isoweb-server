@@ -7,7 +7,6 @@ def try_len(n):
     except:
         return n
 
-
 cdef class Node:
     def __init__(self, box, d, p):
         self.box = box
@@ -53,28 +52,28 @@ cdef class Node:
                 return self.node3
 
     cdef Node aabb_subnode(self, AABB aabb):
-        if aabb.bottom() <= self.box.center.y:
-            # bottom side is < our centerline, so goes into the top
-            if aabb.right() <= self.box.center.x: # top left
-                return self.node0
+        if aabb.hwidth < self.box.hwidth and aabb.hheight < self.box.hheight:
+            if aabb.bottom() <= self.box.center.y:
+                # bottom side is < our centerline, so goes into the top
+                if aabb.right() <= self.box.center.x: # top left
+                    return self.node0
 
-            if aabb.left() >= self.box.center.x: # top right
-                return self.node1
+                if aabb.left() >= self.box.center.x: # top right
+                    return self.node1
 
-            raise RuntimeError('[Top] Could not determine quadrant')
+                return None
 
-        if aabb.top() >= self.box.center.y:
-            # top side of object is > our centerline, so it goes bottom
-            if aabb.right() <= self.box.center.x: # bottom left
-                return self.node2
+            if aabb.top() >= self.box.center.y:
+                # top side of object is > our centerline, so it goes bottom
+                if aabb.right() <= self.box.center.x: # bottom left
+                    return self.node2
 
-            if aabb.left() >= self.box.center.x: # bottom right
-                return self.node3
+                if aabb.left() >= self.box.center.x: # bottom right
+                    return self.node3
 
-            raise RuntimeError('[Bottom] Could not determine quadrant')
+                return None
 
-        # we must be straddling the line or something.. wtf
-        raise RuntimeError('Could not determine quadrant: {} {}'.format(self.box, aabb))
+        return None
 
 
     cdef subdivide(self, int n=1):
@@ -93,7 +92,7 @@ cdef class Node:
         self.node3 = Node(AABB(Vector2(self.box.center.x + qw, self.box.center.y + qw), qw), nd, self)
 
         x = self.items
-        self.items = None
+        self.items = set()
 
         if n > 1:
             self.node0.subdivide(n-1)
@@ -138,13 +137,16 @@ cdef class Node:
 
     def insert(self, NodeItem item):
         if self.node0:
-            self.aabb_subnode(item.aabb).insert(item)
-            return
+            node = self.aabb_subnode(item.aabb)
+
+            if node:
+                node.insert(item)
+                return
 
         self.items.add(item)
         item.node = self
 
-        if len(self.items) >= 5 and self.box.hwidth >= 2:
+        if not self.node0 and len(self.items) >= 5 and self.box.hwidth >= 2:
             self.subdivide()
 
     def remove(self, NodeItem item):
@@ -183,14 +185,12 @@ cdef class Node:
 
         if self.items:
             output |= {i for i in self.items if flags & i.flags == flags and aabb.contains_aabb(i.aabb)}
-            return
 
         if self.node0:
             self.node0.q_aabb(aabb, output, flags)
             self.node1.q_aabb(aabb, output, flags)
             self.node2.q_aabb(aabb, output, flags)
             self.node3.q_aabb(aabb, output, flags)
-            return
 
 
 cdef class NodeItem:
