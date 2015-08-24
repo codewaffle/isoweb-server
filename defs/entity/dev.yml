@@ -23,9 +23,7 @@ sharp_rock:
     - Hammer.tier: 1
   - class: Containable
 
-land_vehicle:
-  components:
-  - class: TileMap
+
 
 stone_axe:
   components:
@@ -55,9 +53,3 @@ campfire:
   - class: Sprite
     sprite:
 
-testhouse:
-  components:
-  - class: Structure
-    tileset: default
-    size: [5,5]
-    data: [0,1,1,1,1,1,1,2,2,1,1,2,2,2,1,1,2,2,2,1,1,1,2,1,1]

@@ -1,11 +1,11 @@
 meatbag:
   components:
   - class: MeatbagController
-  #- class: Sprite
-  #  sprite: sprites/player.png
-  - class: Spine
-    character: spine/chicken/chicken.json
-    atlas: spine/chicken/chicken.atlas
+  - class: Sprite
+    sprite: characters/meatbag.png
+  #- class: Spine
+  #  character: spine/chicken/chicken.json
+  #  atlas: spine/chicken/chicken.atlas
   - class: Dragger
   - class: Container
     capacity: 950
