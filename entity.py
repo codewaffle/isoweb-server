@@ -39,8 +39,8 @@ class Entity:
 
         self._memo_cache = {}  # for @memoize
         self.cache = AttributeDict()
-        self.island = None
-        self.island_id = 0  # TODO : this will eventually be tied to the island that spawned this entity..
+        self.region = None
+        self.region_id = 0  # TODO : this will eventually be tied to the island that spawned this entity..
         self.id = ent_id
         self.entity_def = None
         self._menu_providers = set()
@@ -58,23 +58,23 @@ class Entity:
     def set_dirty(self):
         if not self.dirty:
             self.dirty = True
-            self.island.dirty_set.add(self)
+            self.region.dirty_set.add(self)
 
     def set_clean(self, remove=False):
         self.dirty = False
 
         if remove:
-            self.island.dirty_set.remove(self)
+            self.region.dirty_set.remove(self)
 
     @property
     def name(self):
         if self._name is None:
             return self.entity_def.name
 
-    def set_island(self, island):
-        self.island = island
-        self.snapshots = SnapshotContainer(self, island.dirty_set)
-        island.entities.add(self)
+    def set_region(self, region):
+        self.region = region
+        self.snapshots = SnapshotContainer(self, region.dirty_set)
+        region.entities.add(self)
 
     @property
     def menu_providers(self):
@@ -108,7 +108,7 @@ class Entity:
 
     @property
     def scheduler(self):
-        return self.island.scheduler
+        return self.region.scheduler
 
     @memoize
     def __getattr__(self, item):
@@ -212,7 +212,7 @@ class Entity:
             return None
 
     def destroy(self):
-        self.island.destroy_entity(self)
+        self.region.destroy_entity(self)
 
     def look(self, look_dir):
         self.Position.data.r = atan2(look_dir.y, look_dir.x) + pi / 2.

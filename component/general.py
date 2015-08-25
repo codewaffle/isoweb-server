@@ -56,7 +56,7 @@ class Position(BaseComponent):
         ob.aabb.center.x = self.data.x or random() - 0.5
         ob.aabb.center.y = self.data.y or random() - 0.5
         self.entity.pos = ob.aabb.center
-        self.entity.island.quadtree.insert(ob)
+        self.entity.region.quadtree.insert(ob)
         self.data._parent = self.data.parent
 
         self.entity.snapshots[self.position_snapshot] = 0
@@ -106,7 +106,7 @@ class Position(BaseComponent):
         if exclude is True:
             exclude = {self.entity}
 
-        return self.entity.island.quadtree.query_aabb_ents(_q_aabb, exclude, flags, components)
+        return self.entity.region.quadtree.query_aabb_ents(_q_aabb, exclude, flags, components)
 
     @component_method
     def get_pos(self, copy=False):

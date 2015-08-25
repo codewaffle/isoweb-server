@@ -11,19 +11,19 @@ from mathx.quadtree import Quadtree
 from scheduler import Scheduler
 
 
-class Island:
-    def __init__(self, island_id):
+class Region:
+    def __init__(self, region_id):
         self._delete_set = set()
-        self.island_id = island_id
+        self.region_id = region_id
         self.scheduler = Scheduler()
         self.entities = set()
         self.quadtree = Quadtree()
         self._dirty_set = set()
-        self.log = logbook.Logger('Island({})'.format(island_id))
+        self.log = logbook.Logger('Island({})'.format(region_id))
 
         self.max_entity_id = None
 
-        self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.island_id), map_size=1024*1024*64)
+        self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.region_id), map_size=1024*1024*64)
 
         with self.db.begin() as tx:
             self.load_data(tx.cursor())
@@ -41,14 +41,14 @@ class Island:
         return self._delete_set
 
     def load_data(self, cursor):
-        d = cursor.get(b'island_data', '{}')
+        d = cursor.get(b'region_data', '{}')
         data = ujson.loads(d)
         self.max_entity_id = data.get('max_entity_id', 0)
 
         self.load_entities(cursor)
 
     def save_data(self, write_cursor):
-        write_cursor.put(b'island_data', ujson.dumps({
+        write_cursor.put(b'region_data', ujson.dumps({
             u'max_entity_id': self.max_entity_id
         }).encode('utf8'))
 
@@ -67,7 +67,7 @@ class Island:
         ent = Entity(self.next_entity_id())
         ent.entity_def = entdef
         ent.ob.flags = 0
-        ent.set_island(self)
+        ent.set_region(self)
 
         if components:
             ent.add_components(components)
@@ -116,7 +116,7 @@ class Island:
                 ent = Entity(data['id'])
                 ent.entity_def = definition_from_key(data['entitydef'])
                 ent.ob.flags = data['ob_flags']
-                ent.set_island(self)
+                ent.set_region(self)
                 ent.update_components(data.get('components', {}))
                 ent.initialize()
         self.log.info('Loaded entities in {} seconds', clock() - start)

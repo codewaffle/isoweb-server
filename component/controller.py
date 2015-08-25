@@ -185,7 +185,7 @@ class MeatbagController(ControllerComponent):
         if dist < move_amt:
             self.entity.Position.teleport(dest)
             self.entity.Position.data.vx = self.entity.Position.data.vy = 0
-            self.entity.island.log.debug('{} arrived at {}', self.entity, dest)
+            self.entity.region.log.debug('{} arrived at {}', self.entity, dest)
 
             return None
         else:

@@ -33,8 +33,8 @@ class ComponentProxy:
         self.bind_def = bind_def
 
     @property
-    def island(self):
-        return self.entity.island
+    def region(self):
+        return self.entity.region
 
     @property
     def pos(self):
@@ -147,7 +147,7 @@ class BaseComponent:
 
     # these are mostly to shut up pycharm/idea
     entity = NotImplemented
-    island = NotImplemented
+    region = NotImplemented
     pos = NotImplemented
     cache = NotImplemented
 

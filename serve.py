@@ -28,13 +28,13 @@ from entitydef import load_defs
 load_defs()
 
 from component import c
-from island import Island
+from region import Region
 
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-island = Island(0)
+island = Region(0)
 island.start()
 
 

@@ -49,7 +49,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
     def __init__(self):
         super(PlayerWebsocket, self).__init__()
         self.entity = None
-        self.island = None
+        self.region = None
         self.log = logbook.Logger('PlayerSocket({})'.format(str(id(self))))
         self.packet_queue = Queue()
 
@@ -61,8 +61,8 @@ class PlayerWebsocket(WebSocketServerProtocol):
     def onMessage(self, payload, isBinary):
         # self.log.debug('onMessage({})', hexlify(payload))
 
-        if self.island is None:
-            self.island = self.factory.island
+        if self.region is None:
+            self.region = self.factory.region
             self.handle_login()
 
         now = clock()
@@ -144,7 +144,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
     def handle_login(self):
         # assign player to island, send initial bla bla bla
 
-        self.entity = self.island.spawn('meatbag', {
+        self.entity = self.region.spawn('meatbag', {
             c.NetworkViewer: {'_socket': self},
             c.MeatbagController: {'_socket': self}
         }, pos=Vector2.random_inside(5.0))
