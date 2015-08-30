@@ -22,15 +22,16 @@ class Region:
         self._dirty_set = set()
         self.log = logbook.Logger('Island({})'.format(region_id))
 
-        self.max_entity_id = None
+        self.max_entity_id = 0
 
         self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.region_id), map_size=1024*1024*64)
 
-        with self.db.begin() as tx:
-            self.load_data(tx.cursor())
+        if False:
+            with self.db.begin() as tx:
+                self.load_data(tx.cursor())
 
-        with self.db.begin(write=True) as tx:
-            self.save_data(tx.cursor())
+            with self.db.begin(write=True) as tx:
+                self.save_data(tx.cursor())
 
     # this property is mostly to prevent reassignment on accident.
     @property

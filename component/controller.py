@@ -178,6 +178,12 @@ class MeatbagController(ControllerComponent):
 
         move_diff = dest - self.entity.pos
         dist = move_diff.length
+        dir = move_diff / dist
+
+        self.entity.Physics.data._body.velocity = dir
+
+        return dt * -1.
+
         move_amt = self.data.move_speed * dt
 
         self.entity.Position.data.r = atan2(move_diff.y, move_diff.x)#  + pi / 2.
