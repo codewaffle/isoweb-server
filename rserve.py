@@ -81,3 +81,4 @@ if spawn:
 
 reactor.run()
 
+print("WOMP")

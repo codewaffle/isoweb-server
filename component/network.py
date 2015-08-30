@@ -14,7 +14,7 @@ class NetworkViewer(BaseComponent):
     """
     data = {
         '_socket': None,
-        'visibility_radius': 20
+        'visibility_radius': 15
     }
 
     @component_method
@@ -35,7 +35,7 @@ class NetworkViewer(BaseComponent):
         current = self.data._current
         cache = self.data._cache
 
-        visible = self.entity.Position.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
+        visible = self.entity.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
 
         for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated
@@ -107,7 +107,6 @@ class NetworkViewer(BaseComponent):
 class Replicated(BaseComponent):
     @component_method
     def initialize(self):
-        self.entity.ob.flags |= ObFlags.REPLICATE
         self.data._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
 
         self.entity.snapshots[self.get_entitydef_hash] = 0

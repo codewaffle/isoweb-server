@@ -7,6 +7,7 @@ from config import DB_DIR
 from entity import Entity
 from entitydef import definition_from_key
 from mathx.quadtree import Quadtree
+from pymunk import Space
 
 from scheduler import Scheduler
 
@@ -17,7 +18,7 @@ class Region:
         self.region_id = region_id
         self.scheduler = Scheduler()
         self.entities = set()
-        self.quadtree = Quadtree()
+        self.space = Space()
         self._dirty_set = set()
         self.log = logbook.Logger('Island({})'.format(region_id))
 
@@ -54,7 +55,12 @@ class Region:
 
     def start(self):
         self.scheduler.schedule(func=self.save_snapshot)
+        self.scheduler.schedule(func=self.update_space)
         self.scheduler.start()
+
+    def update_space(self):
+        self.space.step(1/60)
+        return -1/60
 
     def next_entity_id(self):
         self.max_entity_id += 1
@@ -66,7 +72,6 @@ class Region:
 
         ent = Entity(self.next_entity_id())
         ent.entity_def = entdef
-        ent.ob.flags = 0
         ent.set_region(self)
 
         if components:
@@ -115,7 +120,6 @@ class Region:
 
                 ent = Entity(data['id'])
                 ent.entity_def = definition_from_key(data['entitydef'])
-                ent.ob.flags = data['ob_flags']
                 ent.set_region(self)
                 ent.update_components(data.get('components', {}))
                 ent.initialize()

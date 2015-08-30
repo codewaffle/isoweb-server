@@ -1,5 +1,6 @@
 import collections
 from functools import partial
+from pymunk.vec2d import Vec2d
 from twisted.internet import task, reactor
 
 _class_cache = {}

@@ -1,5 +1,6 @@
 meatbag:
   components:
+  - class: Physics
   - class: MeatbagController
   - class: Sprite
     sprite: characters/meatbag.png
@@ -14,7 +15,7 @@ meatbag:
 
 rock:
   components:
-  - class: Physical
+  - class: Physics
   - class: Sprite
     sprite: sprites/assets_td/rock2.png
   - class: Melee
@@ -32,7 +33,7 @@ tree:
 
 log:
   components:
-  - class: Physical
+  - class: Physics
     volume: 200
     mass: 160
   - class: Sprite
@@ -47,7 +48,7 @@ log:
 
 firewood:
   components:
-  - class: Physical
+  - class: Physics
     volume: 12.5
     mass: 10
   - class: Sprite
@@ -58,7 +59,7 @@ firewood:
 
 crate:
   components:
-  - class: Physical
+  - class: Physics
     volume: 1000
     mass: 5
   - class: Sprite
@@ -70,7 +71,7 @@ crate:
 
 backpack:
   components:
-  - class: Physical
+  - class: Physics
   - class: Sprite
     sprite: sprites/backpack.png
   - class: Container
@@ -83,7 +84,7 @@ backpack:
 
 chicken:
   components:
-  - class: Physical
+  - class: Physics
   - class: Spine
     character: spine/chicken/chicken.json
     atlas: spine/chicken/chicken.atlas

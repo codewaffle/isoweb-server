@@ -1,19 +1,14 @@
-import asyncio
-from binascii import hexlify
 from queue import Queue
-import random
 import struct
 from isoweb_time import clock
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from entity import Entity
 
 import logbook
-import time
 from component import c
-from mathx.vector2 import Vector2
 
 import packet_types
-from twisted.internet import task, reactor
+from pymunk import Vec2d
 from twisted.internet.defer import inlineCallbacks
 from util import sleep, to_bytes
 
@@ -85,7 +80,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
         elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
             x, y = struct.unpack_from('>ff', payload, 1)
             # self.log.debug('Move to {}, {}', x, y)
-            self.entity.controller.handle_context_position(Vector2(x, y))
+            self.entity.controller.handle_context_position(Vec2d(x, y))
         elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
             ent_id, = struct.unpack_from('>I', payload, 1)
             ent = Entity.get(ent_id)
@@ -147,7 +142,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
         self.entity = self.region.spawn('meatbag', {
             c.NetworkViewer: {'_socket': self},
             c.MeatbagController: {'_socket': self}
-        }, pos=Vector2.random_inside(5.0))
+        }, pos=Vec2d())
 
         msg = struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id)
 

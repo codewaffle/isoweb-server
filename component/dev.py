@@ -6,7 +6,8 @@ from isoweb_time import clock
 from component import BaseComponent
 from component.base import component_method, MenuComponent
 from component.network import string_replicator, float_replicator
-from mathx.vector2 import Vector2
+from pymunk import Body, moment_for_circle, Circle
+from pymunk.vec2d import Vec2d
 
 
 class Interactive(BaseComponent):
@@ -28,6 +29,10 @@ class Choppable(MenuComponent):
     }
 
     @component_method
+    def initialize(self):
+        self.initialize_menu()
+
+    @component_method
     def get_menu(self, ent):
         return {
             'chop': (self.data.label, partial(self.chop, ent))
@@ -44,26 +49,48 @@ class Choppable(MenuComponent):
     def do_chop(self, chopper):
         self.entity.destroy()
         for x in range(self.data.output_count):
-            self.region.spawn(self.data.output_def, pos=self.pos + Vector2.random_inside(0.2), rot=uniform(0, pi * 2.0))
+            self.region.spawn(self.data.output_def, pos=self.pos + Vec2d(), rot=uniform(0, pi * 2.0))
 
 
 class TileMap(BaseComponent):
     pass
 
 
-
-
-
-class Physical(BaseComponent):
+class Physics(BaseComponent):
     data = {
         'mass': 1.0,
-        'volume': 1.0
+        'volume': 1.0,
+        'radius': 1.0
     }
 
     @component_method
+    def init_physics(self):
+        body = self.data._body = Body(
+            mass=self.data.mass,
+            moment=self.compute_moment()
+        )
+        shape = self.data._shape = self.compute_shape(body)
+        self.entity.region.space.add(body, shape)
+
+    @component_method
+    def compute_moment(self):
+        return moment_for_circle(self.data.mass, 0, self.data.radius)
+
+    @component_method
+    def compute_shape(self, body):
+        return Circle(body, self.data.radius)
+
+    @component_method
+    def get_position(self):
+        return self.data._body.position
+
+    @component_method
     def initialize(self):
-        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'mass'), 'mass')] = 0
-        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'volume'), 'volume')] = 0
+        self.init_physics()
+
+
+class PolygonPhysics(BaseComponent):
+    pass
 
 
 class Structure(BaseComponent):
@@ -74,3 +101,7 @@ class Structure(BaseComponent):
     }
 
     exports = ['tileset', 'size', 'data']
+
+    @component_method
+    def initialize(self):
+        pass

@@ -1,6 +1,6 @@
 large_stick:
   components:
-  - class: Physical
+  - class: Physics
   - class: Melee
     damage: 1
 
@@ -11,7 +11,7 @@ rock_deposit:
 
 sharp_rock:
   components:
-  - class: Physical
+  - class: Physics
   - class: Melee
     damage: 2
   - class: Chopper
@@ -27,7 +27,7 @@ sharp_rock:
 
 stone_axe:
   components:
-  - class: Physical
+  - class: Physics
   - class: Equippable
   - class: Melee
     damage: 3
@@ -49,7 +49,7 @@ tree_stump:
 
 campfire:
   components:
-  - class: Physical
+  - class: Physics
   - class: Sprite
     sprite:
 

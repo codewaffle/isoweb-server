@@ -177,7 +177,7 @@ class MeatbagController(ControllerComponent):
             return False
 
         move_diff = dest - self.entity.pos
-        dist = move_diff.magnitude
+        dist = move_diff.length
         move_amt = self.data.move_speed * dt
 
         self.entity.Position.data.r = atan2(move_diff.y, move_diff.x)#  + pi / 2.
@@ -189,7 +189,8 @@ class MeatbagController(ControllerComponent):
 
             return None
         else:
-            self.entity.Position.teleport(self.entity.pos.lerp(dest, move_amt / dist))
+            #self.entity.Position.teleport(self.entity.pos.lerp(dest, move_amt / dist))
+            self.entity.Position.teleport(dest)
             self.entity.Position.data.vx = move_diff.x / dist * self.data.move_speed
             self.entity.Position.data.vy = move_diff.y / dist * self.data.move_speed
 

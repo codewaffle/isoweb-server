@@ -1,14 +1,14 @@
 from functools import partial
 from component import BaseComponent
 from component.base import component_method, MenuComponent
-from mathx.vector2 import Vector2
+from pymunk.vec2d import Vec2d
 
 
 class Dragger(BaseComponent):
     @component_method
     def initialize(self):
         self.data._cache = {
-            'contribution': Vector2(),
+            'contribution': Vec2d(),
             'draggable': None
         }
 
@@ -20,7 +20,7 @@ class Dragger(BaseComponent):
 class Draggable(MenuComponent):
     data = {
         'drag_handles': [
-            Vector2(0.5, 0.0)  # attach to bottom center by default
+            Vec2d(0.5, 0.0)  # attach to bottom center by default
         ]
     }
 
@@ -80,7 +80,7 @@ class Draggable(MenuComponent):
             return
 
         dt = 1/20.
-        drag_force = Vector2()
+        drag_force = Vec2d()
 
         # reel in draggables and apply their drag force
 

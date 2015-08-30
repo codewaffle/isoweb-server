@@ -34,7 +34,6 @@ class Entity:
     _menu_providers = None
 
     def __init__(self, ent_id):
-        from component.general import EntityOb
         self._registry[ent_id] = self
 
         self._memo_cache = {}  # for @memoize
@@ -46,8 +45,6 @@ class Entity:
         self._menu_providers = set()
         self.component_data = {}
         self.snapshots = None
-        self.pos = None  # replaced by whatever component handles position.
-        self.ob = EntityOb(self)
         self.dirty = False
         self.valid = True
 
@@ -114,6 +111,10 @@ class Entity:
     def __getattr__(self, item):
         # return memoized component proxy
         return getattr(self.entity_def, item).bind(self)
+
+    @property
+    def pos(self):
+        return self.Physics.get_position()
 
     def __getitem__(self, item):
         return self.__getattr__(item)
@@ -222,7 +223,9 @@ class Entity:
         return result
 
     def find_nearby(self, radius, exclude=True, flags=0, components=None):
-        return self.Position.find_nearby(radius, exclude, flags, components)
+        return set(self._registry.values())
+        pass
+        # return self.Position.find_nearby(radius, exclude, flags, components)
 
     @property
     def persistent_data(self):
@@ -250,7 +253,6 @@ class Entity:
             data = {
                 'id': self.id,
                 'entitydef': self.entity_def.key,
-                'ob_flags': self.ob.flags,
                 'components': self.persistent_data
             }
             cur.put(self.get_db_key(), ujson.dumps(data, double_precision=3).encode('utf8'))

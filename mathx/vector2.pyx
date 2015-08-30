@@ -1,9 +1,10 @@
 from libc.math cimport sqrt
 from random import uniform
+from pymunk import Vec2d
 
 cdef class Vector2:
     def __init__(self, x=0, y=0.):
-        self.x, self.y = x,y
+        self._vec = Vec2d(x, y)
 
     def update(self, Vector2 other):
         self.x, self.y = other.x, other.y
