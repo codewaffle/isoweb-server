@@ -51,6 +51,7 @@ class Entity:
         self.dirty = False
         self.valid = True
         self.components = []
+        self._component_names = set()
 
     @classmethod
     def get(cls, ent_id):
@@ -120,9 +121,9 @@ class Entity:
 
     def has_component(self, key):
         if isinstance(key, (str, bytes)):
-            return key in self.components
+            return key in self._component_names
         elif issubclass(key, BaseComponent):
-            return key.__name__ in self.components
+            return key.__name__ in self._component_names
 
     def __contains__(self, item):
         return self.has_component(item)
@@ -137,6 +138,7 @@ class Entity:
             comp.initialize()
 
         self.components.append(comp)
+        self._component_names.add(comp_name)
 
         return comp
 

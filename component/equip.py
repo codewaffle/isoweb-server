@@ -19,8 +19,8 @@ class Equippable(MenuComponent):
     def get_menu(self, ent):
         # if self.data.equipped and
         if (
-            component.c.Equipped not in self.entity and
-            component.c.EquipmentUser in ent and
+            'Equipped' not in self.entity and
+            'EquipmentUser' in ent and
             ent.EquipmentUser.can_equip(self.entity)
         ):
             return {
@@ -32,10 +32,11 @@ class Equippable(MenuComponent):
     @component_method
     def wear(self, ent):
         print(ent, 'tried to wear')
-        if component.c.Position in ent:
+        if 'Position' in ent:
             ent.Position.destroy()
 
         ent.add_component(component.c.Equipped, )
+
 
 class Equipped(MenuComponent):
     @component_method
