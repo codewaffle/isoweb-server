@@ -49,13 +49,32 @@ class EntityDef:
 
     def load_components(self, data):
         for c in data:
-            comp_name = c.pop('component')
-            comp_class = component.get(comp_name)
+            if isinstance(c, dict):
+                try:
+                    comp_name = c.pop('component')
+                    comp_args = c.copy()
+                except KeyError:
+                    # look for short-form component (Mass: 10) - must only be one entry!
+                    assert len(c) == 1
+                    comp_name, comp_args = list(c.items())[0]
+                    if not isinstance(comp_args, dict):
+                        comp_args = {'value': comp_args}
+            elif isinstance(c, str):
+                comp_name = c
+                comp_args = {}
+            else:
+                raise NotImplemented
+
+            try:
+                comp_class = component.get(comp_name)
+            except KeyError:
+                raise ValueError("Component '{}' does not exist".format(comp_name))
+
             setattr(self, comp_name, comp_class)
             self.components.add(comp_name)
 
             dataproxy = self.component_data[comp_name] = DataProxy(comp_class.data)
-            dataproxy.update(c)
+            dataproxy.update(comp_args)
 
     @property
     @memoize

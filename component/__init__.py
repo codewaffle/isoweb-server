@@ -6,6 +6,9 @@ from inspect import isclass, getmembers
 from component.base import BaseComponent
 from util import AttributeDict
 
+# this is a silly place
+
+
 modules = glob.glob(os.path.dirname(__file__) + '/*.py')
 
 __all__ = list(
@@ -14,10 +17,12 @@ __all__ = list(
 
 from . import *
 
+
 def component_filter(m):
     return m != BaseComponent and isclass(m) and issubclass(m, BaseComponent)
 
 c = AttributeDict()
+
 
 def load_components():
     g = globals()
@@ -26,6 +31,7 @@ def load_components():
             c[clsname] = cls
 
 load_components()
+
 
 def get(classname):
     return c[classname]

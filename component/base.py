@@ -25,6 +25,7 @@ class DataProxy(dict):
         # self.__dict__['_dirty'][key] = clock()
         dict.__setitem__(self, key, value)
 
+
 class ComponentProxy:
     def __init__(self, cls, entity, bind_def):
         self._memo_cache = {}
@@ -90,6 +91,7 @@ class ComponentProxy:
 
 current_component_class = None
 
+
 def component_method(f):
     @wraps(f)
     def wrapper(cls, *a, **kw):
@@ -98,6 +100,7 @@ def component_method(f):
         return f(*a, **kw)
 
     return classmethod(wrapper)
+
 
 class BaseComponent:
     data = {

@@ -28,14 +28,14 @@ tree:
 - component: Interactive
 
 log:
+- Draggable
+- Containable
+- Interactive
 - component: Physical
   volume: 200
   mass: 160
 - component: Sprite
   sprite: sprites/log.png
-- component: Draggable
-- component: Interactive
-- component: Containable
 - component: Choppable
   label: Chop into firewood x16
   output_def: firewood
