@@ -1,55 +1,48 @@
 large_stick:
-  components:
-  - class: Physical
-  - class: Melee
-    damage: 1
+- component: Physical
+- component: Melee
+  damage: 1
 
 rock_deposit:
-  components:
-  - class: Sprite
-    sprite: sprites/assets_td/rock1.png
+- component: Sprite
+  sprite: sprites/assets_td/rock1.png
 
 sharp_rock:
-  components:
-  - class: Physical
-  - class: Melee
-    damage: 2
-  - class: Chopper
-    tier: 1
-  - class: Craftable
-    ingredients:
-    - rock
-    tools:
-    - Hammer.tier: 1
-  - class: Containable
+- component: Physical
+- component: Melee
+  damage: 2
+- component: Chopper
+  tier: 1
+- component: Craftable
+  ingredients:
+  - rock
+  tools:
+  - Hammer.tier: 1
+- component: Containable
 
 
 
 stone_axe:
-  components:
-  - class: Physical
-  - class: Equippable
-  - class: Melee
-    damage: 3
-  - class: Chopper
-    tier: 3
-  - class: Craftable
-    ingredients:
-    - sharp_rock
-    - large_stick
-  - class: Sprite
-    sprite: sprites/stone_axe.png
-  - class: Containable
-  - class: Interactive
+- component: Physical
+- component: Equippable
+- component: Melee
+  damage: 3
+- component: Chopper
+  tier: 3
+- component: Craftable
+  ingredients:
+  - sharp_rock
+  - large_stick
+- component: Sprite
+  sprite: sprites/stone_axe.png
+- component: Containable
+- component: Interactive
 
 tree_stump:
-  components:
-  - class: Sprite
-    sprite: sprites/assets_td/stump1.png
+- component: Sprite
+  sprite: sprites/assets_td/stump1.png
 
 campfire:
-  components:
-  - class: Physical
-  - class: Sprite
-    sprite:
-
+- component: Physical
+- component: Sprite
+  sprite:

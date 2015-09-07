@@ -9,10 +9,13 @@ from util import memoize
 xx = xxhash.xxh64()
 
 class EntityDef:
+    """
+    EntityDefs serve as templates for new Entities.
+    """
     by_digest = {}
     by_key = {}
 
-    def __init__(self, data, key):
+    def __init__(self, key, data):
         self.key = key
 
         xx.reset()
@@ -29,7 +32,9 @@ class EntityDef:
         self.component_data = {}
         self.components = set()
 
-        if isinstance(data, dict):
+        if isinstance(data, list):
+            self.load_components(data)
+        elif isinstance(data, dict):
             self.load_data(data)
         else:
             raise RuntimeError
@@ -44,7 +49,7 @@ class EntityDef:
 
     def load_components(self, data):
         for c in data:
-            comp_name = c.pop('class')
+            comp_name = c.pop('component')
             comp_class = component.get(comp_name)
             setattr(self, comp_name, comp_class)
             self.components.add(comp_name)
@@ -83,7 +88,7 @@ def load_defs():
         for fn in files:
             if fnmatch.fnmatch(fn, '*.yml'):
                 for def_key, data in load(os.path.join(root, fn)).items():
-                    _defs[def_key] = EntityDef(data, def_key)
+                    _defs[def_key] = EntityDef(def_key, data)
 
 def definition_from_key(def_key):
     return _defs[def_key]

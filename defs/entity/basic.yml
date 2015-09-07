@@ -1,89 +1,81 @@
 meatbag:
-  components:
-  - class: MeatbagController
-  - class: Sprite
-    sprite: characters/meatbag.png
-  #- class: Spine
-  #  character: spine/chicken/chicken.json
-  #  atlas: spine/chicken/chicken.atlas
-  - class: Dragger
-  - class: Container
-    capacity: 950
-  - class: Interactive
-  - class: EquipmentUser
+- component: MeatbagController
+- component: Sprite
+  sprite: characters/meatbag.png
+#- component: Spine
+#  character: spine/chicken/chicken.json
+#  atlas: spine/chicken/chicken.atlas
+- component: Dragger
+- component: Container
+  capacity: 950
+- component: Interactive
+- component: EquipmentUser
 
 rock:
-  components:
-  - class: Physical
-  - class: Sprite
-    sprite: sprites/assets_td/rock2.png
-  - class: Melee
-    damage: 1
-  - class: Hammer
-    tier: 1
-  - class: Containable
+- component: Physical
+- component: Sprite
+  sprite: sprites/assets_td/rock2.png
+- component: Melee
+  damage: 1
+- component: Hammer
+  tier: 1
+- component: Containable
 
 tree:
-  components:
-  - class: Choppable
-  - class: Sprite
-    sprite: sprites/assets_td/tree1.png
-  - class: Interactive
+- component: Choppable
+- component: Sprite
+  sprite: sprites/assets_td/tree1.png
+- component: Interactive
 
 log:
-  components:
-  - class: Physical
-    volume: 200
-    mass: 160
-  - class: Sprite
-    sprite: sprites/log.png
-  - class: Draggable
-  - class: Interactive
-  - class: Containable
-  - class: Choppable
-    label: Chop into firewood x16
-    output_def: firewood
-    output_count: 16
+- component: Physical
+  volume: 200
+  mass: 160
+- component: Sprite
+  sprite: sprites/log.png
+- component: Draggable
+- component: Interactive
+- component: Containable
+- component: Choppable
+  label: Chop into firewood x16
+  output_def: firewood
+  output_count: 16
 
 firewood:
-  components:
-  - class: Physical
-    volume: 12.5
-    mass: 10
-  - class: Sprite
-    sprite: sprites/log.png
-    scale: 0.35
-  - class: Interactive
-  - class: Containable
+- component: Physical
+  volume: 12.5
+  mass: 10
+- component: Sprite
+  sprite: sprites/log.png
+  scale: 0.35
+- component: Interactive
+- component: Containable
 
 crate:
-  components:
-  - class: Physical
-    volume: 1000
-    mass: 5
-  - class: Sprite
-    sprite: sprites/assets_td/crate1.png
-  - class: Container
-    capacity: 950
-  - class: Interactive
-  - class: Draggable
+- component: Physical
+  volume: 1000
+  mass: 5
+- component: Sprite
+  sprite: sprites/assets_td/crate1.png
+- component: Container
+  capacity: 950
+- component: Interactive
+- component: Draggable
 
 backpack:
-  components:
-  - class: Physical
-  - class: Sprite
-    sprite: sprites/backpack.png
-  - class: Container
-    capacity: 80
-    expandable: true # expandable - volume of container will expand up to initial size + capacity
-  - class: Interactive
-  - class: Draggable
-  - class: Equippable
-    slot: backpack
+- component: Physical
+- component: Sprite
+  sprite: sprites/backpack.png
+- component: Container
+  capacity: 80
+  expandable: true # expandable - volume of container will expand up to initial size + capacity
+- component: Interactive
+- component: Draggable
+- component: Equippable
+  slot: backpack
 
 chicken:
-  components:
-  - class: Physical
-  - class: Spine
-    character: spine/chicken/chicken.json
-    atlas: spine/chicken/chicken.atlas
+- component: Physical
+- component: Spine
+  character: spine/chicken/chicken.json
+  atlas: spine/chicken/chicken.atlas

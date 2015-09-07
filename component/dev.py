@@ -51,9 +51,6 @@ class TileMap(BaseComponent):
     pass
 
 
-
-
-
 class Physical(BaseComponent):
     data = {
         'mass': 1.0,
