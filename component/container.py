@@ -1,6 +1,6 @@
 from collections import defaultdict
 from functools import partial
-from component.base import MenuComponent, component_method
+from component.base import MenuComponent
 from util import refreeze
 
 
@@ -9,7 +9,6 @@ class Container(MenuComponent):
         'contents': {}
     }
 
-    @component_method
     def initialize(self):
         self.initialize_menu()
         self.data.contents = {
@@ -17,24 +16,21 @@ class Container(MenuComponent):
                 (v[0][0], refreeze(v[0][1])), v[1]
             ) for k, v in self.data.contents.items()
 
-        }
-        self.data._registry = {v[0]: k for k,v in self.data.contents.items()}
+            }
+        self.data._registry = {v[0]: k for k, v in self.data.contents.items()}
 
         self.data._max = max(list(self.data.contents.keys()) + [0])
 
-    @component_method
     def get_menu(self, ent):
         return {
             '!view': ('View contents (noop)', partial(self.view_contents, ent))
         }
 
-    @component_method
     def view_contents(self, ent):
         print(ent, 'tried to view contents.')
         ent.controller.update_container(self.entity)
         ent.controller.show_container(self.entity)
 
-    @component_method
     def put(self, target):
         try:
             target.Position.destroy()
@@ -61,13 +57,12 @@ class Container(MenuComponent):
 
         self.entity.set_dirty()
 
-    @component_method
     def next_idx(self):
         self.data._max += 1
         return self.data._max
 
+
 class Containable(MenuComponent):
-    @component_method
     def get_menu(self, ent):
         # TODO : also include containers equipped by ent, and maybe containers dragged by ent.
         # do not compare to containers near ent at call because ent may be in range of containers that this is not
@@ -77,6 +72,7 @@ class Containable(MenuComponent):
 
         # for now just find all containers near the containable
         for container in self.entity.find_nearby(5, components={'Container'}):
-            ret['put_{}'.format(container.id)] = ('Put in {}'.format(container.name), partial(container.Container.put, self.entity))
+            ret['put_{}'.format(container.id)] = (
+            'Put in {}'.format(container.name), partial(container.Container.put, self.entity))
 
         return ret

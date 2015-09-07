@@ -2,7 +2,6 @@ from functools import partial
 import struct
 from isoweb_time import clock
 from component import BaseComponent
-from component.base import component_method
 from entity import ObFlags
 import packet_types
 from util import to_bytes
@@ -17,14 +16,12 @@ class NetworkViewer(BaseComponent):
         'visibility_radius': 20
     }
 
-    @component_method
     def initialize(self):
         self.data._current = set()
         self.data._cache = {}
         self.data._def_cache = set()
         self.entity.scheduler.schedule(func=self.update)
 
-    @component_method
     def update(self):
         if not self.data._socket:
             self.destroy()
@@ -86,7 +83,7 @@ class NetworkViewer(BaseComponent):
                 packet_data.extend(pdata)
 
             # queue up again based on priority or something.
-            cache[ref] = now + 1/40., now  # for now, just ensure we update faster than the network rate so it's 1:1
+            cache[ref] = now + 1 / 40., now  # for now, just ensure we update faster than the network rate so it's 1:1
 
             if packet_fmt:
                 # entity update header
@@ -103,11 +100,10 @@ class NetworkViewer(BaseComponent):
         current.update(enter)
 
         # update @ 20hz
-        return -1/20.
+        return -1 / 20.
 
 
 class Replicated(BaseComponent):
-    @component_method
     def initialize(self):
         self.entity.ob.flags |= ObFlags.REPLICATE
         self.data._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
@@ -115,11 +111,9 @@ class Replicated(BaseComponent):
         self.entity.snapshots[self.get_entitydef_hash] = 0
         self.entity.snapshots[name_replicator] = 0
 
-    @component_method
     def get_entitydef_hash(self):
         return 'BQ', (packet_types.ENTITYDEF_HASH_UPDATE, self.entity.entity_def.digest)
 
-    @component_method
     def on_destroy(self):
         self.entity.ob.flags &= ~ObFlags.REPLICATE
         try:

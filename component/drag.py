@@ -1,18 +1,16 @@
 from functools import partial
 from component import BaseComponent
-from component.base import component_method, MenuComponent
+from component.base import MenuComponent
 from mathx.vector2 import Vector2
 
 
 class Dragger(BaseComponent):
-    @component_method
     def initialize(self):
         self.data._cache = {
             'contribution': Vector2(),
             'draggable': None
         }
 
-    @component_method
     def get_drag_force(self):
         return 50.0
 
@@ -24,7 +22,6 @@ class Draggable(MenuComponent):
         ]
     }
 
-    @component_method
     def initialize(self):
         self.initialize_menu()
         self.data._cache = {
@@ -32,7 +29,6 @@ class Draggable(MenuComponent):
             'scheduled': False
         }
 
-    @component_method
     def get_menu(self, ent):
         if ent in self.data._cache['draggers']:
             return {
@@ -43,43 +39,37 @@ class Draggable(MenuComponent):
             'drag': ('Start dragging', partial(self.drag, ent))
         }
 
-    @component_method
     def drag(self, dragger):
         dragger.controller.set_queue([
             dragger.controller.move_near_task(self.drag_handle_near(dragger.pos), 0.5),
             (self.do_drag, (dragger,))
         ])
 
-    @component_method
     def stop_drag(self, dragger):
         try:
             self.data._cache['draggers'].remove(dragger)
         except KeyError:
             pass
 
-    @component_method
     def drag_handle_near(self, pos):
         return self.entity.pos
 
-    @component_method
     def do_drag(self, dragger):
         self.data._cache['draggers'].add(dragger)
 
         if not self.data._cache['scheduled']:
             self.start_schedule()
 
-    @component_method
     def start_schedule(self):
         self.data._cache['scheduled'] = True
         self.entity.schedule(self.update)
 
-    @component_method
     def update(self):
         if not self.data._cache['draggers']:
             self.data._cache['scheduled'] = False
             return
 
-        dt = 1/20.
+        dt = 1 / 20.
         drag_force = Vector2()
 
         # reel in draggables and apply their drag force

@@ -1,7 +1,6 @@
 from random import random
 from isoweb_time import clock
 from component import BaseComponent
-from component.base import component_method
 from mathx.aabb import AABB
 from mathx.quadtree import NodeItem
 from mathx.vector2 import Vector2
@@ -31,7 +30,6 @@ class Position(BaseComponent):
         'parent': None,
     }
 
-    @component_method
     def _update(self):
         # update quadtree position
         ob = self.entity.ob
@@ -46,11 +44,9 @@ class Position(BaseComponent):
             self.data._parent = self.data.parent
             self.entity.snapshots[self.parent_snapshot] = clock()
 
-    @component_method
     def on_destroy(self):
         self.entity.ob.remove()
 
-    @component_method
     def initialize(self):
         # quadtree junk
         ob = self.entity.ob
@@ -63,7 +59,6 @@ class Position(BaseComponent):
         self.entity.snapshots[self.position_snapshot] = 0
         self.entity.snapshots[self.parent_snapshot] = 0
 
-    @component_method
     def position_snapshot(self):
         return 'Bfffff', (
             packet_types.POSITION_UPDATE,
@@ -71,21 +66,18 @@ class Position(BaseComponent):
             self.data.vx, self.data.vy
         )
 
-    @component_method
     def parent_snapshot(self):
         return 'BI', (
             packet_types.PARENT_UPDATE,
             self.get_parent_id()
         )
 
-    @component_method
     def get_parent_id(self):
         if self.data.parent:
             return self.data.parent.id
 
         return 0
 
-    @component_method
     def teleport(self, x, y=None):
         if y is None and isinstance(x, Vector2):
             self.data.x = x.x
@@ -96,7 +88,6 @@ class Position(BaseComponent):
 
         self._update()
 
-    @component_method
     def find_nearby(self, radius, exclude=None, flags=0, components=None):
         _q_aabb.center.update(self.entity.ob.aabb.center)
         _q_aabb.hwidth = _q_aabb.hheight = radius
@@ -109,7 +100,6 @@ class Position(BaseComponent):
 
         return self.entity.region.quadtree.query_aabb_ents(_q_aabb, exclude, flags, components)
 
-    @component_method
     def get_pos(self, copy=False):
         if copy:
             return self.entity.ob.aabb.center.copy()

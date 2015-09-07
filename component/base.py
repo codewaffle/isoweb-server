@@ -1,5 +1,4 @@
 from functools import partial, wraps
-
 from util import memoize
 
 
@@ -62,14 +61,14 @@ class ComponentProxy:
             k: self.data[k]
             for k in self.cls.exports
             if self.data[k] != base[k]
-        }
+            }
 
     @property
     def def_exports(self):
         return {
             k: self.entity.entity_def.component_data[self.cls.__name__][k]
             for k in self.cls.exports
-        }
+            }
 
     @memoize
     def __getattr__(self, item):
@@ -85,11 +84,8 @@ class ComponentProxy:
     def schedule(self, task):
         return self.entity.schedule(task)
 
+
 current_component_class = None
-
-
-def component_method(f):
-    return f
 
 
 class BaseComponent:
@@ -137,14 +133,11 @@ class BaseComponent:
 
 
 class MenuComponent(BaseComponent):
-    @component_method
     def initialize(self):
         self.initialize_menu()
 
-    @component_method
     def initialize_menu(self):
         self.entity.menu_providers.add(self)
 
-    @component_method
     def get_menu(self, ent):
         raise NotImplemented

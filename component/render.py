@@ -1,9 +1,4 @@
-from functools import partial
-from isoweb_time import clock
-
 from component import BaseComponent
-from component.base import component_method
-from component.network import string_replicator, float_replicator
 
 
 class Mesh(BaseComponent):
@@ -18,6 +13,7 @@ class Mesh(BaseComponent):
     }
     exports = ['model', 'scale', 'material']
 
+
 class Sprite(BaseComponent):
     data = {
         'sprite': 'textures/dev.png',
@@ -31,6 +27,7 @@ class Sprite(BaseComponent):
     exports = [
         'scale', 'sprite', 'anchor'
     ]
+
 
 class Spine(BaseComponent):
     data = {

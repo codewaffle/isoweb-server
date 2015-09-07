@@ -1,6 +1,6 @@
 from functools import partial
 import component
-from component.base import MenuComponent, component_method
+from component.base import MenuComponent
 from entity import Entity
 
 
@@ -11,17 +11,15 @@ class Equippable(MenuComponent):
         'equipped': False
     }
 
-    @component_method
     def get_slots(self):
         return self.data.slots or [self.data.slot]
 
-    @component_method
     def get_menu(self, ent):
         # if self.data.equipped and
         if (
-            'Equipped' not in self.entity and
-            'EquipmentUser' in ent and
-            ent.EquipmentUser.can_equip(self.entity)
+                            'Equipped' not in self.entity and
+                            'EquipmentUser' in ent and
+                    ent.EquipmentUser.can_equip(self.entity)
         ):
             return {
                 'wear': ('Wear {}'.format(self.entity.name), partial(ent.EquipmentUser.equip, self))
@@ -29,7 +27,6 @@ class Equippable(MenuComponent):
 
         return {}
 
-    @component_method
     def wear(self, ent):
         print(ent, 'tried to wear')
         if 'Position' in ent:
@@ -39,7 +36,6 @@ class Equippable(MenuComponent):
 
 
 class Equipped(MenuComponent):
-    @component_method
     def get_menu(self, ent):
         return {
             'remove': ('Remove {}'.format(ent.name), partial(ent.EquipmentUser.remove, self))
@@ -51,15 +47,12 @@ class EquipmentUser(component.BaseComponent):
         'slots': {}
     }
 
-    @component_method
     def initialize(self):
         self.data.slots = {k: Entity.get(v) for k, v in self.data.slots.items()}
 
-    @component_method
     def can_equip(self, equippable):
         return True
 
-    @component_method
     def equip(self, eq):
         if not self.can_equip(eq):
             return
@@ -72,6 +65,5 @@ class EquipmentUser(component.BaseComponent):
 
         self.entity.add_component(component.c.Equipped)
 
-    @component_method
     def remove(self, eq):
         return

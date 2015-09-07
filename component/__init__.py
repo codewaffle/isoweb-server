@@ -21,6 +21,7 @@ from . import *
 def component_filter(m):
     return m != BaseComponent and isclass(m) and issubclass(m, BaseComponent)
 
+
 registry = AttributeDict()
 
 
@@ -30,9 +31,9 @@ def load_components():
         for clsname, cls in getmembers(getattr(sys.modules[__name__], mod), component_filter):
             registry[clsname] = cls
 
+
 load_components()
 
 
 def get(classname):
     return registry[classname]
-
