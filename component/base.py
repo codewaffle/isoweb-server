@@ -1,7 +1,3 @@
-from functools import partial, wraps
-from util import memoize
-
-
 class DataProxy(dict):
     def __init__(self, src):
         self.__dict__.update({
@@ -23,69 +19,6 @@ class DataProxy(dict):
     def __setitem__(self, key, value):
         # self.__dict__['_dirty'][key] = clock()
         dict.__setitem__(self, key, value)
-
-
-class ComponentProxy:
-    def __init__(self, cls, entity, bind_def):
-        self._memo_cache = {}
-        self.cls = cls
-        self.entity = entity
-        self.bind_def = bind_def
-
-    @property
-    def region(self):
-        return self.entity.region
-
-    @property
-    @memoize  # the object that is returned is memoized, not any of the data inside
-    def data(self):
-        try:
-            return self.entity.component_data[self.cls.__name__]
-        except KeyError:
-            if self.bind_def:
-                data = self.entity.component_data[self.cls.__name__] = DataProxy(
-                    self.entity.entity_def.component_data[self.cls.__name__]
-                )
-            else:
-                data = self.entity.component_data[self.cls.__name__] = DataProxy(
-                    self.cls.data
-                )
-            return data
-
-    @property
-    def exports(self):
-        assert self.entity and self.entity.entity_def
-        base = self.def_exports
-
-        return {
-            k: self.data[k]
-            for k in self.cls.exports
-            if self.data[k] != base[k]
-            }
-
-    @property
-    def def_exports(self):
-        return {
-            k: self.entity.entity_def.component_data[self.cls.__name__][k]
-            for k in self.cls.exports
-            }
-
-    @memoize
-    def __getattr__(self, item):
-        return partial(
-            getattr(self.cls, item),
-            self
-        )
-
-    @memoize
-    def __repr__(self):
-        return '{}({})'.format(self.cls.__name__, self.entity)
-
-    def schedule(self, task):
-        return self.entity.schedule(task)
-
-
-current_component_class = None
 
 
 class BaseComponent:
