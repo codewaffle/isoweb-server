@@ -3,7 +3,7 @@ from collections import defaultdict
 import lmdb
 import ujson
 import logbook
-from component import c
+import component
 from config import DB_DIR
 from entity import Entity
 from entitydef import definition_from_key, EntityDef

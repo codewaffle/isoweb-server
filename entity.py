@@ -47,10 +47,10 @@ class Entity:
         self._menu_providers = set()
         self.component_data = {}
         self.snapshots = None
-        self.pos = None  # replaced by whatever component handles position.
         self.ob = EntityOb(self)
         self.dirty = False
         self.valid = True
+        self.components = []
 
     @classmethod
     def get(cls, ent_id):
@@ -95,17 +95,13 @@ class Entity:
         else:
             self._controller = val
 
-    @property
-    def components(self):
-        return self.entity_def.components | set(self.component_data.keys())
-
     def component_iter(self):
         for x in self.components:
             yield getattr(self, x)
 
     def initialize(self):
         for c in self.components:
-            getattr(self, c).initialize()
+            c.initialize()
 
     @property
     def scheduler(self):
@@ -133,12 +129,14 @@ class Entity:
 
     def add_component(self, comp_name, initialize=True, **data):
         comp_class = component.get(comp_name)
-        comp = comp_class.bind(self, False)
+        comp = comp_class(self)
         object.__setattr__(self, comp_class.__name__, comp)
         comp.data.update(data)
 
         if initialize:
             comp.initialize()
+
+        self.components.append(comp)
 
         return comp
 
@@ -225,6 +223,14 @@ class Entity:
 
     def find_nearby(self, radius, exclude=True, flags=0, components=None):
         return self.Position.find_nearby(radius, exclude, flags, components)
+
+    @property
+    def pos(self):
+        return self.Position.get_pos()
+
+    @pos.setter
+    def pos(self, value):
+        self.Position.teleport(value)
 
     @property
     def persistent_data(self):

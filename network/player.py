@@ -9,7 +9,7 @@ from entity import Entity
 
 import logbook
 import time
-from component import c
+import component
 from mathx.vector2 import Vector2
 
 import packet_types

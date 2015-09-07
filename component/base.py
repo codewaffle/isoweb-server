@@ -93,13 +93,7 @@ current_component_class = None
 
 
 def component_method(f):
-    @wraps(f)
-    def wrapper(cls, *a, **kw):
-        global current_component_class
-        current_component_class = cls
-        return f(*a, **kw)
-
-    return classmethod(wrapper)
+    return f
 
 
 class BaseComponent:
@@ -109,34 +103,32 @@ class BaseComponent:
 
     exports = []
 
-    def __init__(self):
-        raise RuntimeError("class-only")
+    def __getattr__(self, item):
+        print("WHAT!!!")
 
-    @component_method
+    def __init__(self, ent):
+        self.data = DataProxy(self.data)
+        self.entity = ent
+
     def initialize(self):
         pass
 
-    @component_method
     def deactivate(self):
         if self.data.active:
             self.data.active = False
             self.on_deactivate()
 
-    @component_method
     def activate(self):
         if not self.data.active:
             self.data.active = True
             self.on_activate()
 
-    @component_method
     def on_activate(self):
         pass
 
-    @component_method
     def on_deactivate(self):
         pass
 
-    @component_method
     def destroy(self):
         self.on_destroy()
         try:
@@ -144,23 +136,11 @@ class BaseComponent:
         except KeyError:
             pass
 
-    @component_method
     def on_destroy(self):
         pass
 
-    # these are mostly to shut up pycharm/idea
-    entity = NotImplemented
-    region = NotImplemented
-    pos = NotImplemented
-    cache = NotImplemented
-
     def schedule(self, task):
         raise NotImplemented
-
-    @classmethod
-    # not memoized - memoize on accessor! classmethods never ever garbage collect.
-    def bind(cls, entity, bind_def=True):
-        return ComponentProxy(cls, entity, bind_def)
 
 
 class MenuComponent(BaseComponent):

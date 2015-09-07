@@ -22,7 +22,7 @@ class NetworkViewer(BaseComponent):
         self.data._current = set()
         self.data._cache = {}
         self.data._def_cache = set()
-        self.entity.scheduler.schedule(func=self.entity.NetworkViewer.update)
+        self.entity.scheduler.schedule(func=self.update)
 
     @component_method
     def update(self):

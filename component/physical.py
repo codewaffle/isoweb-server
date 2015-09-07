@@ -56,7 +56,7 @@ class Position(BaseComponent):
         ob = self.entity.ob
         ob.aabb.center.x = self.data.x or random() - 0.5
         ob.aabb.center.y = self.data.y or random() - 0.5
-        self.entity.pos = ob.aabb.center
+        # self.entity.pos = ob.aabb.center
         self.entity.region.quadtree.insert(ob)
         self.data._parent = self.data.parent
 
