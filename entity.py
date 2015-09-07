@@ -98,7 +98,7 @@ class Entity:
 
     def component_iter(self):
         for x in self.components:
-            yield getattr(self, x)
+            yield x
 
     def initialize(self):
         for c in self.components:

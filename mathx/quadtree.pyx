@@ -236,7 +236,7 @@ cdef class Quadtree:
         if components:
             filtered = set()
             for e in result:
-                if e.components & components == components:
+                if e._component_names & components == components:
                     filtered.add(e)
 
             return filtered

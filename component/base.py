@@ -38,10 +38,6 @@ class ComponentProxy:
         return self.entity.region
 
     @property
-    def pos(self):
-        return self.entity.pos
-
-    @property
     @memoize  # the object that is returned is memoized, not any of the data inside
     def data(self):
         try:
@@ -132,7 +128,7 @@ class BaseComponent:
     def destroy(self):
         self.on_destroy()
         try:
-            del self.entity.component_data[current_component_class.__name__]
+            del self.entity.component_data[self.__class__.__name__]
         except KeyError:
             pass
 
