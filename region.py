@@ -21,7 +21,7 @@ class Region:
         self._dirty_set = set()
         self.log = logbook.Logger('Island({})'.format(region_id))
 
-        self.max_entity_id = None
+        self.max_entity_id = 0
 
         self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.region_id), map_size=1024*1024*64)
 
