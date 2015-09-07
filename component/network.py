@@ -51,6 +51,7 @@ class NetworkViewer(BaseComponent):
         enter_defs = set(e.entity_def for e in enter)
         enter_defs.difference_update(self.data._def_cache)
 
+        # send component exports attached to this entity def.
         if enter_defs:
             for d in enter_defs:
                 packet = struct.pack(
@@ -104,6 +105,7 @@ class NetworkViewer(BaseComponent):
         # update @ 20hz
         return -1/20.
 
+
 class Replicated(BaseComponent):
     @component_method
     def initialize(self):
@@ -129,6 +131,7 @@ class Replicated(BaseComponent):
             del self.entity.snapshots[self.get_entitydef_hash]
         except KeyError:
             pass
+
 
 def string_replicator(func, attr_name):
     name_len = len(attr_name)

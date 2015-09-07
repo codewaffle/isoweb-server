@@ -8,6 +8,7 @@ from util import memoize
 
 xx = xxhash.xxh64()
 
+
 class EntityDef:
     """
     EntityDefs serve as templates for new Entities.
@@ -77,7 +78,7 @@ class EntityDef:
             dataproxy.update(comp_args)
 
     @property
-    @memoize
+    @memoize  # EntityDefs are static after load so we can cache this
     def exports(self):
         return dict(e for e in {
             comp: {k: self.component_data[comp][k] for k in getattr(self, comp).exports}
@@ -90,6 +91,7 @@ class EntityDef:
         return ujson.dumps(self.exports, double_precision=3).encode('utf8')
 
 _defs = {}
+
 
 def load_defs():
     import yaml
@@ -108,6 +110,7 @@ def load_defs():
             if fnmatch.fnmatch(fn, '*.yml'):
                 for def_key, data in load(os.path.join(root, fn)).items():
                     _defs[def_key] = EntityDef(def_key, data)
+
 
 def definition_from_key(def_key):
     return _defs[def_key]

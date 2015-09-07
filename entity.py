@@ -1,5 +1,6 @@
 from math import atan2, pi
 import ujson
+import component
 from component.base import BaseComponent
 from menu import Menu
 from util import memoize, AttributeDict
@@ -130,7 +131,8 @@ class Entity:
     def __contains__(self, item):
         return self.has_component(item)
 
-    def add_component(self, comp_class, initialize=True, **data):
+    def add_component(self, comp_name, initialize=True, **data):
+        comp_class = component.get(comp_name)
         comp = comp_class.bind(self, False)
         object.__setattr__(self, comp_class.__name__, comp)
         comp.data.update(data)
@@ -141,12 +143,12 @@ class Entity:
         return comp
 
     def add_components(self, components, initialize=True):
-        if isinstance(components, (list, tuple)):
-            for comp_class in components:
-                self.add_component(comp_class, initialize=initialize)
+        if isinstance(components, (list, tuple, set)):
+            for comp_name in components:
+                self.add_component(comp_name, initialize=initialize)
         elif isinstance(components, dict):
-            for comp_class, data in components.items():
-                self.add_component(comp_class, initialize=initialize, **data)
+            for comp_name, data in components.items():
+                self.add_component(comp_name, initialize=initialize, **data)
         else:
             raise ValueError('Components is not valid')
 

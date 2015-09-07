@@ -1,14 +1,18 @@
 from isoweb_time import clock
+from collections import defaultdict
 import lmdb
 import ujson
 import logbook
 from component import c
 from config import DB_DIR
 from entity import Entity
-from entitydef import definition_from_key
+from entitydef import definition_from_key, EntityDef
 from mathx.quadtree import Quadtree
 
 from scheduler import Scheduler
+
+def component_dict(*args):
+    return defaultdict(dict, *args)
 
 
 class Region:
@@ -60,23 +64,35 @@ class Region:
         self.max_entity_id += 1
         return self.max_entity_id
 
-    def spawn(self, entdef, components=None, pos=None, rot=None, replicate=True):
+    def spawn(self, entdef, spawn_components=None, pos=None, rot=None, replicate=True):
         if isinstance(entdef, (str, bytes)):
             entdef = definition_from_key(entdef)
+
+        assert isinstance(entdef, EntityDef)
 
         ent = Entity(self.next_entity_id())
         ent.entity_def = entdef
         ent.ob.flags = 0
         ent.set_region(self)
 
-        if components:
-            ent.add_components(components)
+        # gather up components from various sources
+        components = component_dict(entdef.component_data)
+
+        if isinstance(spawn_components, (list, tuple, set)):
+            for comp_name in spawn_components:
+                components[comp_name].update()  # trigger defaultdict creation
+        elif isinstance(spawn_components, dict):
+            for comp_name, comp_init in spawn_components.items():
+                components[comp_name].update(comp_init)
 
         if pos is not None:
-            ent.add_component(c.Position, initialize=False, x=pos.x, y=pos.y, r=rot or 0)
+            components['Position'].update({'x': pos.x, 'y': pos.y, 'r': rot or 0})
 
         if replicate:
-            ent.add_component(c.Replicated, initialize=False)
+            components['Replicated'].update()
+
+        if components:
+            ent.add_components(components, initialize=False)
 
         ent.initialize()
         return ent

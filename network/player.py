@@ -145,8 +145,8 @@ class PlayerWebsocket(WebSocketServerProtocol):
         # assign player to island, send initial bla bla bla
 
         self.entity = self.region.spawn('meatbag', {
-            c.NetworkViewer: {'_socket': self},
-            c.MeatbagController: {'_socket': self}
+            'NetworkViewer': {'_socket': self},
+            'MeatbagController': {'_socket': self}
         }, pos=Vector2.random_inside(5.0))
 
         msg = struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id)
