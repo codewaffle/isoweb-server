@@ -34,13 +34,13 @@ class Entity:
     _menu_providers = None
 
     def __init__(self, ent_id):
-        from component.general import EntityOb
+        from component.physical import EntityOb
         self._registry[ent_id] = self
 
         self._memo_cache = {}  # for @memoize
         self.cache = AttributeDict()
         self.region = None
-        self.region_id = 0  # TODO : this will eventually be tied to the island that spawned this entity..
+        self.region_id = 0
         self.id = ent_id
         self.entity_def = None
         self._menu_providers = set()
