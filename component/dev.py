@@ -51,18 +51,6 @@ class TileMap(BaseComponent):
     pass
 
 
-class Physical(BaseComponent):
-    data = {
-        'mass': 1.0,
-        'volume': 1.0
-    }
-
-    @component_method
-    def initialize(self):
-        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'mass'), 'mass')] = 0
-        self.entity.snapshots[float_replicator(partial(getattr, self.data, 'volume'), 'volume')] = 0
-
-
 class Structure(BaseComponent):
     data = {
         'tileset': 'default',

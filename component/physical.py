@@ -19,6 +19,7 @@ class EntityOb(NodeItem):
 
 _q_aabb = AABB(Vector2(), 1)
 
+
 class Position(BaseComponent):
     data = {
         'x': 0.,
@@ -114,3 +115,15 @@ class Position(BaseComponent):
             return self.entity.ob.aabb.center.copy()
 
         return self.entity.ob.aabb.center
+
+
+class Mass(BaseComponent):
+    data = {
+        'value': 1.0
+    }
+
+
+class Volume(BaseComponent):
+    data = {
+        'value': 1.0
+    }

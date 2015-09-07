@@ -1,39 +1,34 @@
 meatbag:
-- component: MeatbagController
+- MeatbagController
 - component: Sprite
   sprite: characters/meatbag.png
-#- component: Spine
-#  character: spine/chicken/chicken.json
-#  atlas: spine/chicken/chicken.atlas
-- component: Dragger
+- Dragger
 - component: Container
   capacity: 950
-- component: Interactive
-- component: EquipmentUser
+- Interactive
+- EquipmentUser
 
 rock:
-- component: Physical
 - component: Sprite
   sprite: sprites/assets_td/rock2.png
 - component: Melee
   damage: 1
 - component: Hammer
   tier: 1
-- component: Containable
+- Containable
 
 tree:
-- component: Choppable
+- Choppable
 - component: Sprite
   sprite: sprites/assets_td/tree1.png
-- component: Interactive
+- Interactive
 
 log:
 - Draggable
 - Containable
 - Interactive
-- component: Physical
-  volume: 200
-  mass: 160
+- Mass: 160
+- Volume: 200
 - component: Sprite
   sprite: sprites/log.png
 - component: Choppable
@@ -42,40 +37,40 @@ log:
   output_count: 16
 
 firewood:
-- component: Physical
-  volume: 12.5
-  mass: 10
+- Volume: 12.5
+- Mass: 10
 - component: Sprite
   sprite: sprites/log.png
   scale: 0.35
-- component: Interactive
-- component: Containable
+- Interactive
+- Containable
 
 crate:
-- component: Physical
-  volume: 1000
-  mass: 5
+- Volume: 1000
+- Mass: 5
 - component: Sprite
   sprite: sprites/assets_td/crate1.png
 - component: Container
   capacity: 950
-- component: Interactive
-- component: Draggable
+- Interactive
+- Draggable
 
 backpack:
-- component: Physical
+- Mass
+- Volume
 - component: Sprite
   sprite: sprites/backpack.png
 - component: Container
   capacity: 80
   expandable: true # expandable - volume of container will expand up to initial size + capacity
-- component: Interactive
-- component: Draggable
+- Interactive
+- Draggable
 - component: Equippable
   slot: backpack
 
 chicken:
-- component: Physical
+- Mass: 2
+- Volume: 1
 - component: Spine
   character: spine/chicken/chicken.json
   atlas: spine/chicken/chicken.atlas

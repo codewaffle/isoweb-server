@@ -1,16 +1,16 @@
 large_stick:
-- component: Physical
-- component: Melee
-  damage: 1
+- Mass: 1
+- Volume: 1
+- Melee: 1
 
 rock_deposit:
 - component: Sprite
   sprite: sprites/assets_td/rock1.png
 
 sharp_rock:
-- component: Physical
-- component: Melee
-  damage: 2
+- Mass: 1
+- Volume: 1
+- Melee: 2
 - component: Chopper
   tier: 1
 - component: Craftable
@@ -20,13 +20,11 @@ sharp_rock:
   - Hammer.tier: 1
 - component: Containable
 
-
-
 stone_axe:
-- component: Physical
-- component: Equippable
-- component: Melee
-  damage: 3
+- Mass
+- Volume
+- Equippable
+- Melee: 3
 - component: Chopper
   tier: 3
 - component: Craftable
@@ -35,14 +33,15 @@ stone_axe:
   - large_stick
 - component: Sprite
   sprite: sprites/stone_axe.png
-- component: Containable
-- component: Interactive
+- Containable
+- Interactive
 
 tree_stump:
 - component: Sprite
   sprite: sprites/assets_td/stump1.png
 
 campfire:
-- component: Physical
+- Mass
+- Volume
 - component: Sprite
   sprite:
