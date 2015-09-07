@@ -135,9 +135,6 @@ class BaseComponent:
     def on_destroy(self):
         pass
 
-    def schedule(self, task):
-        raise NotImplemented
-
 
 class MenuComponent(BaseComponent):
     @component_method

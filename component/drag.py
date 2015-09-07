@@ -59,7 +59,7 @@ class Draggable(MenuComponent):
 
     @component_method
     def drag_handle_near(self, pos):
-        return self.pos
+        return self.entity.pos
 
     @component_method
     def do_drag(self, dragger):
@@ -71,7 +71,7 @@ class Draggable(MenuComponent):
     @component_method
     def start_schedule(self):
         self.data._cache['scheduled'] = True
-        self.schedule(self.update)
+        self.entity.schedule(self.update)
 
     @component_method
     def update(self):
@@ -85,7 +85,7 @@ class Draggable(MenuComponent):
         # reel in draggables and apply their drag force
 
         for d in self.data._cache['draggers']:
-            diff = (d.pos - self.pos)
+            diff = (d.pos - self.entity.pos)
             dist = diff.magnitude
             dragdir = diff / dist
 
@@ -94,7 +94,7 @@ class Draggable(MenuComponent):
                 d.Position.teleport(d.pos - dragdir * dist_diff * 0.5)
                 drag_force.add(dragdir * dist_diff * d.Dragger.get_drag_force() * 0.5)
 
-        self.entity.Position.teleport(self.pos + drag_force * dt)
+        self.entity.Position.teleport(self.entity.pos + drag_force * dt)
         # TODO : uncomment this when rotation bugs are sorted out.
         # self.entity.look(drag_force)
 
