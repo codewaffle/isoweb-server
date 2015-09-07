@@ -9,12 +9,11 @@ from util import to_bytes
 
 
 class ControllerComponent(BaseComponent):
-    data = {
-        '_socket': None
-    }
+    _socket = None
+    _queue = None
 
     def controller_initialize(self):
-        self.data._queue = []
+        self._queue = []
 
     def initialize(self):
         self.controller_initialize()
@@ -36,7 +35,7 @@ class ControllerComponent(BaseComponent):
             fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
             data.extend([len(kw), kw, len(desc), desc])
 
-        self.data._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
+        self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
 
     def handle_menu_exec_entity(self, ent, action):
         menu = ent.get_menu(self.entity)
@@ -62,15 +61,15 @@ class ControllerComponent(BaseComponent):
                 fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
                 data.extend([len(kw), kw, len(desc), desc])
 
-            self.data._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
+            self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
             return
 
     def update_container(self, container):
 
         fmt = ['>BfIH']
-        dat = [packet_types.CONTAINER_UPDATE, clock(), container.id, len(container.Container.data.contents)]
+        dat = [packet_types.CONTAINER_UPDATE, clock(), container.id, len(container.Container.contents)]
 
-        for idx, c in container.Container.data.contents.items():
+        for idx, c in container.Container.contents.items():
             entdef = entitydef.definition_from_key(c[0][0])
             fmt.append('HIffB{}sB{}s'.format(len(entdef.name), len(entdef.component_data['Sprite'].sprite)))
 
@@ -86,19 +85,19 @@ class ControllerComponent(BaseComponent):
             ])
 
         packed = struct.pack(''.join(fmt), *to_bytes(dat))
-        self.data._socket.send(packed)
+        self._socket.send(packed)
 
     def show_container(self, container):
-        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_SHOW, clock(), container.id))
+        self._socket.send(struct.pack('>BfI', packet_types.CONTAINER_SHOW, clock(), container.id))
 
     def hide_container(self, container):
-        self.data._socket.send(struct.pack('>BfI', packet_types.CONTAINER_HIDE, clock(), container.id))
+        self._socket.send(struct.pack('>BfI', packet_types.CONTAINER_HIDE, clock(), container.id))
 
     def handle_hide_container(self, container):
         print('player requested that we hide container:', container)
 
     def update_queue(self):
-        q = self.data._queue
+        q = self._queue
         try:
             func, args = q[0]
         except IndexError:
@@ -111,27 +110,25 @@ class ControllerComponent(BaseComponent):
             if len(q) > 0:
                 return -1 / 20.
         elif ret is False:  # False = abort queue
-            del self.data._queue[:]
+            del self._queue[:]
         else:
             return ret
 
     def set_queue(self, new_queue):
-        if new_queue and not self.data._queue:
+        if new_queue and not self._queue:
             self.entity.schedule(self.update_queue)
 
-        self.data._queue = new_queue
+        self._queue = new_queue
 
     def queue_task(self, task, args):
-        if not self.data._queue:
+        if not self._queue:
             self.entity.schedule(self.update_queue)
 
-        self.data._queue.append((task, args))
+        self._queue.append((task, args))
 
 
 class MeatbagController(ControllerComponent):
-    data = {
-        'move_speed': 3.0
-    }
+    move_speed = 3.0
 
     def initialize(self):
         self.entity.controller = self.entity.MeatbagController
@@ -159,19 +156,19 @@ class MeatbagController(ControllerComponent):
 
         move_diff = dest - self.entity.pos
         dist = move_diff.magnitude
-        move_amt = self.data.move_speed * dt
+        move_amt = self.move_speed * dt
 
-        self.entity.Position.data.r = atan2(move_diff.y, move_diff.x)  # + pi / 2.
+        self.entity.Position.r = atan2(move_diff.y, move_diff.x)  # + pi / 2.
 
         if dist < move_amt:
             self.entity.Position.teleport(dest)
-            self.entity.Position.data.vx = self.entity.Position.data.vy = 0
+            self.entity.Position.vx = self.entity.Position.vy = 0
             self.entity.region.log.debug('{} arrived at {}', self.entity, dest)
 
             return None
         else:
             self.entity.Position.teleport(self.entity.pos.lerp(dest, move_amt / dist))
-            self.entity.Position.data.vx = move_diff.x / dist * self.data.move_speed
-            self.entity.Position.data.vy = move_diff.y / dist * self.data.move_speed
+            self.entity.Position.vx = move_diff.x / dist * self.move_speed
+            self.entity.Position.vy = move_diff.y / dist * self.move_speed
 
             return dt * -1.

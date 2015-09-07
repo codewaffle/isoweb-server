@@ -31,7 +31,8 @@ class EntityDef:
 
         self.name = key.replace('_', ' ')
         self.component_data = {}
-        self.components = set()
+        self.component_names = set()
+        self.component_classes = set()
 
         if isinstance(data, list):
             self.load_components(data)
@@ -72,17 +73,17 @@ class EntityDef:
                 raise ValueError("Component '{}' does not exist".format(comp_name))
 
             setattr(self, comp_name, comp_class)
-            self.components.add(comp_name)
-
-            dataproxy = self.component_data[comp_name] = DataProxy(comp_class.data)
-            dataproxy.update(comp_args)
+            self.component_names.add(comp_name)
+            self.component_classes.add(comp_class)
+            self.component_data[comp_class] = comp_args
 
     @property
     @memoize  # EntityDefs are static after load so we can cache this
     def exports(self):
         return dict(e for e in {
-            comp: {k: self.component_data[comp][k] for k in getattr(self, comp).exports}
-            for comp in self.components
+            comp.__name__: {k: self.component_data[comp].get(k, getattr(comp, k))
+                            for k in comp.exports}
+            for comp in self.component_classes
         }.items() if e[1])
 
     @property

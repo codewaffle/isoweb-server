@@ -5,8 +5,10 @@ from mathx.vector2 import Vector2
 
 
 class Dragger(BaseComponent):
+    _cache = None
+
     def initialize(self):
-        self.data._cache = {
+        self._cache = {
             'contribution': Vector2(),
             'draggable': None
         }
@@ -16,21 +18,20 @@ class Dragger(BaseComponent):
 
 
 class Draggable(MenuComponent):
-    data = {
-        'drag_handles': [
-            Vector2(0.5, 0.0)  # attach to bottom center by default
-        ]
-    }
+    _cache = None
+    drag_handles = [
+        Vector2(0.5, 0.0)  # attach to bottom center by default
+    ]
 
     def initialize(self):
         self.initialize_menu()
-        self.data._cache = {
+        self._cache = {
             'draggers': set(),
             'scheduled': False
         }
 
     def get_menu(self, ent):
-        if ent in self.data._cache['draggers']:
+        if ent in self._cache['draggers']:
             return {
                 '!stop_dragging': ('Stop dragging', partial(self.stop_drag, ent))
             }
@@ -47,7 +48,7 @@ class Draggable(MenuComponent):
 
     def stop_drag(self, dragger):
         try:
-            self.data._cache['draggers'].remove(dragger)
+            self._cache['draggers'].remove(dragger)
         except KeyError:
             pass
 
@@ -55,18 +56,18 @@ class Draggable(MenuComponent):
         return self.entity.pos
 
     def do_drag(self, dragger):
-        self.data._cache['draggers'].add(dragger)
+        self._cache['draggers'].add(dragger)
 
-        if not self.data._cache['scheduled']:
+        if not self._cache['scheduled']:
             self.start_schedule()
 
     def start_schedule(self):
-        self.data._cache['scheduled'] = True
+        self._cache['scheduled'] = True
         self.entity.schedule(self.update)
 
     def update(self):
-        if not self.data._cache['draggers']:
-            self.data._cache['scheduled'] = False
+        if not self._cache['draggers']:
+            self._cache['scheduled'] = False
             return
 
         dt = 1 / 20.
@@ -74,7 +75,7 @@ class Draggable(MenuComponent):
 
         # reel in draggables and apply their drag force
 
-        for d in self.data._cache['draggers']:
+        for d in self._cache['draggers']:
             diff = (d.pos - self.entity.pos)
             dist = diff.magnitude
             dragdir = diff / dist

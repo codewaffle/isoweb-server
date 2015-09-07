@@ -9,25 +9,22 @@ from mathx.vector2 import Vector2
 
 
 class Interactive(BaseComponent):
-    data = {
-        'hit_area': 'Circle(0, 0, 100)'
-    }
+    hit_area = 'Circle(0, 0, 100)'
     exports = ['hit_area']
 
     def initialize(self):
-        self.entity.snapshots[string_replicator(partial(getattr, self.data, 'hit_area'), 'hit_area')] = clock()
+        self.entity.snapshots[string_replicator(partial(getattr, self, 'hit_area'), 'hit_area')] = clock()
 
 
 class Choppable(MenuComponent):
-    data = {
-        'label': 'Chop!',
-        'output_def': 'log',
-        'output_count': 1
-    }
+
+    label = 'Chop!'
+    output_def = 'log'
+    output_count = 1
 
     def get_menu(self, ent):
         return {
-            'chop': (self.data.label, partial(self.chop, ent))
+            'chop': (self.label, partial(self.chop, ent))
         }
 
     def chop(self, chopper):
@@ -38,8 +35,8 @@ class Choppable(MenuComponent):
 
     def do_chop(self, chopper):
         self.entity.destroy()
-        for x in range(self.data.output_count):
-            self.entity.region.spawn(self.data.output_def, pos=self.entity.pos + Vector2.random_inside(0.2),
+        for x in range(self.output_count):
+            self.entity.region.spawn(self.output_def, pos=self.entity.pos + Vector2.random_inside(0.2),
                                      rot=uniform(0, pi * 2.0))
 
 

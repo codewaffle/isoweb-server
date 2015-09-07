@@ -22,30 +22,26 @@ class DataProxy(dict):
 
 
 class BaseComponent:
-    data = {
-        'active': True
-    }
-
+    active = True
     exports = []
 
     def __getattr__(self, item):
         print("WHAT!!!")
 
     def __init__(self, ent):
-        self.data = DataProxy(self.data)
         self.entity = ent
 
     def initialize(self):
         pass
 
     def deactivate(self):
-        if self.data.active:
-            self.data.active = False
+        if self.active:
+            self.active = False
             self.on_deactivate()
 
     def activate(self):
-        if not self.data.active:
-            self.data.active = True
+        if not self.active:
+            self.active = True
             self.on_activate()
 
     def on_activate(self):

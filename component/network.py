@@ -11,42 +11,44 @@ class NetworkViewer(BaseComponent):
     """
     Responsible for most of the work of figuring out what the client can see.
     """
-    data = {
-        '_socket': None,
-        'visibility_radius': 20
-    }
+    _socket = None
+    visibility_radius = 20
+
+    _current = None
+    _cache = None
+    _def_cache = None
 
     def initialize(self):
-        self.data._current = set()
-        self.data._cache = {}
-        self.data._def_cache = set()
+        self._current = set()
+        self._cache = {}
+        self._def_cache = set()
         self.entity.scheduler.schedule(func=self.update)
 
     def update(self):
-        if not self.data._socket:
+        if not self._socket:
             self.destroy()
             return
 
         now = clock()
 
-        current = self.data._current
-        cache = self.data._cache
+        current = self._current
+        cache = self._cache
 
-        visible = self.entity.Position.find_nearby(self.data.visibility_radius, flags=ObFlags.REPLICATE)
+        visible = self.entity.Position.find_nearby(self.visibility_radius, flags=ObFlags.REPLICATE)
 
         for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated
-                self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
+                self._socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
                 del cache[ref]
             else:  # hide dynamic/moving entities, stop updating static ones
-                self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
+                self._socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
 
             current.remove(ref)
 
         enter = visible - current
 
         enter_defs = set(e.entity_def for e in enter)
-        enter_defs.difference_update(self.data._def_cache)
+        enter_defs.difference_update(self._def_cache)
 
         # send component exports attached to this entity def.
         if enter_defs:
@@ -61,8 +63,8 @@ class NetworkViewer(BaseComponent):
                 )
 
                 # send() bundles the packets up so this should be safe
-                self.data._socket.send(packet)
-            self.data._def_cache.update(enter_defs)
+                self._socket.send(packet)
+            self._def_cache.update(enter_defs)
 
         # loop through previously-and-still-visible entities and only process those that are due.
         # entities that were not previously visible but cached can still sit around in the cache and only get
@@ -92,10 +94,10 @@ class NetworkViewer(BaseComponent):
 
                 # SEND
                 packet = struct.pack(''.join(packet_fmt), *to_bytes(packet_data))
-                self.data._socket.send(packet)
+                self._socket.send(packet)
 
         for ref in enter:
-            self.data._socket.send(struct.pack('>BfI', packet_types.ENTITY_SHOW, clock(), ref.id))
+            self._socket.send(struct.pack('>BfI', packet_types.ENTITY_SHOW, clock(), ref.id))
 
         current.update(enter)
 
@@ -104,9 +106,11 @@ class NetworkViewer(BaseComponent):
 
 
 class Replicated(BaseComponent):
+    _name_replicator = None
+
     def initialize(self):
         self.entity.ob.flags |= ObFlags.REPLICATE
-        self.data._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
+        self._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
 
         self.entity.snapshots[self.get_entitydef_hash] = 0
         self.entity.snapshots[name_replicator] = 0
@@ -117,7 +121,7 @@ class Replicated(BaseComponent):
     def on_destroy(self):
         self.entity.ob.flags &= ~ObFlags.REPLICATE
         try:
-            del self.entity.snapshots[self.data._name_replicator]
+            del self.entity.snapshots[self._name_replicator]
         except KeyError:
             pass
 

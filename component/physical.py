@@ -20,28 +20,27 @@ _q_aabb = AABB(Vector2(), 1)
 
 
 class Position(BaseComponent):
-    data = {
-        'x': 0.,
-        'y': 0.,
-        'vx': 0.,
-        'vy': 0.,
-        'radius': 0.,
-        'r': 1.,
-        'parent': None,
-    }
+    x = 0.
+    y = 0.
+    vx = 0.
+    vy = 0.
+    radius = 0.
+    r = 1.
+    parent = None
+    _parent = None
 
     def _update(self):
         # update quadtree position
         ob = self.entity.ob
-        ob.aabb.center.x = self.data.x
-        ob.aabb.center.y = self.data.y
+        ob.aabb.center.x = self.x
+        ob.aabb.center.y = self.y
         ob.update_quadtree()
 
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()
 
-        if self.data.parent != self.data._parent:
-            self.data._parent = self.data.parent
+        if self.parent != self._parent:
+            self._parent = self.parent
             self.entity.snapshots[self.parent_snapshot] = clock()
 
     def on_destroy(self):
@@ -50,11 +49,11 @@ class Position(BaseComponent):
     def initialize(self):
         # quadtree junk
         ob = self.entity.ob
-        ob.aabb.center.x = self.data.x or random() - 0.5
-        ob.aabb.center.y = self.data.y or random() - 0.5
+        ob.aabb.center.x = self.x or random() - 0.5
+        ob.aabb.center.y = self.y or random() - 0.5
         # self.entity.pos = ob.aabb.center
         self.entity.region.quadtree.insert(ob)
-        self.data._parent = self.data.parent
+        self._parent = self.parent
 
         self.entity.snapshots[self.position_snapshot] = 0
         self.entity.snapshots[self.parent_snapshot] = 0
@@ -62,8 +61,8 @@ class Position(BaseComponent):
     def position_snapshot(self):
         return 'Bfffff', (
             packet_types.POSITION_UPDATE,
-            self.data.x, self.data.y, self.data.r,
-            self.data.vx, self.data.vy
+            self.x, self.y, self.r,
+            self.vx, self.vy
         )
 
     def parent_snapshot(self):
@@ -73,18 +72,18 @@ class Position(BaseComponent):
         )
 
     def get_parent_id(self):
-        if self.data.parent:
-            return self.data.parent.id
+        if self.parent:
+            return self.parent.id
 
         return 0
 
     def teleport(self, x, y=None):
         if y is None and isinstance(x, Vector2):
-            self.data.x = x.x
-            self.data.y = x.y
+            self.x = x.x
+            self.y = x.y
         else:
-            self.data.x = x
-            self.data.y = y
+            self.x = x
+            self.y = y
 
         self._update()
 

@@ -7,8 +7,10 @@ class MenuItem:
 
 _registry = {}
 
+
 class MultipleDefaultMenuItems(RuntimeError):
     pass
+
 
 class Menu:
     def __init__(self):

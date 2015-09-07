@@ -5,21 +5,20 @@ from util import refreeze
 
 
 class Container(MenuComponent):
-    data = {
-        'contents': {}
-    }
+    contents = {}
+    _registry = None
+    _max = 0
 
     def initialize(self):
         self.initialize_menu()
-        self.data.contents = {
+        self.contents = {
             int(k): (
                 (v[0][0], refreeze(v[0][1])), v[1]
-            ) for k, v in self.data.contents.items()
+            ) for k, v in self.contents.items()
 
             }
-        self.data._registry = {v[0]: k for k, v in self.data.contents.items()}
-
-        self.data._max = max(list(self.data.contents.keys()) + [0])
+        self._registry = {v[0]: k for k, v in self.contents.items()}
+        self._max = max(list(self.contents.keys()) + [0])
 
     def get_menu(self, ent):
         return {
@@ -45,21 +44,21 @@ class Container(MenuComponent):
         frozen = target.freeze()
 
         try:
-            idx = self.data._registry[frozen]
+            idx = self._registry[frozen]
 
             # we already have a dupe, destroy the original
             target.destroy()
-            self.data.contents[idx][1] += 1
+            self.contents[idx][1] += 1
         except KeyError:
             # first entry in the container, keep it alive.
-            idx = self.data._registry[frozen] = self.next_idx()
-            self.data.contents[idx] = [frozen, 1]
+            idx = self._registry[frozen] = self.next_idx()
+            self.contents[idx] = [frozen, 1]
 
         self.entity.set_dirty()
 
     def next_idx(self):
-        self.data._max += 1
-        return self.data._max
+        self._max += 1
+        return self._max
 
 
 class Containable(MenuComponent):

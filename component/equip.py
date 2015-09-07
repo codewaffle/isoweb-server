@@ -5,17 +5,15 @@ from entity import Entity
 
 
 class Equippable(MenuComponent):
-    data = {
-        'slot': None,
-        'slots': None,
-        'equipped': False
-    }
-
+    slot = None
+    slots = None
+    equipped = False
+    
     def get_slots(self):
-        return self.data.slots or [self.data.slot]
+        return self.slots or [self.slot]
 
     def get_menu(self, ent):
-        # if self.data.equipped and
+        # if self.equipped and
         if (
                             'Equipped' not in self.entity and
                             'EquipmentUser' in ent and
@@ -43,12 +41,10 @@ class Equipped(MenuComponent):
 
 
 class EquipmentUser(component.BaseComponent):
-    data = {
-        'slots': {}
-    }
+    slots = {}
 
     def initialize(self):
-        self.data.slots = {k: Entity.get(v) for k, v in self.data.slots.items()}
+        self.slots = {k: Entity.get(v) for k, v in self.slots.items()}
 
     def can_equip(self, equippable):
         return True
@@ -61,7 +57,7 @@ class EquipmentUser(component.BaseComponent):
             eq.entity.Position.destroy()
 
         for slot in eq.get_slots():
-            self.data.slots[slot] = eq.entity
+            self.slots[slot] = eq.entity
 
         self.entity.add_component(component.c.Equipped)
 

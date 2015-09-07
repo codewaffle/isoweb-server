@@ -76,7 +76,7 @@ class Region:
         ent.set_region(self)
 
         # gather up components from various sources
-        components = component_dict(entdef.component_data)
+        components = component_dict({k.__name__: v for k, v in entdef.component_data.items()})
 
         if isinstance(spawn_components, (list, tuple, set)):
             for comp_name in spawn_components:

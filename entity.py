@@ -132,7 +132,7 @@ class Entity:
         comp_class = component.get(comp_name)
         comp = comp_class(self)
         object.__setattr__(self, comp_class.__name__, comp)
-        comp.data.update(data)
+        comp.__dict__.update(data)
 
         if initialize:
             comp.initialize()
@@ -163,7 +163,7 @@ class Entity:
         to_create = kset - to_update
 
         for comp in to_update:
-            getattr(self, comp).data.update(components[comp])
+            getattr(self, comp).__dict__.update(components[comp])
 
         to_init = [self.add_component(getattr(c, comp), initialize=False, **components[comp]) for comp in to_create]
 
@@ -217,7 +217,7 @@ class Entity:
         self.region.destroy_entity(self)
 
     def look(self, look_dir):
-        self.Position.data.r = atan2(look_dir.y, look_dir.x) + pi / 2.
+        self.Position.r = atan2(look_dir.y, look_dir.x) + pi / 2.
 
     def freeze(self):
         result = self.entity_def.name, util.freeze_dict(self.persistent_data)
