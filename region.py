@@ -134,7 +134,6 @@ class Region:
                 ent.ob.flags = data['ob_flags']
                 ent.set_region(self)
                 ent.update_components(data.get('components', {}))
-                ent.initialize()
         self.log.info('Loaded entities in {} seconds', clock() - start)
 
     def destroy_entity(self, ent):

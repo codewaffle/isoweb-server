@@ -55,7 +55,8 @@ class BaseComponent:
     def destroy(self):
         self.on_destroy()
         try:
-            del self.entity.component_data[self.__class__.__name__]
+            self.entity.components.remove(self)
+            delattr(self.entity, self.__class__.__name__)
         except KeyError:
             pass
 

@@ -107,11 +107,6 @@ class Entity:
     def scheduler(self):
         return self.region.scheduler
 
-    @memoize
-    def __getattr__(self, item):
-        # return memoized component proxy
-        return getattr(self.entity_def, item).bind(self)
-
     def __getitem__(self, item):
         return self.__getattr__(item)
 
@@ -155,19 +150,20 @@ class Entity:
         """
         Update existing components and create new ones for missings.
         """
-        from component import c
-
         kset = set(components.keys())
-        to_update = self.components & set(components.keys())
+        to_update = self._component_names & set(components.keys())
         to_create = kset - to_update
 
-        for comp in to_update:
-            getattr(self, comp).__dict__.update(components[comp])
+        for comp_name in to_update:
+            getattr(self, comp_name).__dict__.update(components[comp_name])
 
-        to_init = [self.add_component(getattr(c, comp), initialize=False, **components[comp]) for comp in to_create]
+        to_init = [
+            self.add_component(comp_name, initialize=False, **components[comp_name])
+            for comp_name in to_create
+        ]
 
-        for comp in to_init:
-            comp.initialize()
+        for comp_name in to_init:
+            comp_name.initialize()
 
     def changes_after(self, ts):
         ret = []
