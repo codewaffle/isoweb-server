@@ -24,19 +24,27 @@ class Position(BaseComponent):
     y = 0.
     vx = 0.
     vy = 0.
-    radius = 0.
-    r = 0.
+
+    w = 1.
+    h = 1.
+
+    r = 0.  # rotation
+
     parent = None
     _parent = None
 
-    persists = ['x', 'y', 'vx', 'vy', 'radius', 'r', 'parent']
+    persists = ['x', 'y', 'vx', 'vy', 'w', 'h', 'r', 'parent']
 
     def _update(self):
         # update quadtree position
         ob = self.entity.ob
         ob.aabb.center.x = self.x
         ob.aabb.center.y = self.y
-        ob.update_quadtree()
+        ob.aabb.hwidth = self.w / 2
+        ob.aabb.hheight = self.h / 2
+
+        if ob.node:
+            ob.update_quadtree()
 
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()

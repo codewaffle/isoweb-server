@@ -22,6 +22,14 @@ class Island(BaseComponent):
         hull = MultiPoint(points).convex_hull
         points = list(hull.boundary.coords)
 
+        self.entity.Position.x = (hull.bounds[0] + hull.bounds[2]) / 2
+        self.entity.Position.y = (hull.bounds[1] + hull.bounds[3]) / 2
+
+        self.entity.Position.w = hull.bounds[2] - hull.bounds[0]
+        self.entity.Position.h = hull.bounds[3] - hull.bounds[1]
+
+        self.entity.Position._update()
+
         tpoly = self.entity.add_component(
             'TerrainPolygon',
             points=points
@@ -31,7 +39,9 @@ class Island(BaseComponent):
 
 class TerrainPolygon(BaseComponent):
     points = None
+
+    exports = ['points']
     persists = ['points']
 
     def initialize(self):
-        print(self.points)
+        pass
