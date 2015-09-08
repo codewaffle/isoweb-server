@@ -235,10 +235,18 @@ class Entity:
 
     @property
     def persistent_data(self):
-        return {
-            comp.__class__.__name__: comp.modified_persists
-            for comp in self.components
-        }
+        def _keep_always(comp_name):
+            return comp_name not in self.entity_def.component_names
+
+        def _filter_empty(items):
+            return (i for i in items if i[1] or _keep_always(i[0]))
+
+        return dict(
+            _filter_empty((
+                (comp.__class__.__name__, comp.modified_persists)
+                for comp in self.components
+            ))
+        )
 
     def get_db_key(self):
         return 'ent-{}'.format(self.id).encode('utf8')
