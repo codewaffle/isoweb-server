@@ -27,9 +27,6 @@ class BaseComponent:
 
     active = True
 
-    def __getattr__(self, item):
-        print("WHAT!!!")
-
     def __init__(self, ent):
         self.entity = ent
 

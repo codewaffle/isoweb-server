@@ -11,12 +11,13 @@ from mathx.quadtree import Quadtree
 
 from scheduler import Scheduler
 
+
 def component_dict(*args):
     return defaultdict(dict, *args)
 
 
 class Region:
-    def __init__(self, region_id):
+    def __init__(self, region_id, load=True):
         self._delete_set = set()
         self.region_id = region_id
         self.scheduler = Scheduler()
@@ -29,8 +30,9 @@ class Region:
 
         self.db = lmdb.Environment('{}/{}'.format(DB_DIR, self.region_id), map_size=1024*1024*64)
 
-        with self.db.begin() as tx:
-            self.load_data(tx.cursor())
+        if load:
+            with self.db.begin() as tx:
+                self.load_data(tx.cursor())
 
         with self.db.begin(write=True) as tx:
             self.save_data(tx.cursor())
@@ -122,6 +124,7 @@ class Region:
     def load_entities(self, cur):
         self.log.debug('Loading entities from db')
         start = clock()
+        count = 0
         if cur.set_range(b'ent-'):
             for key, val in cur:
                 if not key.startswith(b'ent-'):
@@ -134,7 +137,9 @@ class Region:
                 ent.ob.flags = data['ob_flags']
                 ent.set_region(self)
                 ent.update_components(data.get('components', {}))
-        self.log.info('Loaded entities in {} seconds', clock() - start)
+                count += 1
+                
+        self.log.info('Loaded {} entities in {} seconds', count, clock() - start)
 
     def destroy_entity(self, ent):
         # reset Reference

@@ -9,27 +9,24 @@ from util import sleep
 
 StderrHandler(level=logbook.DEBUG).push_application()
 import logging
-logging.basicConfig(level=logging.DEBUG)
 
+logging.basicConfig(level=logging.DEBUG)
 
 from region import Region
 from network.player import PlayerWebsocket
 from twisted.internet import reactor, defer, task
-
-
 from autobahn.twisted.websocket import WebSocketServerFactory
-
 from entitydef import load_defs
-
 import os
-spawn = False
 
+spawn = False
 
 try:
     os.stat(DB_DIR)
 except OSError:
     os.makedirs(DB_DIR)
     spawn = True
+# spawn = True
 
 load_defs()
 
@@ -38,8 +35,9 @@ factory.protocol = PlayerWebsocket
 
 reactor.listenTCP(10000, factory)
 
-factory.region = Region(0)
+factory.region = Region(0, load=not spawn)
 factory.region.start()
+
 
 def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
     for x in range(num):
@@ -50,18 +48,23 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
             ent.Position.data.z = ent.Sprite.data.scale / 2.
 
         if rot:
-            ent.Position.r = 2.*math.pi * random.random()
+            ent.Position.r = 2. * math.pi * random.random()
 
-#@inlineCallbacks
+
+# @inlineCallbacks
 def spawn_all():
+    factory.region.spawn('island', pos=Vector2(0, 0))
+    return
     spawn_crap('crate', 1, rot=True)
     spawn_crap('backpack', 1, rot=True)
 
     for x in range(500):
-        factory.region.spawn('tree', pos=Vector2(random.uniform(-128, 128), random.uniform(-128, 128))).Position.r = 2.*math.pi * random.random()
+        factory.region.spawn('tree', pos=Vector2(random.uniform(-128, 128),
+                                                 random.uniform(-128, 128))).Position.r = 2. * math.pi * random.random()
 
     for x in range(500):
-        factory.region.spawn('chicken', pos=Vector2(random.uniform(-256, 256), random.uniform(-256, 256))).Position.r = 2.*math.pi * random.random()
+        factory.region.spawn('chicken', pos=Vector2(random.uniform(-256, 256), random.uniform(-256,
+                                                                                              256))).Position.r = 2. * math.pi * random.random()
 
     # factory.region.spawn('testhouse', pos=Vector2(0, 0))
 
@@ -75,9 +78,8 @@ def spawn_all():
         yield sleep(0.1)
     """
 
-spawn = True
+
 if spawn:
     spawn_all()
 
 reactor.run()
-

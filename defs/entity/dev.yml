@@ -45,3 +45,6 @@ campfire:
 - Volume
 - component: Sprite
   sprite:
+
+island:
+- Island

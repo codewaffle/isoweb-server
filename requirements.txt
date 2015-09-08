@@ -9,3 +9,4 @@ wsaccel==0.6.2
 zope.interface==4.1.2
 xxhash==0.4.0
 noise==1.2.2
+Shapely==1.5.9

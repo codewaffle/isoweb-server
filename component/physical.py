@@ -25,7 +25,7 @@ class Position(BaseComponent):
     vx = 0.
     vy = 0.
     radius = 0.
-    r = 1.
+    r = 0.
     parent = None
     _parent = None
 
