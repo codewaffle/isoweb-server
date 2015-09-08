@@ -128,11 +128,11 @@ class Entity:
         object.__setattr__(self, comp_class.__name__, comp)
         comp.__dict__.update(data)
 
-        if initialize:
-            comp.initialize()
-
         self.components.append(comp)
         self._component_names.add(comp_name)
+
+        if initialize:
+            comp.initialize()
 
         return comp
 

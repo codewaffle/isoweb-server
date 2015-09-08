@@ -39,8 +39,9 @@ class Island(BaseComponent):
 
 class TerrainPolygon(BaseComponent):
     points = None
+    texture = 'tiles/tile_grass.png'
 
-    exports = ['points']
+    exports = ['points', 'texture']
     persists = ['points']
 
     def initialize(self):
