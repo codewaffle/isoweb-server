@@ -8,6 +8,7 @@ from util import sleep
 
 logger = logbook.Logger(__name__)
 
+
 class Scheduler:
     def __init__(self, resolution=1/100.):
         self.resolution = resolution
@@ -26,7 +27,7 @@ class Scheduler:
             now = clock()
 
             while queue.queue[0][0] < now:
-                # time desired, time when originally scheduled (used to compute dt), function, args, kwargs.
+                # time desired, integer id, time scheduled, function, args, kwargs.
                 t, i, s, f, a, k = self.queue.get()
 
                 d = now - s
