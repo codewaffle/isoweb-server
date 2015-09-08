@@ -16,6 +16,9 @@ class Island(BaseComponent):
     def generate(self):
         # much random
         self.seed = 1  # random.getrandbits(64)
+
+        random.seed(self.seed)
+
         points = [(random.uniform(-2048.0, 2048.0), random.uniform(-2048.0, 2048.0)) for _ in range(1000)]
 
         # extract convex hull
