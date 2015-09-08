@@ -29,6 +29,8 @@ class Position(BaseComponent):
     parent = None
     _parent = None
 
+    persists = ['x', 'y', 'vx', 'vy', 'radius', 'r', 'parent']
+
     def _update(self):
         # update quadtree position
         ob = self.entity.ob
@@ -107,12 +109,8 @@ class Position(BaseComponent):
 
 
 class Mass(BaseComponent):
-    data = {
-        'value': 1.0
-    }
+    value = 1.1
 
 
 class Volume(BaseComponent):
-    data = {
-        'value': 1.0
-    }
+    value = 1.2

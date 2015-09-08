@@ -22,8 +22,10 @@ class DataProxy(dict):
 
 
 class BaseComponent:
-    active = True
     exports = []
+    persists = []
+
+    active = True
 
     def __getattr__(self, item):
         print("WHAT!!!")
@@ -59,6 +61,13 @@ class BaseComponent:
 
     def on_destroy(self):
         pass
+
+    @property
+    def modified_persists(self):
+        def _persists():
+            return ((k, getattr(self, k)) for k in self.persists)
+
+        return {k: v for k, v in _persists() if v != getattr(self.__class__, k)}
 
 
 class MenuComponent(BaseComponent):

@@ -9,6 +9,8 @@ class Container(MenuComponent):
     _registry = None
     _max = 0
 
+    persists = ['contents']
+
     def initialize(self):
         self.initialize_menu()
         self.contents = {

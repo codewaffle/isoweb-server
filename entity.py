@@ -45,7 +45,6 @@ class Entity:
         self.id = ent_id
         self.entity_def = None
         self._menu_providers = set()
-        self.component_data = {}
         self.snapshots = None
         self.ob = EntityOb(self)
         self.dirty = False
@@ -236,21 +235,10 @@ class Entity:
 
     @property
     def persistent_data(self):
-        def transform(cd):
-            if isinstance(cd, dict):
-                return {k: transform(v) for k,v in cd.items()}
-            elif isinstance(cd, Entity):
-                return cd.id
-            else:
-                return cd
-
-        def public(cd):
-            return {k: transform(v) for k, v in cd.items() if not k.startswith('_')}
-
-        def persistable(cd):
-            return {k: v for k, v in cd.items() if v or k not in self.entity_def.components}
-
-        return persistable({k: public(v) for k, v in self.component_data.items() if k not in ('NetworkViewer', )})
+        return {
+            comp.__class__.__name__: comp.modified_persists
+            for comp in self.components
+        }
 
     def get_db_key(self):
         return 'ent-{}'.format(self.id).encode('utf8')
