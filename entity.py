@@ -126,10 +126,9 @@ class Entity:
         comp_class = component.get(comp_name)
         comp = comp_class(self)
         object.__setattr__(self, comp_class.__name__, comp)
-        comp.__dict__.update(data)
-
         self.components.append(comp)
         self._component_names.add(comp_name)
+        [setattr(comp, k, v) for k, v in data.items()]
 
         if initialize:
             comp.initialize()
