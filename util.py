@@ -175,69 +175,44 @@ class TrackedDictionary(dict):
         return {k: self.get(k, TrackedDictionary.DELETED) for k, d in self._tracking.items() if d > when}
 
 
-def track_attributes(*attrs, change_callback_name='on_tracked_attribute_changed'):
-    """
-    Class decorator that will hook into __setattr__ to wrap some attributes in a `TrackedDictionary`
-    :param attrs:
-    :param track_exports:
-    :param track_persists:
-    :return:
-    """
-    if len(attrs) == 1 and isinstance(attrs[0], type):
-        return track_attributes()(attrs[0])
+class TrackAttributes:
+    tracked_attributes = frozenset()
+    on_tracked_attribute_changed = None
 
-    attrs = set(attrs)
+    def __init__(self, *args, **kwargs):
+        object.__setattr__(self, '_tracking', TrackedDictionary())
+        [self.__setattr__(k, getattr(self, k)) for k in self.tracked_attributes]
+        super().__init__()
 
-    def wrap_init(init_func):
-        def __init__(self, *args, **kwargs):
-            object.__setattr__(self, '_tracking', TrackedDictionary())
-            init_func(self, *args, **kwargs)
-            [setattr(self, k, getattr(self, k)) for k in attrs]
+    def __setattr__(self, key, value):
+        changed = value != getattr(self, key, TrackedDictionary.INVALID)
+        super().__setattr__(key, value)
 
-        return __init__
+        if key in self.tracked_attributes:
+            if value == getattr(self.__class__, key):
+                # delete and save memory!
+                try:
+                    del self._tracking[key]
+                except KeyError:
+                    return
+            else:
+                self._tracking[key] = value
 
-    def wrap_setattr(setattr_func, change_callback_func):
-        def __setattr__(self, key, value):
-            changed = value != getattr(self, key, TrackedDictionary.INVALID)
-            setattr_func(self, key, value)
+        if changed and self.on_tracked_attribute_changed:
+            self.on_tracked_attribute_changed(key)
 
-            if key in attrs:
-                if value == getattr(self.__class__, key):
-                    # delete and save memory!
-                    try:
-                        del self._tracking[key]
-                    except KeyError:
-                        return
-                else:
-                    self._tracking[key] = value
+    def get_tracked_attributes(self, after=-1):
+        if after == -1:
+            return {k: getattr(self, k) for k in self.tracked_attributes}
 
-            if changed and change_callback_func:
-                change_callback_func(self, key)
+        def filter_deleted(k, v):
+            return k, v if v != TrackedDictionary.DELETED else getattr(self, k)
 
-        return __setattr__
+        return dict(
+            (filter_deleted(k, v)
+             for k, v in self._tracking.get_modified_after(after).items())
+        )
 
-    def class_wrapper(cls):
-        callback = getattr(cls, change_callback_name, None)
-
-        def get_tracked_attributes(self, after=-1):
-            if after == -1:
-                return {k: getattr(self, k) for k in attrs}
-
-            def filter_deleted(k, v):
-                return k, v if v != TrackedDictionary.DELETED else getattr(self, k)
-
-            return dict(
-                (filter_deleted(k, v)
-                 for k, v in self._tracking.get_modified_after(after).items())
-            )
-
-        cls.__init__ = wrap_init(cls.__init__)
-        cls.__setattr__ = wrap_setattr(cls.__setattr__, callback)
-        cls.get_tracked_attributes = get_tracked_attributes
-
-        return cls
-
-    return class_wrapper
 
 clock_time_start = time() - clock()
 

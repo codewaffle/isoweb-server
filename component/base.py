@@ -1,4 +1,4 @@
-from util import track_attributes
+from util import TrackAttributes
 
 
 class DataProxy(dict):
@@ -26,13 +26,15 @@ class DataProxy(dict):
 
 class BaseMeta(type):
     def __new__(cls, name, parents, dct):
-        obj = super().__new__(cls, name, parents, dct)
-
         track = dct.get('exports', [])
         track.extend(dct.get('persists', []))
+        track.extend(list(dct.get('tracked_attributes', [])))
 
         if track:
-            return track_attributes(*track)(obj)
+            parents = parents + (TrackAttributes,)
+            dct['tracked_attributes'] = frozenset(track)
+
+        obj = super().__new__(cls, name, parents, dct)
 
         return obj
 
@@ -44,6 +46,7 @@ class BaseComponent(metaclass=BaseMeta):
     active = True
 
     def __init__(self, ent):
+        super(BaseComponent, self).__init__()
         self.entity = ent
 
     def initialize(self):
@@ -88,9 +91,6 @@ class BaseComponent(metaclass=BaseMeta):
             self.entity.set_dirty()
         else:
             self.entity.set_modified()
-
-    def get_tracked_attributes(self, after=-1):
-        pass  # replaced by metaclass
 
 
 class MenuComponent(BaseComponent):
