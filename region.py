@@ -66,13 +66,16 @@ class Region:
         self.max_entity_id += 1
         return self.max_entity_id
 
-    def spawn(self, entdef, spawn_components=None, pos=None, rot=None, replicate=True):
+    def spawn(self, entdef, spawn_components=None, pos=None, rot=None, replicate=True, ent_id=None):
         if isinstance(entdef, (str, bytes)):
             entdef = definition_from_key(entdef)
 
         assert isinstance(entdef, EntityDef)
 
-        ent = Entity(self.next_entity_id())
+        if ent_id is None:
+            ent_id = self.next_entity_id()
+
+        ent = Entity(ent_id)
         ent.entity_def = entdef
         ent.ob.flags = 0
         ent.set_region(self)
@@ -132,11 +135,14 @@ class Region:
 
                 data = ujson.loads(val)
 
-                ent = Entity(data['id'])
-                ent.entity_def = definition_from_key(data['entitydef'])
-                ent.ob.flags = data['ob_flags']
-                ent.set_region(self)
-                ent.update_components(data.get('components', {}))
+                ent = self.spawn(
+                    data['entitydef'],
+                    spawn_components=data.get('components', {}),
+                    replicate=False, # set by Replicate component
+                    ent_id=data['id']
+                )
+
+                # ent.ob.flags = data['ob_flags']
                 count += 1
                 
         self.log.info('Loaded {} entities in {} seconds', count, clock() - start)
