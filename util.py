@@ -1,5 +1,6 @@
 import collections
 from functools import partial
+from time import time
 
 from isoweb_time import clock
 from twisted.internet import task, reactor
@@ -174,7 +175,7 @@ class TrackedDictionary(dict):
         return {k: self.get(k, TrackedDictionary.DELETED) for k, d in self._tracking.items() if d > when}
 
 
-def track_attributes(*attrs, track_exports=True, track_persists=True):
+def track_attributes(*attrs, change_callback_name='on_tracked_attribute_changed'):
     """
     Class decorator that will hook into __setattr__ to wrap some attributes in a `TrackedDictionary`
     :param attrs:
@@ -197,32 +198,26 @@ def track_attributes(*attrs, track_exports=True, track_persists=True):
 
     def wrap_setattr(setattr_func, change_callback_func):
         def __setattr__(self, key, value):
+            changed = value != getattr(self, key, TrackedDictionary.INVALID)
+            setattr_func(self, key, value)
+
             if key in attrs:
                 if value == getattr(self.__class__, key):
                     # delete and save memory!
                     try:
                         del self._tracking[key]
                     except KeyError:
-                        pass
+                        return
+                else:
+                    self._tracking[key] = value
 
-                    return
-                self._tracking[key] = value
-
-            setattr_func(self, key, value)
-
-            if change_callback_func:
+            if changed and change_callback_func:
                 change_callback_func(self, key)
 
         return __setattr__
 
     def class_wrapper(cls):
-        change_callback = getattr(cls, 'on_tracked_attribute_change', None)
-
-        if track_exports:
-            attrs.update(cls.exports)
-
-        if track_persists:
-            attrs.update(cls.persists)
+        callback = getattr(cls, change_callback_name, None)
 
         def get_tracked_attributes(self, after=-1):
             if after == -1:
@@ -237,9 +232,19 @@ def track_attributes(*attrs, track_exports=True, track_persists=True):
             )
 
         cls.__init__ = wrap_init(cls.__init__)
-        cls.__setattr__ = wrap_setattr(cls.__setattr__, change_callback)
+        cls.__setattr__ = wrap_setattr(cls.__setattr__, callback)
         cls.get_tracked_attributes = get_tracked_attributes
 
         return cls
 
     return class_wrapper
+
+clock_time_start = time() - clock()
+
+
+def clock_to_time(clock_value):
+    return clock_time_start + clock_value
+
+
+def time_to_clock(time_value):
+    return time_value - clock_time_start

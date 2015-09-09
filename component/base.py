@@ -1,3 +1,6 @@
+from util import track_attributes
+
+
 class DataProxy(dict):
     def __init__(self, src):
         self.__dict__.update({
@@ -21,7 +24,20 @@ class DataProxy(dict):
         dict.__setitem__(self, key, value)
 
 
-class BaseComponent:
+class BaseMeta(type):
+    def __new__(cls, name, parents, dct):
+        obj = super().__new__(cls, name, parents, dct)
+
+        track = dct.get('exports', [])
+        track.extend(dct.get('persists', []))
+
+        if track:
+            return track_attributes(*track)(obj)
+
+        return obj
+
+
+class BaseComponent(metaclass=BaseMeta):
     exports = []
     persists = []
 
@@ -66,6 +82,15 @@ class BaseComponent:
             return ((k, getattr(self, k)) for k in self.persists)
 
         return {k: v for k, v in _persists() if v != getattr(self.__class__, k)}
+
+    def on_tracked_attribute_changed(self, key):
+        if key in self.persists:
+            self.entity.set_dirty()
+        else:
+            self.entity.set_modified()
+
+    def get_tracked_attributes(self, after=-1):
+        pass  # replaced by metaclass
 
 
 class MenuComponent(BaseComponent):

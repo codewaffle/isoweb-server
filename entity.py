@@ -1,9 +1,11 @@
 from math import atan2, pi
+from time import time
 import ujson
 import component
 from component.base import BaseComponent
+from isoweb_time import clock
 from menu import Menu
-from util import memoize, AttributeDict
+from util import memoize, AttributeDict, time_to_clock
 import util
 
 
@@ -12,7 +14,7 @@ class ObFlags:
 
 
 class SnapshotContainer(dict):
-    def __init__(self, ent, dirty_set):
+    def __init__(self, ent):
         super(SnapshotContainer, self).__init__()
         self._ent = ent
 
@@ -51,6 +53,7 @@ class Entity:
         self.valid = True
         self.components = []
         self._component_names = set()
+        self.modified = self.created = time()
 
     @classmethod
     def get(cls, ent_id):
@@ -60,12 +63,20 @@ class Entity:
         if not self.dirty:
             self.dirty = True
             self.region.dirty_set.add(self)
+        self.set_modified()
 
     def set_clean(self, remove=False):
         self.dirty = False
 
         if remove:
             self.region.dirty_set.remove(self)
+
+    def set_modified(self):
+        self.modified = time()
+
+    @property
+    def modified_clock(self):
+        return time_to_clock(self.modified)
 
     @property
     def name(self):
@@ -74,7 +85,7 @@ class Entity:
 
     def set_region(self, region):
         self.region = region
-        self.snapshots = SnapshotContainer(self, region.dirty_set)
+        self.snapshots = SnapshotContainer(self)
         region.entities.add(self)
 
     @property
@@ -106,9 +117,6 @@ class Entity:
     @property
     def scheduler(self):
         return self.region.scheduler
-
-    def __getitem__(self, item):
-        return self.__getattr__(item)
 
     def schedule(self, task):
         self.scheduler.schedule(func=task)
