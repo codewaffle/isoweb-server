@@ -1,5 +1,7 @@
 import collections
 from functools import partial
+
+from isoweb_time import clock
 from twisted.internet import task, reactor
 
 _class_cache = {}
@@ -102,6 +104,7 @@ def freeze_dict(d):
 
     return frozenset(((k, _filter(v)) for k, v in d.items()))
 
+
 def refreeze(obj):
     def _filter(x):
         if isinstance(x, (list, tuple, set)):
@@ -110,11 +113,14 @@ def refreeze(obj):
 
     return frozenset(_filter(x) for x in obj)
 
+
 def noop():
     pass
 
+
 def sleep(seconds, callback=noop):
     return task.deferLater(reactor, seconds, callback)
+
 
 def to_bytes(data):
     if isinstance(data, list):
@@ -123,3 +129,117 @@ def to_bytes(data):
         return data.encode('utf8')
     else:
         return data
+
+
+class TrackedDictionary(dict):
+    """
+    Tracks a timestamp for every item.
+
+    Provides method `get_modified_after(timestamp)` to return a sub-dictionary
+    containing only values that have changed after `timestamp`.
+    """
+    _tracked_parent = None
+    DELETED = object()
+    INVALID = object()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._tracking = {k: -1 for k in self.keys()}
+
+    def __setitem__(self, key, value):
+        if isinstance(value, dict):
+            # we are borg
+            value = TrackedDictionary(value)
+
+        if isinstance(value, TrackedDictionary) and (not value._tracked_parent or value._tracked_parent[1] != self):
+            value._tracked_parent = (key, self)
+
+        if value != self.get(key, TrackedDictionary.INVALID):
+            self.touch(key)
+            super().__setitem__(key, value)
+
+    def __delitem__(self, key):
+        self.touch(key)
+        super().__delitem__(key)
+
+    def touch(self, key):
+        self._tracking[key] = clock()
+        try:
+            _k, _p = self._tracked_parent
+            _p.touch(_k)
+        except (TypeError, ):
+            pass
+
+    def get_modified_after(self, when):
+        return {k: self.get(k, TrackedDictionary.DELETED) for k, d in self._tracking.items() if d > when}
+
+
+def track_attributes(*attrs, track_exports=True, track_persists=True):
+    """
+    Class decorator that will hook into __setattr__ to wrap some attributes in a `TrackedDictionary`
+    :param attrs:
+    :param track_exports:
+    :param track_persists:
+    :return:
+    """
+    if len(attrs) == 1 and isinstance(attrs[0], type):
+        return track_attributes()(attrs[0])
+
+    attrs = set(attrs)
+
+    def wrap_init(init_func):
+        def __init__(self, *args, **kwargs):
+            object.__setattr__(self, '_tracking', TrackedDictionary())
+            init_func(self, *args, **kwargs)
+            [setattr(self, k, getattr(self, k)) for k in attrs]
+
+        return __init__
+
+    def wrap_setattr(setattr_func, change_callback_func):
+        def __setattr__(self, key, value):
+            if key in attrs:
+                if value == getattr(self.__class__, key):
+                    # delete and save memory!
+                    try:
+                        del self._tracking[key]
+                    except KeyError:
+                        pass
+
+                    return
+                self._tracking[key] = value
+
+            setattr_func(self, key, value)
+
+            if change_callback_func:
+                change_callback_func(self, key)
+
+        return __setattr__
+
+    def class_wrapper(cls):
+        change_callback = getattr(cls, 'on_tracked_attribute_change', None)
+
+        if track_exports:
+            attrs.update(cls.exports)
+
+        if track_persists:
+            attrs.update(cls.persists)
+
+        def get_tracked_attributes(self, after=-1):
+            if after == -1:
+                return {k: getattr(self, k) for k in attrs}
+
+            def filter_deleted(k, v):
+                return k, v if v != TrackedDictionary.DELETED else getattr(self, k)
+
+            return dict(
+                (filter_deleted(k, v)
+                 for k, v in self._tracking.get_modified_after(after).items())
+            )
+
+        cls.__init__ = wrap_init(cls.__init__)
+        cls.__setattr__ = wrap_setattr(cls.__setattr__, change_callback)
+        cls.get_tracked_attributes = get_tracked_attributes
+
+        return cls
+
+    return class_wrapper
