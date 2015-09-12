@@ -3,9 +3,11 @@ import struct
 from isoweb_time import clock
 from component import BaseComponent
 from entity import ObFlags
+from network.util import PacketBuilder
 import packet_types
 from util import to_bytes
 
+pb = PacketBuilder()
 
 class NetworkViewer(BaseComponent):
     """
@@ -29,6 +31,7 @@ class NetworkViewer(BaseComponent):
             self.destroy()
             return
 
+        pb.begin()
         now = clock()
 
         current = self._current
@@ -38,10 +41,10 @@ class NetworkViewer(BaseComponent):
 
         for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated
-                self._socket.send(struct.pack('>BfI', packet_types.ENTITY_DESTROY, clock(), ref.id))
+                pb.append('BfI', packet_types.ENTITY_DESTROY, clock(), ref.id)
                 del cache[ref]
             else:  # hide dynamic/moving entities, stop updating static ones
-                self._socket.send(struct.pack('>BfI', packet_types.ENTITY_HIDE, clock(), ref.id))
+                pb.append('BfI', packet_types.ENTITY_HIDE, clock(), ref.id)
 
             current.remove(ref)
 
@@ -53,17 +56,14 @@ class NetworkViewer(BaseComponent):
         # send component exports attached to this entity def.
         if enter_defs:
             for d in enter_defs:
-                packet = struct.pack(
-                    '>BfQH{}s'.format(len(d.exports_json)),
+                pb.append(
+                    'BfQH{}s'.format(len(d.exports_json)),
                     packet_types.ENTITYDEF_UPDATE,
                     clock(),
                     d.digest,
                     len(d.exports_json),
                     d.exports_json
                 )
-
-                # send() bundles the packets up so this should be safe
-                self._socket.send(packet)
             self._def_cache.update(enter_defs)
 
         # loop through previously-and-still-visible entities and only process those that are due.
@@ -76,30 +76,27 @@ class NetworkViewer(BaseComponent):
             if when > now:
                 continue
 
-            packet_fmt = []
-            packet_data = []
+            header = False
 
             # append changes.
             for fmt, pdata in ref.changes_after(last):
-                packet_fmt.append(fmt)
-                packet_data.extend(pdata)
+                if not header:
+                    pb.append('BfI', packet_types.ENTITY_UPDATE, clock(), ref.id)
+                    header = True
+                pb.append(fmt, *pdata)
+            if header:
+                pb.append('B', 0)
 
             # queue up again based on priority or something.
             cache[ref] = now + 1 / 40., now  # for now, just ensure we update faster than the network rate so it's 1:1
 
-            if packet_fmt:
-                # entity update header
-                packet_fmt = ['>BfI'] + packet_fmt + ['B']
-                packet_data = [packet_types.ENTITY_UPDATE, clock(), ref.id] + packet_data + [0]
-
-                # SEND
-                packet = struct.pack(''.join(packet_fmt), *to_bytes(packet_data))
-                self._socket.send(packet)
-
         for ref in enter:
-            self._socket.send(struct.pack('>BfI', packet_types.ENTITY_SHOW, clock(), ref.id))
+            pb.append('BfI', packet_types.ENTITY_SHOW, clock(), ref.id)
 
         current.update(enter)
+
+        if pb.values:
+            self._socket.send(pb.build())
 
         # update @ 20hz
         return -1 / 20.
