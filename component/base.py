@@ -26,9 +26,12 @@ class DataProxy(dict):
 
 class BaseMeta(type):
     def __new__(cls, name, parents, dct):
-        track = dct.get('exports', [])
-        track.extend(dct.get('persists', []))
-        track.extend(list(dct.get('tracked_attributes', [])))
+        track = dct.get('tracked_attributes', None)
+        dct['exports'] = exports = set(dct.get('exports', set()))
+        dct['persists'] = persists = set(dct.get('persists', set()))
+
+        if track is None:
+            track = exports | persists
 
         if track:
             parents = parents + (TrackAttributes,)
@@ -45,9 +48,11 @@ class BaseComponent(metaclass=BaseMeta):
 
     active = True
 
-    def __init__(self, ent):
-        super(BaseComponent, self).__init__()
+    def __init__(self, ent, entdef=None):
+        self.name = self.__class__.__name__
         self.entity = ent
+        self.entdef = entdef
+        super(BaseComponent, self).__init__()
 
     def initialize(self):
         pass
@@ -79,8 +84,21 @@ class BaseComponent(metaclass=BaseMeta):
     def on_destroy(self):
         pass
 
+    def get_original_value(self, key):
+        if self.entdef:
+            return self.entdef.get(key, getattr(self.__class__, key))
+
+        return getattr(self.__class__, key)
+
     @property
     def modified_persists(self):
+        """
+        return a dict of attributes listed in 'persists' that differ from the default...
+        this is not as useful as I thought, as it will almost always differ from the class default
+        but share values with the entitydef :(
+
+        needs to
+        """
         def _persists():
             return ((k, getattr(self, k)) for k in self.persists)
 
@@ -89,7 +107,8 @@ class BaseComponent(metaclass=BaseMeta):
     def on_tracked_attribute_changed(self, key):
         if key in self.persists:
             self.entity.set_dirty()
-        else:
+
+        if key in self.exports:
             self.entity.set_modified()
 
 

@@ -5,7 +5,7 @@ import component
 from component.base import BaseComponent
 from isoweb_time import clock
 from menu import Menu
-from util import memoize, AttributeDict, time_to_clock
+from util import memoize, AttributeDict, time_to_clock, TrackedDictionary, TrackAttributes
 import util
 
 
@@ -55,6 +55,8 @@ class Entity:
         self._component_names = set()
         self.modified = self.created = time()
 
+        self.tracked_components = TrackedDictionary()
+
     @classmethod
     def get(cls, ent_id):
         return cls._registry[ent_id]
@@ -63,7 +65,6 @@ class Entity:
         if not self.dirty:
             self.dirty = True
             self.region.dirty_set.add(self)
-        self.set_modified()
 
     def set_clean(self, remove=False):
         self.dirty = False
@@ -130,9 +131,17 @@ class Entity:
     def __contains__(self, item):
         return self.has_component(item)
 
-    def add_component(self, comp_name, initialize=True, **data):
+    def add_component(self, comp_name, initialize=True, entdef=None, **data):
         comp_class = component.get(comp_name)
-        comp = comp_class(self)
+        comp = comp_class(self, entdef.component_data[comp_class] if entdef else entdef)
+
+        if getattr(comp, 'tracked_attributes', None):
+            # store a reference to the component..
+            self.tracked_components[comp_name] = comp
+            # and then hook the component's tracker up to update the timestamp (but keep the reference)
+            # dirty but fancy.. just the way I like it.
+            comp._tracking._tracked_parent = (comp_name, self.tracked_components)
+
         object.__setattr__(self, comp_class.__name__, comp)
         self.components.append(comp)
         self._component_names.add(comp_name)
@@ -143,13 +152,13 @@ class Entity:
 
         return comp
 
-    def add_components(self, components, initialize=True):
+    def add_components(self, components, initialize=True, entdef=None):
         if isinstance(components, (list, tuple, set)):
             for comp_name in components:
-                self.add_component(comp_name, initialize=initialize)
+                self.add_component(comp_name, initialize=initialize, entdef=entdef)
         elif isinstance(components, dict):
             for comp_name, data in components.items():
-                self.add_component(comp_name, initialize=initialize, **data)
+                self.add_component(comp_name, initialize=initialize, entdef=entdef, **data)
         else:
             raise ValueError('Components is not valid')
 
@@ -173,12 +182,16 @@ class Entity:
             comp_name.initialize()
 
     def changes_after(self, ts):
-        ret = []
         for ss_func, ss_time in self.snapshots.items():
             if ss_time >= ts:
-                ret.append(ss_func())
+                yield ss_func()
 
-        return ret
+        if self.tracked_components.modified > ts:
+            mods = {comp_name: comp.get_exports(ts) for comp_name, comp in self.tracked_components.get_modified_after(ts).items()}
+            mods = {k: v for k, v in mods.items() if v}
+            if mods:
+                # TODO : we can send this.
+                print('mods:', mods)
 
     def get_menu(self, user):
         # users use menus, I guess..

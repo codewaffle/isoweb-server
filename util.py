@@ -200,7 +200,7 @@ class TrackAttributes:
         super().__setattr__(key, value)
 
         if key in self.tracked_attributes:
-            if value == getattr(self.__class__, key):
+            if value == self.get_original_value(key):
                 # delete and save memory!
                 try:
                     self._tracking.erase(key)
@@ -223,6 +223,18 @@ class TrackAttributes:
             (filter_deleted(k, v)
              for k, v in self._tracking.get_modified_after(after).items())
         )
+
+    def get_persists(self, after=-1):
+        if after == -1:
+            return {k: getattr(self, k) for k in self.persists}
+
+        return {k: v for k, v in self.get_tracked_attributes(after).items() if k in self.persists}
+
+    def get_exports(self, after=-1):
+        if after == -1:
+            return {k: getattr(self, k) for k in self.exports}
+
+        return {k: v for k, v in self.get_tracked_attributes(after).items() if k in self.exports}
 
 
 clock_time_start = time() - clock()

@@ -80,9 +80,12 @@ class Region:
         ent.ob.flags = 0
         ent.set_region(self)
 
-        # gather up components from various sources
-        components = component_dict({k.__name__: v for k, v in entdef.component_data.items()})
+        entdef_components = {k.__name__: v for k, v in entdef.component_data.items()}
+        if entdef_components:
+            ent.add_components(entdef_components, initialize=False, entdef=entdef)
 
+        # gather up components from various sources
+        components = component_dict()
         if isinstance(spawn_components, (list, tuple, set)):
             for comp_name in spawn_components:
                 components[comp_name].update()  # trigger defaultdict creation

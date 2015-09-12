@@ -19,6 +19,12 @@ class _PacketBuilder:
 
         self.values.extend(_filtered(v) for v in vals)
 
+    def append_short_string(self, s):
+        self.append('B{}s'.format(len(s), s))
+
+    def append_string(self, s):
+        self.append('H{}s'.format(len(s), s))
+
     def build(self):
         return pack(''.join(self.fmt), *self.values)
 
