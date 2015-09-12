@@ -149,11 +149,11 @@ class TrackedDictionary(dict):
         self.modified = clock()
 
     def __setitem__(self, key, value):
-        if isinstance(value, dict):
+        if isinstance(value, TrackedDictionary) and (not value._tracked_parent or value._tracked_parent[1] != self):
+            value._tracked_parent = (key, self)
+        elif isinstance(value, dict):
             # we are borg
             value = TrackedDictionary(value)
-
-        if isinstance(value, TrackedDictionary) and (not value._tracked_parent or value._tracked_parent[1] != self):
             value._tracked_parent = (key, self)
 
         if value != self.get(key, TrackedDictionary.INVALID):
@@ -164,6 +164,13 @@ class TrackedDictionary(dict):
         self.touch(key)
         super().__delitem__(key)
 
+    def erase(self, key):
+        """
+        delete a key completely, including tracking information
+        """
+        super().__delitem__(key)
+        del self._tracking[key]
+
     def touch(self, key):
         self._tracking[key] = self.modified = clock()
         try:
@@ -173,7 +180,10 @@ class TrackedDictionary(dict):
             pass
 
     def get_modified_after(self, when):
-        return {k: self.get(k, TrackedDictionary.DELETED) for k, d in self._tracking.items() if d > when}
+        def _unpack(v):
+            return v.get_modified_after(when) if isinstance(v, TrackedDictionary) else v
+
+        return {k: _unpack(self.get(k, TrackedDictionary.DELETED)) for k, d in self._tracking.items() if d > when}
 
 
 class TrackAttributes:
@@ -193,7 +203,7 @@ class TrackAttributes:
             if value == getattr(self.__class__, key):
                 # delete and save memory!
                 try:
-                    del self._tracking[key]
+                    self._tracking.erase(key)
                 except KeyError:
                     return
             else:
