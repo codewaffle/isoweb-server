@@ -146,6 +146,7 @@ class TrackedDictionary(dict):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._tracking = {k: -1 for k in self.keys()}
+        self.modified = clock()
 
     def __setitem__(self, key, value):
         if isinstance(value, dict):
@@ -164,7 +165,7 @@ class TrackedDictionary(dict):
         super().__delitem__(key)
 
     def touch(self, key):
-        self._tracking[key] = clock()
+        self._tracking[key] = self.modified = clock()
         try:
             _k, _p = self._tracked_parent
             _p.touch(_k)
