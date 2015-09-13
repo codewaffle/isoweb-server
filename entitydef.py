@@ -4,6 +4,7 @@ import xxhash
 import ujson
 from component.base import DataProxy
 import component
+from logbook import Logger
 from util import memoize
 
 xx = xxhash.xxh64()
@@ -18,6 +19,7 @@ class EntityDef:
 
     def __init__(self, key, data):
         self.key = key
+        self.log = Logger('EntityDef({})'.format(repr(self.key)))
 
         xx.reset()
         xx.update(key)
@@ -57,8 +59,12 @@ class EntityDef:
                     comp_args = c.copy()
                 except KeyError:
                     # look for short-form component (Mass: 10) - must only be one entry!
-                    assert len(c) == 1
+                    assert len(c) == 1, repr(c)
                     comp_name, comp_args = list(c.items())[0]
+
+                    if comp_name == 'meta':
+                        self.__dict__.update(comp_args)
+
                     if not isinstance(comp_args, dict):
                         comp_args = {'value': comp_args}
             elif isinstance(c, str):
@@ -70,7 +76,9 @@ class EntityDef:
             try:
                 comp_class = component.get(comp_name)
             except KeyError:
-                raise ValueError("Component '{}' does not exist".format(comp_name))
+                self.log.warn("Component '{}' does not exist", comp_name)
+                continue
+                # raise ValueError("Component '{}' does not exist".format(comp_name))
 
             setattr(self, comp_name, comp_class)
             self.component_names.add(comp_name)

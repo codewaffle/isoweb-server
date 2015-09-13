@@ -25,6 +25,20 @@ class Sprite(BaseComponent):
     exports = [
         'scale', 'sprite', 'anchor'
     ]
+    
+    def __init__(self, ent, entdef):
+        if 'value' in entdef:
+            entdef['sprite'] = entdef['value']
+            del entdef['value']
+        super(Sprite, self).__init__(ent, entdef)
+
+    @property
+    def value(self):
+        return self.sprite
+
+    @value.setter
+    def value(self, value):
+        self.sprite = value
 
 
 class Spine(BaseComponent):

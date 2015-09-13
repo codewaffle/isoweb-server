@@ -6,3 +6,14 @@ testhouse:
 
 land_vehicle:
 - component: TileMap
+
+
+acorn:
+- Seed: oak_sapling
+- Sprite: sprites/acorn.png
+
+oak_sapling:
+- Sprite: sprites/sapling.png
+- Plant:
+    grow_into: oak_tree
+    lifespan: 10

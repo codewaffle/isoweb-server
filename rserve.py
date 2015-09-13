@@ -43,10 +43,6 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
     for x in range(num):
         ent = factory.region.spawn(name, pos=Vector2.random_inside(5))
 
-        if modscale:
-            ent.Sprite.data.scale = scalebase + random.random() * modscale
-            ent.Position.data.z = ent.Sprite.data.scale / 2.
-
         if rot:
             ent.Position.r = 2. * math.pi * random.random()
 
@@ -54,6 +50,8 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
 # @inlineCallbacks
 def spawn_all():
     factory.region.spawn('island', pos=Vector2(0, 0))
+    spawn_crap('acorn', 5, rot=True)
+    spawn_crap('oak_sapling', 5, rot=True)
     return
     spawn_crap('crate', 1, rot=True)
     spawn_crap('backpack', 1, rot=True)
