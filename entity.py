@@ -1,10 +1,12 @@
 from math import atan2, pi
+from struct import pack
 from time import time
 import ujson
 import component
 from component.base import BaseComponent
 from isoweb_time import clock
 from menu import Menu
+import packet_types
 from util import memoize, AttributeDict, time_to_clock, TrackedDictionary, TrackAttributes
 import util
 
@@ -189,9 +191,16 @@ class Entity:
         if self.tracked_components.modified > ts:
             mods = {comp_name: comp.get_exports(ts) for comp_name, comp in self.tracked_components.get_modified_after(ts).items()}
             mods = {k: v for k, v in mods.items() if v}
+
             if mods:
-                # TODO : we can send this.
-                print('mods:', mods)
+                mods = ujson.dumps(mods, double_precision=3).encode('utf8')
+                yield (
+                    'BH%ds' % len(mods), (
+                        packet_types.ENTITY_UPDATE,
+                        len(mods),
+                        mods
+                    )
+                )
 
     def get_menu(self, user):
         # users use menus, I guess..
