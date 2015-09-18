@@ -44,7 +44,7 @@ class NetworkViewer(BaseComponent):
                 pb.append('BfI', packet_types.ENTITY_DESTROY, clock(), ref.id)
                 del cache[ref]
             else:  # hide dynamic/moving entities, stop updating static ones
-                pb.append('BfI', packet_types.ENTITY_HIDE, clock(), ref.id)
+                pb.append('BfI', packet_types.ENTITY_DISABLE, clock(), ref.id)
 
             current.remove(ref)
 
@@ -91,7 +91,7 @@ class NetworkViewer(BaseComponent):
             cache[ref] = now + 1 / 40., now  # for now, just ensure we update faster than the network rate so it's 1:1
 
         for ref in enter:
-            pb.append('BfI', packet_types.ENTITY_SHOW, clock(), ref.id)
+            pb.append('BfI', packet_types.ENTITY_ENABLE, clock(), ref.id)
 
         current.update(enter)
 
