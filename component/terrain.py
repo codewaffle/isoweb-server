@@ -19,7 +19,7 @@ class Island(BaseComponent):
 
         random.seed(self.seed)
 
-        points = [(random.uniform(-2048.0, 2048.0), random.uniform(-2048.0, 2048.0)) for _ in range(1000)]
+        points = [(random.uniform(-30.0, 30.0), random.uniform(-30.0, 30.0)) for _ in range(1000)]
 
         # extract convex hull
         hull = MultiPoint(points).convex_hull
@@ -34,13 +34,13 @@ class Island(BaseComponent):
         self.entity.Position._update()
 
         tpoly = self.entity.add_component(
-            'TerrainPolygon',
+            'StaticPolygon',
             points=points
         )
         self.entity.set_dirty()
 
 
-class TerrainPolygon(BaseComponent):
+class StaticPolygon(BaseComponent):
     points = None
     texture = 'tiles/tile_grass.png'
 
