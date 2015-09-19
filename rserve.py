@@ -51,6 +51,7 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
 def spawn_all():
     factory.region.spawn('island', pos=Vector2(0, 0))
     spawn_crap('acorn', 5, rot=True)
+    spawn_crap('chicken', 5, rot=True)
     spawn_crap('oak_sapling', 5, rot=True)
     return
     spawn_crap('crate', 1, rot=True)
