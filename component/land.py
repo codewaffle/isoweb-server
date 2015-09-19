@@ -35,15 +35,17 @@ class Island(BaseComponent):
 
         tpoly = self.entity.add_component(
             'TerrainPolygon',
-            points=points,
-            texture='tiles/tile_grass.png'
+            points=points
         )
         self.entity.set_dirty()
 
 
 class TerrainPolygon(BaseComponent):
     points = None
-    texture = None
+    texture = 'tiles/tile_grass.png'
 
     exports = ['points', 'texture']
-    persists = ['points', 'texture']
+    persists = ['points']
+
+    def initialize(self):
+        pass
