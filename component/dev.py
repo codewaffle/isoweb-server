@@ -12,12 +12,8 @@ class Interactive(BaseComponent):
     hit_area = 'Circle(0, 0, 100)'
     exports = ['hit_area']
 
-    def initialize(self):
-        self.entity.snapshots[string_replicator(partial(getattr, self, 'hit_area'), 'hit_area')] = clock()
-
 
 class Choppable(MenuComponent):
-
     label = 'Chop!'
     output_def = 'log'
     output_count = 1

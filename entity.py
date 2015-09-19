@@ -135,7 +135,10 @@ class Entity:
 
     def add_component(self, comp_name, initialize=True, entdef=None, **data):
         comp_class = component.get(comp_name)
-        comp = comp_class(self, entdef.component_data[comp_class] if entdef else entdef)
+        if entdef is not None:
+            comp = comp_class(self, entdef.component_data[comp_class])
+        else:
+            comp = comp_class(self)
 
         if getattr(comp, 'tracked_attributes', None):
             # store a reference to the component..

@@ -41,6 +41,8 @@ class BaseMeta(type):
 
         return obj
 
+INVALID_VALUE = object()
+
 
 class BaseComponent(metaclass=BaseMeta):
     exports = []
@@ -85,10 +87,12 @@ class BaseComponent(metaclass=BaseMeta):
         pass
 
     def get_original_value(self, key):
-        if self.entdef:
+        if self.entdef is not None:
             return self.entdef.get(key, getattr(self.__class__, key))
 
-        return getattr(self.__class__, key)
+        return INVALID_VALUE
+
+        #return getattr(self.__class__, key)
 
     @property
     def modified_persists(self):
