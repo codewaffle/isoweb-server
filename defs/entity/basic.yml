@@ -74,3 +74,4 @@ chicken:
 - component: Spine
   character: spine/chicken/chicken.json
   atlas: spine/chicken/chicken.atlas
+- Interactive
