@@ -7,7 +7,7 @@ from network.util import PacketBuilder
 import packet_types
 from util import to_bytes
 
-pb = PacketBuilder()
+packet_builder = PacketBuilder()
 
 class NetworkViewer(BaseComponent):
     """
@@ -31,7 +31,7 @@ class NetworkViewer(BaseComponent):
             self.destroy()
             return
 
-        pb.begin()
+        packet_builder.begin()
         now = clock()
 
         current = self._current
@@ -41,10 +41,10 @@ class NetworkViewer(BaseComponent):
 
         for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated
-                pb.append('BfI', packet_types.ENTITY_DESTROY, clock(), ref.id)
+                packet_builder.append('BfI', packet_types.ENTITY_DESTROY, clock(), ref.id)
                 del cache[ref]
             else:  # hide dynamic/moving entities, stop updating static ones
-                pb.append('BfI', packet_types.ENTITY_DISABLE, clock(), ref.id)
+                packet_builder.append('BfI', packet_types.ENTITY_DISABLE, clock(), ref.id)
 
             current.remove(ref)
 
@@ -56,7 +56,7 @@ class NetworkViewer(BaseComponent):
         # send component exports attached to this entity def.
         if enter_defs:
             for d in enter_defs:
-                pb.append(
+                packet_builder.append(
                     'BfQH{}s'.format(len(d.exports_json)),
                     packet_types.ENTITYDEF_UPDATE,
                     clock(),
@@ -81,22 +81,22 @@ class NetworkViewer(BaseComponent):
             # append changes.
             for fmt, pdata in ref.changes_after(last):
                 if not header:
-                    pb.append('BfI', packet_types.ENTITY_UPDATE, clock(), ref.id)
+                    packet_builder.append('BfI', packet_types.ENTITY_UPDATE, clock(), ref.id)
                     header = True
-                pb.append(fmt, *pdata)
+                packet_builder.append(fmt, *pdata)
             if header:
-                pb.append('B', 0)
+                packet_builder.append('B', 0)
 
             # queue up again based on priority or something.
             cache[ref] = now + 1 / 40., now  # for now, just ensure we update faster than the network rate so it's 1:1
 
         for ref in enter:
-            pb.append('BfI', packet_types.ENTITY_ENABLE, clock(), ref.id)
+            packet_builder.append('BfI', packet_types.ENTITY_ENABLE, clock(), ref.id)
 
         current.update(enter)
 
-        if pb.values:
-            self._socket.send(pb.build())
+        if packet_builder.values:
+            self._socket.send(packet_builder.build())
 
         # update @ 20hz
         return -1 / 20.

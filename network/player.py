@@ -25,6 +25,7 @@ ping = struct.Struct('>H')
 
 _chatters = set()
 
+
 def broadcast(message_from, message):
     print('[Broadcast] {}: {}'.format(message_from, message))
     pkt = struct.pack(
@@ -35,6 +36,7 @@ def broadcast(message_from, message):
     for ch in _chatters:
         ch.send(pkt)
 
+
 def entity_text(ent, message):
     print('[EntityText] {}: {}'.format(ent, message))
     pkt = struct.pack(
@@ -44,6 +46,7 @@ def entity_text(ent, message):
 
     for ch in _chatters:
         ch.send(pkt)
+
 
 class PlayerWebsocket(WebSocketServerProtocol):
     def __init__(self):

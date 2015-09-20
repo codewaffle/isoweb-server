@@ -19,7 +19,7 @@ class Island(BaseComponent):
 
         random.seed(self.seed)
 
-        points = [(random.uniform(-7.0, 7.0), random.uniform(-7.0, 7.0)) for _ in range(15)]
+        points = [(random.uniform(-15.0, 15.0), random.uniform(-15.0, 15.0)) for _ in range(15)]
 
         # extract convex hull
         hull = MultiPoint(points).convex_hull
