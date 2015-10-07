@@ -30,10 +30,9 @@ class Position(BaseComponent):
 
     r = 0.  # rotation
 
-    parent = None
     _parent = None
 
-    persists = ['x', 'y', 'vx', 'vy', 'w', 'h', 'r', 'parent']
+    persists = ['x', 'y', 'vx', 'vy', 'w', 'h', 'r']
 
     def _update(self):
         # update quadtree position
@@ -49,8 +48,8 @@ class Position(BaseComponent):
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()
 
-        if self.parent != self._parent:
-            self._parent = self.parent
+        if self.entity.parent != self._parent:
+            self._parent = self.entity.parent
             self.entity.snapshots[self.parent_snapshot] = clock()
 
     def on_destroy(self):
@@ -63,7 +62,7 @@ class Position(BaseComponent):
         ob.aabb.center.y = self.y or random() - 0.5
         # self.entity.pos = ob.aabb.center
         self.entity.region.quadtree.insert(ob)
-        self._parent = self.parent
+        self._parent = self.entity.parent
 
         self.entity.snapshots[self.position_snapshot] = 0
         self.entity.snapshots[self.parent_snapshot] = 0
@@ -82,8 +81,8 @@ class Position(BaseComponent):
         )
 
     def get_parent_id(self):
-        if self.parent:
-            return self.parent.id
+        if self.entity.parent:
+            return self.entity.parent.id
 
         return 0
 

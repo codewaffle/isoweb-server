@@ -56,6 +56,7 @@ class Entity:
         self.components = []
         self._component_names = set()
         self.modified = self.created = time()
+        self.parent = None
 
         self.tracked_components = TrackedDictionary()
 
