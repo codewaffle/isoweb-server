@@ -64,15 +64,15 @@ class PlayerWebsocket(WebSocketServerProtocol):
     def onMessage(self, payload, isBinary):
         # self.log.debug('onMessage({})', hexlify(payload))
 
-        if self.region is None:
-            self.region = self.factory.region
-            self.handle_login()
 
         now = clock()
         if payload is None:
             return
 
         packet_type,  = packet_header.unpack_from(payload, 0)
+
+        if self.region is None:
+            self.handshake(payload)
 
         if packet_type == packet_types.PING:
             num, = ping.unpack_from(payload, 1)
@@ -144,13 +144,19 @@ class PlayerWebsocket(WebSocketServerProtocol):
         self.on_disconnect()
         return
 
-    def handle_login(self):
+    def handshake(self, payload):
+        self.region = self.factory.region
+        # read token and match it up.
+        # token = struct.unpack_from('>16s', payload, 0)
+
         # assign player to island, send initial bla bla bla
 
         self.entity = self.region.spawn('meatbag', {
             'NetworkViewer': {'_socket': self},
             'MeatbagController': {'_socket': self}
         }, pos=Vector2.random_inside(5.0))
+
+        self.entity.parent = self.region._island_hax
 
         msg = struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id)
 
