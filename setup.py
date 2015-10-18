@@ -1,4 +1,5 @@
 from distutils import msvccompiler
+from setuptools.extension import Library
 
 try:
     from setuptools import setup
@@ -32,15 +33,16 @@ if os.name == 'nt':
 chipmunk_src = glob.glob('phys/src/*.c')
 
 extensions = [
-    Extension(
-        'server.phys.chipmunk',
-        chipmunk_src + ['phys/chipmunk.pyx'],
+    Library(
+        name='chipmunk',
+        sources=chipmunk_src,
         include_dirs=['phys/include'],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,
     ),
     Extension(
         'server.phys.*', ['phys/**/*.pyx'],
+        libraries=['chipmunk'],
         include_dirs=['phys/include'],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,
