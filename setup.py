@@ -33,14 +33,14 @@ chipmunk_src = glob.glob('phys/src/*.c')
 
 extensions = [
     Extension(
-        'phys.chipmunk',
+        'server.phys.chipmunk',
         chipmunk_src + ['phys/chipmunk.pyx'],
         include_dirs=['phys/include'],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,
     ),
     Extension(
-        'phys.*', ['phys/**/*.pyx'],
+        'server.phys.*', ['phys/**/*.pyx'],
     ),
     Extension('*', ['**/*.pyx']),
 ]

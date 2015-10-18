@@ -4,3 +4,5 @@
 mathx/*.pyd
 mathx/*.c
 build/
+phys/*.c
+phys/*.pyd
