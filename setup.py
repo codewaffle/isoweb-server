@@ -41,6 +41,9 @@ extensions = [
     ),
     Extension(
         'server.phys.*', ['phys/**/*.pyx'],
+        include_dirs=['phys/include'],
+        define_macros=define_macros,
+        extra_compile_args=extra_compile_args,
     ),
     Extension('*', ['**/*.pyx']),
 ]

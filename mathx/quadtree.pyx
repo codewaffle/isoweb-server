@@ -104,28 +104,28 @@ cdef class Node:
             for item in x:
                 self.insert(item)
 
-    def expand(self):
+    cdef expand(self):
         assert self.p is None
 
         self.box.hwidth *= 2
 
         if self.node0:
-            prev = self.node0, self.node1, self.node2, self.node3
+            prev0, prev1, prev2, prev3 = self.node0, self.node1, self.node2, self.node3
 
             self.subdivide(2)
 
             # reattach manually for maximum speed
-            n0 = self.node0.node3 = prev[0]
-            n1 = self.node1.node2 = prev[1]
-            n2 = self.node2.node1 = prev[2]
-            n3 = self.node3.node0 = prev[3]
+            n0 = self.node0.node3 = prev0
+            n1 = self.node1.node2 = prev1
+            n2 = self.node2.node1 = prev2
+            n3 = self.node3.node0 = prev3
 
             n0.p = self.node0
             n1.p = self.node1
             n2.p = self.node2
             n3.p = self.node3
 
-    def get_node(self, index):
+    cdef Node get_node(self, int index):
         if index == 0:
             return self.node0
         if index == 1:
@@ -135,7 +135,7 @@ cdef class Node:
         if index == 3:
             return self.node3
 
-    def insert(self, NodeItem item):
+    cdef insert(self, NodeItem item):
         if self.node0:
             node = self.aabb_subnode(item.aabb)
 
@@ -149,7 +149,7 @@ cdef class Node:
         if not self.node0 and len(self.items) >= 5 and self.box.hwidth >= 2:
             self.subdivide()
 
-    def remove(self, NodeItem item):
+    cdef remove(self, NodeItem item):
         item.node = None
 
         self.items.remove(item)
@@ -157,7 +157,7 @@ cdef class Node:
         if self.p and not self.items:
             self.p.check_collapse()
 
-    def check_collapse(self):
+    cdef check_collapse(self):
         """
         Check if < threshold items are in subnodes.. if so, steal them and demolish the subnodes.
         :return:

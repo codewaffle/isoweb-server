@@ -8,6 +8,15 @@ cdef class Node:
 
     cdef public Node node0, node1, node2, node3
     cdef subdivide(self, int n=*)
+    cdef expand(self)
+
+    cdef Node get_node(self, int index)
+
+    cdef insert(self, NodeItem)
+    cdef remove(self, NodeItem)
+
+    cdef check_collapse(self)
+
 
     cdef public set items
     cdef void q_aabb(self, AABB aabb, set output, int flags)
