@@ -1,22 +1,18 @@
 cdef extern from "chipmunk/chipmunk_private.h":
-    ctypedef float cpFloat
+    ctypedef double cpFloat
     ctypedef bint cpBool
     ctypedef int cpTimestamp
     ctypedef void* cpDataPointer
     ctypedef int cpHashValue
 
     cdef struct cpVect:
-        float x
-        float y
+        cpFloat x, y
 
     cdef struct cpBB:
-        float l
-        float b
-        float r
-        float t
+        cpFloat l, b, r, t
 
     cdef struct cpTransform:
-        float a, b, c, d, tx, ty
+        cpFloat a, b, c, d, tx, ty
 
     cdef struct cpBodyType
     cdef struct cpPolyline
