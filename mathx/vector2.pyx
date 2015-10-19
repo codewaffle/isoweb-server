@@ -1,9 +1,13 @@
 from libc.math cimport sqrt
 from random import uniform
+from phys.cm cimport *
 
 cdef class Vector2:
     def __init__(self, x=0, y=0.):
         self.x, self.y = x,y
+
+    def to_cpVect(self):
+        return cpv(self.x, self.y)
 
     def update(self, Vector2 other):
         self.x, self.y = other.x, other.y
@@ -11,7 +15,7 @@ cdef class Vector2:
     def update(self, float x, float y):
         self.x, self.y = x, y
 
-    def dot(self, Vector2 other):
+    cpdef dot(self, Vector2 other):
         return self.x*other.x+self.y*other.y
 
     def __sub__(self, other):
@@ -30,22 +34,22 @@ cdef class Vector2:
         return 'Vector2({s.x}, {s.y})'.format(s=self)
 
     # inline chainables
-    def mul(self, float other):
+    cpdef Vector2 mul(self, float other):
         self.x *= other
         self.y *= other
         return self
 
-    def div(self, float other):
+    cpdef Vector2 div(self, float other):
         self.x /= other
         self.y /= other
         return self
 
-    def add(self, Vector2 other):
+    cpdef Vector2 add(self, Vector2 other):
         self.x += other.x
         self.y += other.y
         return self
 
-    def sub(self, Vector2 other):
+    cpdef Vector2 sub(self, Vector2 other):
         self.x -= other.x
         self.y -= other.y
         return self
@@ -62,16 +66,17 @@ cdef class Vector2:
     def normalized(self):
         return self / self.magnitude
 
-    def normalize(self):
+    cpdef Vector2 normalize(self):
         """In-place normalize"""
         return self.div(self.magnitude)
 
-    def lerp(self, other, alpha):
-        return Vector2(self.x + (other.x - self.x) * alpha, self.y + (other.y - self.y) * alpha)
+    cpdef Vector2 lerp(self, other, alpha):
+        return self * (1.0 - alpha) + (other * alpha)
 
-    def inplace_lerp(self, other, alpha):
-        self.x += (other.x - self.x) * alpha
-        self.y += (other.y - self.y) * alpha
+
+    cpdef Vector2 inplace_lerp(self, other, alpha):
+        self.x = self.x * (1.0 - alpha) + (other.x * alpha)
+        self.y = self.y * (1.0 - alpha) + (other.y * alpha)
 
         return self
 
