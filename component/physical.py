@@ -52,6 +52,9 @@ class Position(BaseComponent):
             self._parent = self.entity.parent
             self.entity.snapshots[self.parent_snapshot] = clock()
 
+    def __repr__(self):
+        return '<Position {},{}>'.format(self.x, self.y)
+
     def on_destroy(self):
         self.entity.ob.remove()
 
