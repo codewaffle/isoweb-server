@@ -4,7 +4,7 @@ cdef extern from "chipmunk/chipmunk_private.h":
     ctypedef int cpTimestamp
     ctypedef void* cpDataPointer
     ctypedef int cpHashValue
-
+    ctypedef int cpCollisionID
     cdef struct cpVect:
         cpFloat x, y
 
@@ -51,6 +51,7 @@ cdef extern from "chipmunk/chipmunk_private.h":
     cdef struct cpCollisionHandler
     cdef struct cpContactPointSet
     cdef struct cpArbiter
+    struct cpSpaceDebugColor
     
     cdef struct cpSpace:
         int iterations
@@ -98,3 +99,26 @@ cdef extern from "chipmunk/chipmunk_private.h":
 
         cpBody *staticBody
         # cpBody _staticBody
+
+    ctypedef void (*cpSpaceBBQueryFunc)(cpShape *shape, void *data)
+    ctypedef void (*cpBodyVelocityFunc)(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
+    ctypedef void (*cpBodyPositionFunc)(cpBody *body, cpFloat dt)
+    ctypedef void (*cpBodyShapeIteratorFunc)(cpBody *body, cpShape *shape, void *data)
+    ctypedef void (*cpBodyConstraintIteratorFunc)(cpBody *body, cpConstraint *constraint, void *data)
+    ctypedef void (*cpBodyArbiterIteratorFunc)(cpBody *body, cpArbiter *arbiter, void *data)
+    ctypedef void (*cpConstraintPreSolveFunc)(cpConstraint *constraint, cpSpace *space)
+    ctypedef void (*cpConstraintPostSolveFunc)(cpConstraint *constraint, cpSpace *space);
+
+    ctypedef void (*cpCollisionPostSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+    ctypedef void (*cpCollisionSeparateFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+    ctypedef void (*cpPostStepFunc)(cpSpace *space, void *key, void *data)
+    ctypedef void (*cpSpacePointQueryFunc)(cpShape *shape, cpVect point, cpFloat distance, cpVect gradient, void *data)
+    ctypedef void (*cpSpaceSegmentQueryFunc)(cpShape *shape, cpVect point, cpVect normal, cpFloat alpha, void *data)
+    ctypedef void (*cpSpaceBBQueryFunc)(cpShape *shape, void *data)
+    ctypedef void (*cpSpaceShapeQueryFunc)(cpShape *shape, cpContactPointSet *points, void *data)
+    ctypedef void (*cpSpaceBodyIteratorFunc)(cpBody *body, void *data)
+    ctypedef void (*cpSpaceShapeIteratorFunc)(cpShape *shape, void *data)
+    ctypedef void (*cpSpaceConstraintIteratorFunc)(cpConstraint *constraint, void *data)
+
+    ctypedef cpCollisionID (*cpSpatialIndexQueryFunc)(void *obj1, void *obj2, cpCollisionID id, void *data)
+    ctypedef void (*cpSpatialIndexIteratorFunc)(void *obj, void *data)
