@@ -1,5 +1,5 @@
 autobahn==0.10.5.post2
-Cython==0.23
+Cython==0.23.4
 lmdb==0.86
 Logbook==0.10.1
 PyYAML==3.11

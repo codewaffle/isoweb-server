@@ -30,12 +30,11 @@ if os.name == 'nt':
         '/TP',
     ]
 
-chipmunk_src = glob.glob('phys/src/*.c')
 
 extensions = [
     Library(
-        name='chipmunk',
-        sources=chipmunk_src,
+        name='server.chipmunk',
+        sources=glob.glob('phys/src/*.c'),
         include_dirs=['phys/include'],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,
@@ -47,10 +46,13 @@ extensions = [
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,
     ),
-    Extension('*', ['**/*.pyx']),
+    Extension(
+        'server.mathx.*', ['mathx/**/*.pyx']
+    ),
 ]
 
 setup(
+    name='isoweb_server',
     ext_modules=cythonize(extensions),
 )
 

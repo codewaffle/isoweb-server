@@ -6,3 +6,5 @@ mathx/*.c
 build/
 phys/*.c
 phys/*.pyd
+chipmunk.dll
+*.pdb
