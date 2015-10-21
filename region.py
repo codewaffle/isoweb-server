@@ -77,7 +77,6 @@ class Region:
 
         ent = Entity(ent_id)
         ent.entity_def = entdef
-        ent.ob.flags = 0
         ent.set_region(self)
 
         entdef_components = {k.__name__: v for k, v in entdef.component_data.items()}

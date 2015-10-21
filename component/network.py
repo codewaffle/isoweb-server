@@ -2,7 +2,7 @@ from functools import partial
 import struct
 from isoweb_time import clock
 from component import BaseComponent
-from entity import ObFlags
+from entity import EntityFlags
 from network.util import PacketBuilder
 import packet_types
 from util import to_bytes
@@ -37,7 +37,7 @@ class NetworkViewer(BaseComponent):
         current = self._current
         cache = self._cache
 
-        visible = self.entity.Position.find_nearby(self.visibility_radius, flags=ObFlags.REPLICATE)
+        visible = self.entity.Position.find_nearby(self.visibility_radius, flags=EntityFlags.REPLICATE)
 
         for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated
@@ -106,7 +106,7 @@ class Replicated(BaseComponent):
     _name_replicator = None
 
     def initialize(self):
-        self.entity.ob.flags |= ObFlags.REPLICATE
+        self.entity.flags |= EntityFlags.REPLICATE
         self._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
 
         self.entity.snapshots[self.get_entitydef_hash] = 0
@@ -116,7 +116,7 @@ class Replicated(BaseComponent):
         return 'BQ', (packet_types.ENTITYDEF_HASH_UPDATE, self.entity.entity_def.digest)
 
     def on_destroy(self):
-        self.entity.ob.flags &= ~ObFlags.REPLICATE
+        self.entity.flags &= ~EntityFlags.REPLICATE
         try:
             del self.entity.snapshots[self._name_replicator]
         except KeyError:

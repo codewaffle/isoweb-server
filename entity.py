@@ -11,7 +11,7 @@ from util import memoize, AttributeDict, time_to_clock, TrackedDictionary, Track
 import util
 
 
-class ObFlags:
+class EntityFlags:
     REPLICATE = 1
 
 
@@ -39,7 +39,6 @@ class Entity:
     _menu_providers = None
 
     def __init__(self, ent_id):
-        from component.physical import EntityOb
         self._registry[ent_id] = self
 
         self._memo_cache = {}  # for @memoize
@@ -50,13 +49,13 @@ class Entity:
         self.entity_def = None
         self._menu_providers = set()
         self.snapshots = None
-        self.ob = EntityOb(self)
         self.dirty = False
         self.valid = True
         self.components = []
         self._component_names = set()
         self.modified = self.created = time()
         self.parent = None
+        self.flags = 0
 
         self.tracked_components = TrackedDictionary()
 
@@ -285,7 +284,7 @@ class Entity:
             data = {
                 'id': self.id,
                 'entitydef': self.entity_def.key,
-                'ob_flags': self.ob.flags,
+                'flags': self.flags,
                 'components': self.persistent_data
             }
             cur.put(self.get_db_key(), ujson.dumps(data, double_precision=3).encode('utf8'))
