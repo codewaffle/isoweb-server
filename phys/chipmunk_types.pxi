@@ -5,6 +5,10 @@ cdef extern from "chipmunk/chipmunk_private.h":
     ctypedef void* cpDataPointer
     ctypedef int cpHashValue
     ctypedef int cpCollisionID
+    ctypedef int cpBitmask
+    ctypedef int cpGroup
+
+
     cdef struct cpVect:
         cpFloat x, y
 
@@ -20,7 +24,12 @@ cdef extern from "chipmunk/chipmunk_private.h":
     cdef struct cpPointQueryInfo
     cdef struct cpSegmentQueryInfo
     cdef struct cpCollisionType
-    cdef struct cpShapeFilter
+
+    cdef struct cpShapeFilter:
+        cpGroup group
+        cpBitmask categories
+        cpBitmask mask
+
     cdef struct cpSimpleMotor
     cdef struct cpSpaceDebugDrawOptions
     cdef struct cpSpaceHash
@@ -33,7 +42,31 @@ cdef extern from "chipmunk/chipmunk_private.h":
     cdef struct cpArray
     cdef struct cpHashSet
     cdef struct cpBody
-    cdef struct cpShape
+    
+    cdef struct cpShape:
+        # const cpShapeClass *klass
+
+        cpSpace *space
+        cpBody *body
+        # cpShapeMassInfo massInfo
+        cpBB bb
+
+        cpBool sensor
+
+        cpFloat e
+        cpFloat u
+        cpVect surfaceV
+
+        cpDataPointer userData
+
+        # cpCollisionType type
+        cpShapeFilter filter
+
+        cpShape *next
+        cpShape *prev
+
+        cpHashValue hashid
+        
     cdef struct cpCircleShape
     cdef struct cpSegmentShape
     cdef struct cpPolyShape
@@ -122,3 +155,4 @@ cdef extern from "chipmunk/chipmunk_private.h":
 
     ctypedef cpCollisionID (*cpSpatialIndexQueryFunc)(void *obj1, void *obj2, cpCollisionID id, void *data)
     ctypedef void (*cpSpatialIndexIteratorFunc)(void *obj, void *data)
+
