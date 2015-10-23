@@ -26,7 +26,7 @@ try:
 except OSError:
     os.makedirs(DB_DIR)
     spawn = True
-# spawn = True
+spawn = True
 
 load_defs()
 
@@ -49,10 +49,23 @@ def spawn_crap(name, num, scalebase=1.0, modscale=0.0, rot=False):
 
 # @inlineCallbacks
 def spawn_all():
-    factory.region.spawn('island', pos=Vector2(0, 0))
-    spawn_crap('acorn', 5, rot=True)
-    spawn_crap('chicken', 5, rot=True)
-    spawn_crap('oak_sapling', 5, rot=True)
+    island = factory.region.spawn('island', pos=Vector2(0, 0))
+    #island.Position.r = math.pi
+    print(island.Position)
+    factory.region._island_hax = island
+    raft = factory.region.spawn('raft', pos=Vector2(0, 0))
+
+    raft.parent = island
+
+    island.Position._update()
+
+    raft.Position._update()
+
+
+
+    #spawn_crap('acorn', 5, rot=True)
+    #spawn_crap('chicken', 5, rot=True)
+    #spawn_crap('oak_sapling', 5, rot=True)
     return
     spawn_crap('crate', 1, rot=True)
     spawn_crap('backpack', 1, rot=True)

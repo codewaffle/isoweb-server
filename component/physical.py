@@ -1,22 +1,10 @@
 from random import random
 from isoweb_time import clock
 from component import BaseComponent
-from mathx.aabb import AABB
-from mathx.quadtree import NodeItem
 from mathx.vector2 import Vector2
 import packet_types
-
-
-class EntityOb(NodeItem):
-    def __init__(self, ent):
-        NodeItem.__init__(self)
-        self.ent = ent
-
-    def __repr__(self):
-        return 'EntityOb({})'.format(repr(self.pos))
-
-
-_q_aabb = AABB(Vector2(), 1)
+from phys.core import RegionMember
+from phys.cm import cpv
 
 
 class Position(BaseComponent):
@@ -30,20 +18,18 @@ class Position(BaseComponent):
 
     r = 0.  # rotation
 
+    member = None
+
     _parent = None
 
     persists = ['x', 'y', 'vx', 'vy', 'w', 'h', 'r']
 
     def _update(self):
-        # update quadtree position
-        ob = self.entity.ob
-        ob.aabb.center.x = self.x
-        ob.aabb.center.y = self.y
-        ob.aabb.hwidth = self.w / 2
-        ob.aabb.hheight = self.h / 2
-
-        if ob.node:
-            ob.update_quadtree()
+        if self.member:
+            self.x, self.y = self.member.get_position_components()
+            # pso = self.member
+            # self.x = self.member
+            # self.member.set_position(cpv(self.x, self.y))
 
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()
@@ -59,12 +45,11 @@ class Position(BaseComponent):
         self.entity.ob.remove()
 
     def initialize(self):
-        # quadtree junk
-        ob = self.entity.ob
-        ob.aabb.center.x = self.x or random() - 0.5
-        ob.aabb.center.y = self.y or random() - 0.5
-        # self.entity.pos = ob.aabb.center
-        self.entity.region.quadtree.insert(ob)
+        print("INSERT", self.entity.parent)
+        self.member = RegionMember(self.entity)
+        self.member.setup_test_body()
+        self.member.set_region(self.entity.region)
+
         self._parent = self.entity.parent
 
         self.entity.snapshots[self.position_snapshot] = 0
@@ -91,36 +76,25 @@ class Position(BaseComponent):
 
     def teleport(self, x, y=None):
         if y is None and isinstance(x, Vector2):
-            self.x = x.x
-            self.y = x.y
+            x = x.x
+            y = x.y
+
+        if self.member:
+            self.member.set_position_components(x, y)
         else:
-            self.x = x
-            self.y = y
+            self.x, self.y = x, y
 
         self._update()
 
     def find_nearby(self, radius, exclude=None, flags=0, components=None):
-        _q_aabb.center.update(self.entity.ob.aabb.center)
-        _q_aabb.hwidth = _q_aabb.hheight = radius
-
-        if exclude is None:
-            exclude = set()
+        ret = self.member.find_nearby(radius, 1)
 
         if exclude is True:
-            exclude = {self.entity}
+            ret.difference_update({self.entity})
+        elif exclude:
+            ret.difference_update(exclude)
 
-        return self.entity.region.quadtree.query_aabb_ents(_q_aabb, exclude, flags, components)
+        return ret
 
-    def get_pos(self, copy=False):
-        if copy:
-            return self.entity.ob.aabb.center.copy()
-
-        return self.entity.ob.aabb.center
-
-
-class Mass(BaseComponent):
-    value = 1.1
-
-
-class Volume(BaseComponent):
-    value = 1.2
+    def get_pos(self):
+        return Vector2(self.x, self.y)

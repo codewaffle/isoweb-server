@@ -48,3 +48,16 @@ campfire:
 
 island:
 - Island
+- Interactive:
+    include_position: true
+
+
+raft:
+- Sprite: sprites/raft.png
+- Boat
+
+raft_sail:
+- Sprite: sprites/raft_sail.png
+
+raft_tiller:
+- Sprite: sprites/raft_tiller.png

@@ -41,8 +41,44 @@ cdef extern from "chipmunk/chipmunk_private.h":
 
     cdef struct cpArray
     cdef struct cpHashSet
-    cdef struct cpBody
-    
+    cdef struct cpBody:
+        # mass and it's inverse
+        cpFloat m;
+        cpFloat m_inv;
+
+        # moment of inertia and it's inverse
+        cpFloat i;
+        cpFloat i_inv;
+
+        # center of gravity
+        cpVect cog;
+
+        # position, velocity, force
+        cpVect p;
+        cpVect v;
+        cpVect f;
+
+        # Angle, angular velocity, torque (radians)
+        cpFloat a;
+        cpFloat w;
+        cpFloat t;
+
+        cpTransform transform;
+
+        cpDataPointer userData;
+
+        # "pseudo-velocities" used for eliminating overlap.
+        # Erin Catto has some papers that talk about what these are.
+        cpVect v_bias;
+        cpFloat w_bias;
+
+        cpSpace *space;
+
+        cpShape *shapeList;
+        cpArbiter *arbiterList;
+        cpConstraint *constraintList;
+
+
     cdef struct cpShape:
         # const cpShapeClass *klass
 

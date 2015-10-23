@@ -45,6 +45,7 @@ extensions = [
         include_dirs=['phys/include'],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,
+        language='c++'
     ),
     Extension(
         'server.mathx.*', ['mathx/**/*.pyx']

@@ -157,6 +157,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
         }, pos=Vector2.random_inside(5.0))
 
         self.entity.parent = self.region._island_hax
+        self.entity.Position._update()
 
         msg = struct.pack('>BfI', packet_types.DO_ASSIGN_CONTROL, clock(), self.entity.id)
 

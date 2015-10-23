@@ -8,7 +8,7 @@ from config import DB_DIR
 from entity import Entity
 from entitydef import definition_from_key, EntityDef
 from mathx.quadtree import Quadtree
-
+from phys.core import RegionBase
 from scheduler import Scheduler
 
 
@@ -16,7 +16,7 @@ def component_dict(*args):
     return defaultdict(dict, *args)
 
 
-class Region:
+class Region(RegionBase):
     def __init__(self, region_id, load=True):
         self._delete_set = set()
         self.region_id = region_id
@@ -60,7 +60,12 @@ class Region:
 
     def start(self):
         self.scheduler.schedule(func=self.save_snapshot)
+        self.scheduler.schedule(func=self.simulate)
         self.scheduler.start()
+
+    def simulate(self):
+        self.step(1/20.0)
+        return -1/20.0
 
     def next_entity_id(self):
         self.max_entity_id += 1

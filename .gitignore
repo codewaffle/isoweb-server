@@ -8,3 +8,4 @@ phys/*.c
 phys/*.pyd
 chipmunk.dll
 *.pdb
+phys/*.cpp

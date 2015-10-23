@@ -10,7 +10,9 @@ from mathx.vector2 import Vector2
 
 class Interactive(BaseComponent):
     hit_area = 'Circle(0, 0, 100)'
-    exports = ['hit_area']
+    include_position = False
+
+    exports = ['hit_area', 'include_position']
 
 
 class Choppable(MenuComponent):

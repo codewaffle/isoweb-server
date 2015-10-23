@@ -25,8 +25,11 @@ class Island(BaseComponent):
         hull = MultiPoint(points).convex_hull
         points = list(hull.boundary.coords)
 
-        self.entity.Position.x = (hull.bounds[0] + hull.bounds[2]) / 2
-        self.entity.Position.y = (hull.bounds[1] + hull.bounds[3]) / 2
+        #self.entity.Position.x = (hull.bounds[0] + hull.bounds[2]) / 2
+        #self.entity.Position.y = (hull.bounds[1] + hull.bounds[3]) / 2
+
+        self.entity.Position.x = 0
+        self.entity.Position.y = 0
 
         self.entity.Position.w = hull.bounds[2] - hull.bounds[0]
         self.entity.Position.h = hull.bounds[3] - hull.bounds[1]
@@ -35,6 +38,10 @@ class Island(BaseComponent):
 
         tpoly = self.entity.add_component(
             'StaticPolygon',
+            points=points
+        )
+        self.entity.add_component(
+            'PathablePolygon',
             points=points
         )
         self.entity.set_dirty()
@@ -49,3 +56,10 @@ class StaticPolygon(BaseComponent):
 
     def initialize(self):
         pass
+
+
+class PathablePolygon(BaseComponent):
+    points = None
+
+    exports = ['points']
+    persists = ['points']
