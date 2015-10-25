@@ -7,7 +7,7 @@ cdef class RegionBase:
         print("ALLOC")
         self.space = cpSpaceNew()
         cpSpaceSetIterations(self.space, 5)
-        cpSpaceSetGravity(self.space, cpv(0,-10))
+        cpSpaceSetGravity(self.space, cpv(0,0))
 
         #cdef cpShape* ground = cpSegmentShapeNew(self.space.staticBody, cpv(-20, 5), cpv(20, -5), 0)
         #cpShapeSetFriction(ground, 1)

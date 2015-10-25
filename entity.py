@@ -25,10 +25,6 @@ class SnapshotContainer(dict):
         self._ent.set_dirty()
 
 
-def next_id():
-    pass
-
-
 class Entity:
     """
     an Entity is a bag of component data that points to an EntityDef.
