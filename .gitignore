@@ -9,3 +9,4 @@ phys/*.pyd
 chipmunk.dll
 *.pdb
 phys/*.cpp
+vendor/chipmunk/lib/

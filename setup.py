@@ -22,7 +22,7 @@ if os.name == 'nt':
 
     define_macros = [
         # stupid build hacks..
-        ('WIN32', '1'), ('inline', '__inline')
+        ('WIN32', '1'), # ('inline', '__inline')
     ]
 
     extra_compile_args=[
@@ -32,23 +32,20 @@ if os.name == 'nt':
 
 
 extensions = [
-    Library(
-        name='server.chipmunk',
-        sources=glob.glob('phys/src/*.c'),
-        include_dirs=['phys/include'],
-        define_macros=define_macros,
-        extra_compile_args=extra_compile_args,
-    ),
     Extension(
         'server.phys.*', ['phys/**/*.pyx'],
         libraries=['chipmunk'],
-        include_dirs=['phys/include'],
+        include_dirs=['vendor/chipmunk/include'],
+        library_dirs=['vendor/chipmunk/lib'],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,
         language='c++'
     ),
     Extension(
-        'server.mathx.*', ['mathx/**/*.pyx']
+        'server.mathx.*', ['mathx/**/*.pyx'],
+        include_dirs=['vendor/chipmunk/include'],
+        library_dirs=['vendor/chipmunk/lib'],
+        define_macros=define_macros,
     ),
 ]
 
