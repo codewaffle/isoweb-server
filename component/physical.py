@@ -76,8 +76,8 @@ class Position(BaseComponent):
 
     def teleport(self, x, y=None):
         if y is None and isinstance(x, Vector2):
-            x = x.x
             y = x.y
+            x = x.x
 
         if self.member:
             self.member.set_position_components(x, y)
