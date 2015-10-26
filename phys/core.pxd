@@ -21,3 +21,4 @@ cdef class RegionMember:
     cpdef find_nearby(self, float radius, unsigned int mask)
 
 cdef setup_entity_body(entity, cpBody *)
+cdef setup_entity_shape(entity, cpShape *)

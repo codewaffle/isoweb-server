@@ -29,6 +29,7 @@ class Entity:
     _name = None
     _controller = None
     _menu_providers = None
+    region_member = None
 
     def __init__(self, ent_id):
         self._registry[ent_id] = self
@@ -281,7 +282,7 @@ class Entity:
             }
             cur.put(self.get_db_key(), ujson.dumps(data, double_precision=3).encode('utf8'))
         except Exception as E:
-            print('wtf')
+            print('wtf', data)
             raise
 
         self.dirty = False

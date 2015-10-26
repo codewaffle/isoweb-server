@@ -26,6 +26,16 @@ cdef class RegionMember:
     def __init__(self, entity):
         self.entity = entity
 
+        self.setup()
+
+        entity.region_member = self
+
+        self.set_region(self.entity.region)
+
+
+    def setup(self):
+        pass
+
     cpdef void set_region(self, RegionBase region):
         if region == self.region:
             return
@@ -119,12 +129,12 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
 
 
 cdef class TestMember(RegionMember):
-    def setup_test_body(self):
+    def setup(self):
         self.body = cpBodyNew(1, 0.5)
         setup_entity_body(self.entity, self.body)
 
         self.shape = cpCircleShapeNew(self.body, 1, cpv(0,0))
-        self.shape.userData = <PyObject*>self.entity
+        setup_entity_shape(self.entity, self.shape)
         self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
         self.shape.filter.mask = EntityCategory.COLLIDER
 
@@ -133,3 +143,7 @@ cdef setup_entity_body(entity, cpBody *body):
     body.userData = <PyObject*>entity
     cpBodySetPositionUpdateFunc(body, wrapUpdatePosition)
     # self.body.position_func = wrapUpdatePosition
+
+
+cdef setup_entity_shape(entity, cpShape *shape):
+    shape.userData = <PyObject*>entity

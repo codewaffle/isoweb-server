@@ -23,8 +23,8 @@ class Position(BaseComponent):
     persists = ['x', 'y', 'vx', 'vy', 'w', 'h', 'r']
 
     def _update(self):
-        if self.member:
-            self.x, self.y = self.member.get_position_components()
+        if self.entity.region_member:
+            self.x, self.y = self.entity.region_member.get_position_components()
 
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()
@@ -41,10 +41,6 @@ class Position(BaseComponent):
 
     def initialize(self):
         print("INSERT", self.entity.parent)
-        self.member = TestMember(self.entity)
-        self.member.setup_test_body()
-        self.member.set_region(self.entity.region)
-
         self._parent = self.entity.parent
 
         self.entity.snapshots[self.position_snapshot] = 0
@@ -74,15 +70,15 @@ class Position(BaseComponent):
             y = x.y
             x = x.x
 
-        if self.member:
-            self.member.set_position_components(x, y)
+        if self.entity.region_member:
+            self.entity.region_member.set_position_components(x, y)
         else:
             self.x, self.y = x, y
 
         self._update()
 
     def find_nearby(self, radius, exclude=None, mask=0, components=None):
-        ret = self.member.find_nearby(radius, mask)
+        ret = self.entity.region_member.find_nearby(radius, mask)
 
         if exclude is True:
             ret.difference_update({self.entity})
@@ -93,3 +89,8 @@ class Position(BaseComponent):
 
     def get_pos(self):
         return Vector2(self.x, self.y)
+
+
+class TestPhysics(BaseComponent):
+    def initialize(self):
+        TestMember(self.entity)

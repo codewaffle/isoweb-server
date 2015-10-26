@@ -55,6 +55,7 @@ island:
 raft:
 - Sprite: sprites/raft.png
 - Boat
+- TestPhysics
 
 raft_sail:
 - Sprite: sprites/raft_sail.png

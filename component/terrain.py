@@ -3,6 +3,8 @@ import random
 from component.base import BaseComponent
 from shapely.geometry.multipoint import MultiPoint
 
+from phys.terrain import TerrainMember
+
 
 class Island(BaseComponent):
     seed = None
@@ -44,6 +46,10 @@ class Island(BaseComponent):
             'PathablePolygon',
             points=points
         )
+
+        member = TerrainMember(self.entity)
+        self.entity.Position._update()
+
         self.entity.set_dirty()
 
 
