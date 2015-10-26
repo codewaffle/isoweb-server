@@ -1,15 +1,13 @@
 from functools import partial
-import struct
 
 from isoweb_time import clock
 from component import BaseComponent
-from entity import EntityFlags
 from network.util import PacketBuilder
 import packet_types
 from phys.const import EntityCategory
-from util import to_bytes
 
 packet_builder = PacketBuilder()
+
 
 class NetworkViewer(BaseComponent):
     """
@@ -108,7 +106,6 @@ class Replicated(BaseComponent):
     _name_replicator = None
 
     def initialize(self):
-        self.entity.flags |= EntityFlags.REPLICATE
         self._name_replicator = name_replicator = string_replicator(partial(getattr, self.entity, 'name'), 'name')
 
         self.entity.snapshots[self.get_entitydef_hash] = 0
@@ -118,7 +115,6 @@ class Replicated(BaseComponent):
         return 'BQ', (packet_types.ENTITYDEF_HASH_UPDATE, self.entity.entity_def.digest)
 
     def on_destroy(self):
-        self.entity.flags &= ~EntityFlags.REPLICATE
         try:
             del self.entity.snapshots[self._name_replicator]
         except KeyError:

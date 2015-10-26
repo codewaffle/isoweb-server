@@ -11,10 +11,6 @@ from util import memoize, AttributeDict, time_to_clock, TrackedDictionary, Track
 import util
 
 
-class EntityFlags:
-    REPLICATE = 1
-
-
 class SnapshotContainer(dict):
     def __init__(self, ent):
         super(SnapshotContainer, self).__init__()
