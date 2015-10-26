@@ -23,7 +23,10 @@ cdef class RegionBase:
 
 
 cdef class RegionMember:
-    def __init__(self, entity):
+    def __init__(self, entity, data=None):
+        if data:
+            self.data_ptr = <PyObject*>data
+
         self.entity = entity
 
         self.setup()
@@ -32,6 +35,9 @@ cdef class RegionMember:
 
         self.set_region(self.entity.region)
 
+    property data:
+        def __get__(self):
+            return <object>self.data_ptr
 
     def setup(self):
         pass

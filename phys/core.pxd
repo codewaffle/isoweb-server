@@ -1,5 +1,6 @@
 from phys.cm cimport *
 from libcpp.vector cimport vector
+from cpython.ref cimport PyObject
 
 cdef class RegionBase:
     cdef cpSpace *space
@@ -19,6 +20,9 @@ cdef class RegionMember:
     cpdef object entity
 
     cpdef find_nearby(self, float radius, unsigned int mask)
+
+    cdef PyObject *data_ptr
+
 
 cdef setup_entity_body(entity, cpBody *)
 cdef setup_entity_shape(entity, cpShape *)
