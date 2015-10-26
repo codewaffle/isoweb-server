@@ -148,14 +148,36 @@ class MeatbagController(ControllerComponent):
         return self.do_move_to, (near_pos,)
 
     def do_move_to(self, dest):
-        dt = 1 / 20.
+        dt = 1 / 10.
 
         if dest is None:
             print('ff')
             return False
 
+        if not self.entity.region_member:
+            return dt * -1
+
+
         move_diff = dest - self.entity.pos
         dist = move_diff.magnitude
+        move_dir = move_diff / dist
+
+        curVel = self.entity.region_member.velocity
+        desiredVel = move_dir * min(dist, 3.0)
+        velDiff = desiredVel - curVel
+
+        velDist = velDiff.magnitude
+        velNorm = velDiff/velDist
+
+        move_diff = velNorm * 20 #min(dist, 5)
+
+        self.entity.region_member.set_force(move_diff.x, move_diff.y)
+        self.entity.region_member.set_angle(atan2(curVel.y, curVel.x) + pi/2)
+
+        return dt * -1
+
+        # TODO : FIX THESE TERRIBLE HAX
+
         move_amt = self.move_speed * dt
 
         self.entity.Position.r = atan2(move_diff.y, move_diff.x) + pi/2

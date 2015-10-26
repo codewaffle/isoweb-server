@@ -1,3 +1,4 @@
+from mathx.vector2 import Vector2
 from phys.cm cimport *
 from cpython.ref cimport PyObject
 from phys.const import EntityCategory
@@ -124,6 +125,17 @@ cdef class RegionMember:
             cpBodyFree(self.body)
             self.body = NULL
 
+    def set_force(self, float x, float y):
+        self.body.f.x = x
+        self.body.f.y = y
+
+    def set_angle(self, float angle):
+        self.body.a = angle
+
+    property velocity:
+        def __get__(self):
+            return Vector2(self.body.v.x, self.body.v.y)
+
 cdef void find_results(cpShape *shape, void *data):
     results = <object>data
     ent = <object>shape.userData
@@ -146,7 +158,7 @@ cdef class TestMember(RegionMember):
         self.body = cpBodyNew(1, 0.5)
         setup_entity_body(self.entity, self.body)
 
-        self.shape = cpCircleShapeNew(self.body, 1, cpv(0,0))
+        self.shape = cpCircleShapeNew(self.body, 0.5, cpv(0,0))
         setup_entity_shape(self.entity, self.shape)
         self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
         self.shape.filter.mask = EntityCategory.COLLIDER
