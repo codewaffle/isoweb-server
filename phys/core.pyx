@@ -121,11 +121,15 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
 cdef class TestMember(RegionMember):
     def setup_test_body(self):
         self.body = cpBodyNew(1, 0.5)
-        self.body.userData = <PyObject*>self.entity
-        cpBodySetPositionUpdateFunc(self.body, wrapUpdatePosition)
-        # self.body.position_func = wrapUpdatePosition
+        setup_entity_body(self.entity, self.body)
+
         self.shape = cpCircleShapeNew(self.body, 1, cpv(0,0))
         self.shape.userData = <PyObject*>self.entity
         self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
         self.shape.filter.mask = EntityCategory.COLLIDER
 
+
+cdef setup_entity_body(entity, cpBody *body):
+    body.userData = <PyObject*>entity
+    cpBodySetPositionUpdateFunc(body, wrapUpdatePosition)
+    # self.body.position_func = wrapUpdatePosition
