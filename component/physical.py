@@ -1,10 +1,8 @@
-from random import random
 from isoweb_time import clock
 from component import BaseComponent
 from mathx.vector2 import Vector2
 import packet_types
-from phys.core import RegionMember
-from phys.cm import cpv
+from phys.core import TestMember
 
 
 class Position(BaseComponent):
@@ -43,7 +41,7 @@ class Position(BaseComponent):
 
     def initialize(self):
         print("INSERT", self.entity.parent)
-        self.member = RegionMember(self.entity)
+        self.member = TestMember(self.entity)
         self.member.setup_test_body()
         self.member.set_region(self.entity.region)
 

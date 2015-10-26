@@ -26,16 +26,6 @@ cdef class RegionMember:
     def __init__(self, entity):
         self.entity = entity
 
-    def setup_test_body(self):
-        self.body = cpBodyNew(1, 0.5)
-        self.body.userData = <PyObject*>self.entity
-        cpBodySetPositionUpdateFunc(self.body, wrapUpdatePosition)
-        # self.body.position_func = wrapUpdatePosition
-        self.shape = cpCircleShapeNew(self.body, 1, cpv(0,0))
-        self.shape.userData = <PyObject*>self.entity
-        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
-        self.shape.filter.mask = EntityCategory.COLLIDER
-
     cpdef void set_region(self, RegionBase region):
         if region == self.region:
             return
@@ -126,3 +116,16 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
     if p.x != body.p.x or p.y != body.p.y or a != body.a:
         ent = <object>body.userData
         ent.Position._update()
+
+
+cdef class TestMember(RegionMember):
+    def setup_test_body(self):
+        self.body = cpBodyNew(1, 0.5)
+        self.body.userData = <PyObject*>self.entity
+        cpBodySetPositionUpdateFunc(self.body, wrapUpdatePosition)
+        # self.body.position_func = wrapUpdatePosition
+        self.shape = cpCircleShapeNew(self.body, 1, cpv(0,0))
+        self.shape.userData = <PyObject*>self.entity
+        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
+        self.shape.filter.mask = EntityCategory.COLLIDER
+
