@@ -1,10 +1,12 @@
 from functools import partial
 import struct
+
 from isoweb_time import clock
 from component import BaseComponent
 from entity import EntityFlags
 from network.util import PacketBuilder
 import packet_types
+from phys.const import EntityCategory
 from util import to_bytes
 
 packet_builder = PacketBuilder()
@@ -37,7 +39,7 @@ class NetworkViewer(BaseComponent):
         current = self._current
         cache = self._cache
 
-        visible = self.entity.Position.find_nearby(self.visibility_radius, flags=EntityFlags.REPLICATE)
+        visible = self.entity.Position.find_nearby(self.visibility_radius, mask=EntityCategory.REPLICATE)
 
         for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated

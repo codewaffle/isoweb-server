@@ -18,4 +18,4 @@ cdef class RegionMember:
     cpdef cpVect get_position(self)
     cpdef object entity
 
-    cpdef find_nearby(self, float radius, int mask)
+    cpdef find_nearby(self, float radius, unsigned int mask)

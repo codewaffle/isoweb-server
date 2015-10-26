@@ -246,8 +246,8 @@ class Entity:
         result = self.entity_def.name, util.freeze_dict(self.persistent_data)
         return result
 
-    def find_nearby(self, radius, exclude=True, flags=0, components=None):
-        return self.Position.find_nearby(radius, exclude, flags, components)
+    def find_nearby(self, radius, exclude=True, mask=0, components=None):
+        return self.Position.find_nearby(radius, exclude, mask, components)
 
     @property
     def pos(self):

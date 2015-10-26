@@ -27,9 +27,6 @@ class Position(BaseComponent):
     def _update(self):
         if self.member:
             self.x, self.y = self.member.get_position_components()
-            # pso = self.member
-            # self.x = self.member
-            # self.member.set_position(cpv(self.x, self.y))
 
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()
@@ -86,8 +83,8 @@ class Position(BaseComponent):
 
         self._update()
 
-    def find_nearby(self, radius, exclude=None, flags=0, components=None):
-        ret = self.member.find_nearby(radius, 1)
+    def find_nearby(self, radius, exclude=None, mask=0, components=None):
+        ret = self.member.find_nearby(radius, mask)
 
         if exclude is True:
             ret.difference_update({self.entity})

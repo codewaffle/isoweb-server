@@ -1,5 +1,6 @@
 from phys.cm cimport *
 from cpython.ref cimport PyObject
+from phys.const import EntityCategory
 
 cdef class RegionBase:
 
@@ -32,8 +33,8 @@ cdef class RegionMember:
         # self.body.position_func = wrapUpdatePosition
         self.shape = cpCircleShapeNew(self.body, 1, cpv(0,0))
         self.shape.userData = <PyObject*>self.entity
-        self.shape.filter.categories = 1
-        self.shape.filter.mask = 1
+        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
+        self.shape.filter.mask = EntityCategory.COLLIDER
 
     cpdef void set_region(self, RegionBase region):
         if region == self.region:
@@ -72,7 +73,7 @@ cdef class RegionMember:
         cdef cpVect pos = self.get_position()
         return pos.x, pos.y
 
-    cpdef find_nearby(self, float radius, int mask):
+    cpdef find_nearby(self, float radius, unsigned int mask):
         if not self.region:
             return set()
 
@@ -84,7 +85,8 @@ cdef class RegionMember:
         bb.t = self.get_position().y + radius
 
         cdef cpShapeFilter filt
-        filt.mask = filt.categories = mask
+        filt.categories = 0xffffffff
+        filt.mask = mask
 
         results = set()
 
