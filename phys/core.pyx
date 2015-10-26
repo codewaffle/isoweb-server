@@ -1,6 +1,7 @@
 from phys.cm cimport *
 from cpython.ref cimport PyObject
 from phys.const import EntityCategory
+from math import pi, atan2
 
 cdef class RegionBase:
 
@@ -75,9 +76,15 @@ cdef class RegionMember:
     cpdef cpVect get_position(self):
         return cpBodyGetPosition(self.body)
 
+    cpdef cpFloat get_rotation(self):
+        cdef cpVect rot = cpBodyGetRotation(self.body)
+        return atan2(rot.y, rot.x)
+
+
     def get_position_components(self):
         cdef cpVect pos = self.get_position()
-        return pos.x, pos.y
+        return pos.x, pos.y, self.get_rotation()
+
 
     cpdef find_nearby(self, float radius, unsigned int mask):
         if not self.region:

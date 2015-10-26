@@ -17,6 +17,7 @@ cdef class RegionMember:
     cpdef void set_position(self, cpVect)
     cpdef void set_position_components(self, cpFloat, cpFloat)
     cpdef cpVect get_position(self)
+    cpdef cpFloat get_rotation(self)
     cpdef object entity
 
     cpdef find_nearby(self, float radius, unsigned int mask)

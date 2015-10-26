@@ -24,7 +24,7 @@ class Position(BaseComponent):
 
     def _update(self):
         if self.entity.region_member:
-            self.x, self.y = self.entity.region_member.get_position_components()
+            self.x, self.y, self.r = self.entity.region_member.get_position_components()
 
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()
