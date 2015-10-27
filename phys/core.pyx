@@ -129,6 +129,10 @@ cdef class RegionMember:
         self.body.f.x = x
         self.body.f.y = y
 
+    def set_velocity(self, float x, float y):
+        self.body.v.x = x
+        self.body.v.y = y
+
     def set_angle(self, float angle):
         self.body.a = angle
 

@@ -148,7 +148,7 @@ class MeatbagController(ControllerComponent):
         return self.do_move_to, (near_pos,)
 
     def do_move_to(self, dest):
-        dt = 1 / 10.
+        dt = 1 / 20.
 
         if dest is None:
             print('ff')
@@ -157,40 +157,28 @@ class MeatbagController(ControllerComponent):
         if not self.entity.region_member:
             return dt * -1
 
-
         move_diff = dest - self.entity.pos
         dist = move_diff.magnitude
         move_dir = move_diff / dist
-
         curVel = self.entity.region_member.velocity
-        desiredVel = move_dir * min(dist, 3.0)
+
+        if dist < 0.1:  # we're here
+            self.entity.region_member.set_force(0, 0)
+            self.entity.region_member.set_velocity(0, 0)
+            return None
+        if dist < 3.0:  # arrive
+            desiredVel = move_dir * 4.0 * (dist / 3.0)
+        else:
+            desiredVel = move_dir * 4.0
+            self.entity.region_member.set_angle(atan2(move_dir.y, move_dir.x) + pi/2)
+
         velDiff = desiredVel - curVel
 
         velDist = velDiff.magnitude
         velNorm = velDiff/velDist
 
-        move_diff = velNorm * 20 #min(dist, 5)
+        force = velDiff * 5.0
 
-        self.entity.region_member.set_force(move_diff.x, move_diff.y)
-        self.entity.region_member.set_angle(atan2(curVel.y, curVel.x) + pi/2)
+        self.entity.region_member.set_force(force.x, force.y)
 
         return dt * -1
-
-        # TODO : FIX THESE TERRIBLE HAX
-
-        move_amt = self.move_speed * dt
-
-        self.entity.Position.r = atan2(move_diff.y, move_diff.x) + pi/2
-
-        if dist < move_amt:
-            self.entity.Position.teleport(dest)
-            self.entity.Position.vx = self.entity.Position.vy = 0
-            self.entity.region.log.debug('{} arrived at {}', self.entity, dest)
-
-            return None
-        else:
-            self.entity.Position.teleport(self.entity.pos.lerp(dest, move_amt / dist))
-            self.entity.Position.vx = move_diff.x / dist * self.move_speed
-            self.entity.Position.vy = move_diff.y / dist * self.move_speed
-
-            return dt * -1.
