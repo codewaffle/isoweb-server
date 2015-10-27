@@ -86,6 +86,10 @@ cdef class RegionMember:
         cdef cpVect pos = self.get_position()
         return pos.x, pos.y, self.get_rotation()
 
+    def get_velocity_components(self):
+        cdef cpVect vel = cpBodyGetVelocity(self.body)
+        return vel.x, vel.y
+
 
     cpdef find_nearby(self, float radius, unsigned int mask):
         if not self.region:
