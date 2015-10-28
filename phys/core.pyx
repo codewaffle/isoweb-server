@@ -8,7 +8,7 @@ cdef class RegionBase:
 
     def __cinit__(self):
         self.space = cpSpaceNew()
-        self.space.damping = 0.6
+        self.space.damping = 0.8
         self.space.idleSpeedThreshold = 0.1
         self.space.sleepTimeThreshold = 0.5
 
@@ -180,6 +180,12 @@ cdef class TestMember(RegionMember):
         self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
         self.shape.filter.mask = EntityCategory.COLLIDER
 
+
+cdef void updateVelocityLandFriction(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt):
+    damping = 1.0
+    cpBodyUpdateVelocity(body, gravity, damping, dt)
+
+
 cdef class RaftTestMember(RegionMember):
     def setup(self):
         cdef cpVect points_array[5]
@@ -200,6 +206,7 @@ cdef class RaftTestMember(RegionMember):
         cdef cpFloat moment = cpMomentForPoly(750, 4, points_array, cpv(0,0), 0)
 
         self.body = cpBodyNew(750, moment)
+        cpBodySetVelocityUpdateFunc(self.body, updateVelocityLandFriction)
         setup_entity_body(self.entity, self.body)
 
         self.shape = cpPolyShapeNewRaw(self.body, 4, points_array, 0)
