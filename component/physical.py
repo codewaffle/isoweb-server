@@ -44,6 +44,8 @@ class Position(BaseComponent):
         print("INSERT", self.entity.parent)
         self._parent = self.entity.parent
 
+        assert self.entity.region_member, ':('
+
         self.entity.snapshots[self.position_snapshot] = 0
         self.entity.snapshots[self.parent_snapshot] = 0
 

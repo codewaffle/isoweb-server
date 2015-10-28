@@ -21,7 +21,7 @@ cdef class TerrainMember(RegionMember):
         print(points)
         self.shape = cpPolyShapeNewRaw(self.body, len(points), points_array, 0)
         setup_entity_shape(self.entity, self.shape)
-        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.TERRAIN | EntityCategory.REPLICATE | EntityCategory.COLLIDER
-        self.shape.filter.mask = 1 | EntityCategory.COLLIDER # must be non-zero..
+        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.TERRAIN | EntityCategory.REPLICATE
+        self.shape.filter.mask = 1 # must be non-zero to show up in range queries
 
         PyMem_Free(points_array)

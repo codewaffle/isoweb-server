@@ -246,6 +246,9 @@ class Entity:
     def find_nearby(self, radius, exclude=True, mask=0, components=None):
         return self.Position.find_nearby(radius, exclude, mask, components)
 
+    def __repr__(self):
+        return '<Entity {}>'.format(self.id)
+
     @property
     def pos(self):
         return self.Position.get_pos()

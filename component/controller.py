@@ -162,9 +162,10 @@ class MeatbagController(ControllerComponent):
         move_dir = move_diff / dist
         curVel = self.entity.region_member.velocity
 
-        if dist < 0.1:  # we're here
+        if dist < 0.05:  # we're here
             self.entity.region_member.set_force(0, 0)
             self.entity.region_member.set_velocity(0, 0)
+            self.entity.Position._update()
             return None
         if dist < 3.0:  # arrive
             desiredVel = move_dir * 4.0 * (dist / 3.0)

@@ -7,8 +7,11 @@ from math import pi, atan2
 cdef class RegionBase:
 
     def __cinit__(self):
-        print("ALLOC")
         self.space = cpSpaceNew()
+        self.space.damping = 0.8
+        self.space.idleSpeedThreshold = 0.1
+        self.space.sleepTimeThreshold = 0.5
+
         cpSpaceSetIterations(self.space, 5)
         cpSpaceSetGravity(self.space, cpv(0,0))
 
@@ -17,7 +20,6 @@ cdef class RegionBase:
         #cpSpaceAddShape(self.space, ground)
 
     def __dealloc__(self):
-        print("DEALLOC")
         cpSpaceFree(self.space)
 
     def step(self, float dt):
@@ -56,6 +58,7 @@ cdef class RegionMember:
             assert self.body
             cpSpaceAddShape(region.space, self.shape)
             cpSpaceAddBody(region.space, self.body)
+        cpBodyActivate(self.body)
 
     cpdef void clear_region(self):
         if self.region is None:
@@ -67,12 +70,14 @@ cdef class RegionMember:
 
     cpdef void set_position(self, cpVect pos):
         cpBodySetPosition(self.body, pos)
+        cpBodyActivate(self.body)
 
     cpdef void set_position_components(self, cpFloat x, cpFloat y):
         cdef cpVect pos
         pos.x = x
         pos.y = y
         cpBodySetPosition(self.body, pos)
+        cpBodyActivate(self.body)
 
     cpdef cpVect get_position(self):
         return cpBodyGetPosition(self.body)
@@ -87,8 +92,7 @@ cdef class RegionMember:
         return pos.x, pos.y, self.get_rotation()
 
     def get_velocity_components(self):
-        cdef cpVect vel = cpBodyGetVelocity(self.body)
-        return vel.x, vel.y
+        return self.body.v.x, self.body.v.y
 
 
     cpdef find_nearby(self, float radius, unsigned int mask):
@@ -130,15 +134,16 @@ cdef class RegionMember:
             self.body = NULL
 
     def set_force(self, float x, float y):
-        self.body.f.x = x
-        self.body.f.y = y
+        cpBodySetForce(self.body, cpv(x,y))
+        cpBodyActivate(self.body)
 
     def set_velocity(self, float x, float y):
-        self.body.v.x = x
-        self.body.v.y = y
+        cpBodySetVelocity(self.body, cpv(x, y))
+        cpBodyActivate(self.body)
 
     def set_angle(self, float angle):
-        self.body.a = angle
+        cpBodySetAngle(self.body, angle)
+        cpBodyActivate(self.body)
 
     property velocity:
         def __get__(self):
@@ -152,6 +157,7 @@ cdef void find_results(cpShape *shape, void *data):
 cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
     cdef cpVect p = body.p
     cdef cpFloat a = body.a
+
     cdef object ent
 
     cpBodyUpdatePosition(body, dt)
