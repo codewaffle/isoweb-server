@@ -8,7 +8,7 @@ cdef class RegionBase:
 
     def __cinit__(self):
         self.space = cpSpaceNew()
-        self.space.damping = 0.8
+        self.space.damping = 0.6
         self.space.idleSpeedThreshold = 0.1
         self.space.sleepTimeThreshold = 0.5
 
@@ -45,6 +45,9 @@ cdef class RegionMember:
 
     def setup(self):
         pass
+
+    cpdef cpFloat get_mass(self):
+        return cpBodyGetMass(self.body)
 
     cpdef void set_region(self, RegionBase region):
         if region == self.region:
@@ -169,11 +172,39 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
 
 cdef class TestMember(RegionMember):
     def setup(self):
-        self.body = cpBodyNew(1, 0.5)
+        self.body = cpBodyNew(75, cpMomentForCircle(75, 0, 0.333, cpv(0,0)))
         setup_entity_body(self.entity, self.body)
 
-        self.shape = cpCircleShapeNew(self.body, 0.5, cpv(0,0))
+        self.shape = cpCircleShapeNew(self.body, 0.333, cpv(0,0))
         setup_entity_shape(self.entity, self.shape)
+        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
+        self.shape.filter.mask = EntityCategory.COLLIDER
+
+cdef class RaftTestMember(RegionMember):
+    def setup(self):
+        cdef cpVect points_array[5]
+        points_array[0].x = -1
+        points_array[0].y = -1
+
+        points_array[1].x = 1
+        points_array[1].y = -1
+
+        points_array[2].x = 1
+        points_array[2].y = 1
+
+        points_array[3].x = -1
+        points_array[3].y = 1
+
+        points_array[4] = points_array[0]
+
+        cdef cpFloat moment = cpMomentForPoly(750, 4, points_array, cpv(0,0), 0)
+
+        self.body = cpBodyNew(750, moment)
+        setup_entity_body(self.entity, self.body)
+
+        self.shape = cpPolyShapeNewRaw(self.body, 4, points_array, 0)
+        setup_entity_shape(self.entity, self.shape)
+
         self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
         self.shape.filter.mask = EntityCategory.COLLIDER
 

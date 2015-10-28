@@ -177,7 +177,7 @@ class MeatbagController(ControllerComponent):
         velDist = velDiff.magnitude
         velNorm = velDiff/velDist
 
-        force = velDiff * 5.0
+        force = velDiff * 5.0 * self.entity.region_member.get_mass()
 
         self.entity.region_member.set_angle(atan2(move_dir.y, move_dir.x) + pi/2)
         self.entity.region_member.set_force(force.x, force.y)

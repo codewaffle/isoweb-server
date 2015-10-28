@@ -2,7 +2,7 @@ from isoweb_time import clock
 from component import BaseComponent
 from mathx.vector2 import Vector2
 import packet_types
-from phys.core import TestMember
+from phys.core import TestMember, RaftTestMember
 
 
 class Position(BaseComponent):
@@ -97,3 +97,8 @@ class Position(BaseComponent):
 class TestPhysics(BaseComponent):
     def initialize(self):
         TestMember(self.entity)
+
+
+class RaftPhysics(BaseComponent):
+    def initialize(self):
+        RaftTestMember(self.entity)

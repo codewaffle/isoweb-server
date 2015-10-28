@@ -55,7 +55,8 @@ island:
 raft:
 - Sprite: sprites/raft.png
 - Boat
-- TestPhysics
+- RaftPhysics:
+    Mass: 750
 
 raft_sail:
 - Sprite: sprites/raft_sail.png
