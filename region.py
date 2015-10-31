@@ -8,7 +8,7 @@ from config import DB_DIR
 from entity import Entity
 from entitydef import definition_from_key, EntityDef
 from mathx.quadtree import Quadtree
-from phys.core import RegionBase
+from phys.core import PhysicsSpace
 from scheduler import Scheduler
 
 
@@ -16,7 +16,7 @@ def component_dict(*args):
     return defaultdict(dict, *args)
 
 
-class Region(RegionBase):
+class Region(PhysicsSpace):
     def __init__(self, region_id, load=True):
         self._delete_set = set()
         self.region_id = region_id

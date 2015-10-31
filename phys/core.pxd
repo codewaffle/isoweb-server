@@ -2,16 +2,16 @@ from phys.cm cimport *
 from libcpp.vector cimport vector
 from cpython.ref cimport PyObject
 
-cdef class RegionBase:
+cdef class PhysicsSpace:
     cdef cpSpace *space
 
 
-cdef class RegionMember:
-    cdef RegionBase region
+cdef class SpaceMember:
+    cdef PhysicsSpace region
     cdef cpShape* shape
     cdef cpBody* body
 
-    cpdef void set_region(self, RegionBase)
+    cpdef void set_region(self, PhysicsSpace)
     cpdef void clear_region(self)
 
     cpdef void set_position(self, cpVect)

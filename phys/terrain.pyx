@@ -3,7 +3,7 @@ from phys.core cimport *
 from phys.cm cimport *
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 
-cdef class TerrainMember(RegionMember):
+cdef class TerrainMember(SpaceMember):
     def setup(self):
         points = self.data
         assert points

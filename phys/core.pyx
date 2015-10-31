@@ -4,7 +4,7 @@ from cpython.ref cimport PyObject
 from phys.const import EntityCategory
 from math import pi, atan2
 
-cdef class RegionBase:
+cdef class PhysicsSpace:
 
     def __cinit__(self):
         self.space = cpSpaceNew()
@@ -26,7 +26,7 @@ cdef class RegionBase:
         cpSpaceStep(self.space, dt)
 
 
-cdef class RegionMember:
+cdef class SpaceMember:
     def __init__(self, entity, data=None):
         if data:
             self.data_ptr = <PyObject*>data
@@ -49,7 +49,7 @@ cdef class RegionMember:
     cpdef cpFloat get_mass(self):
         return cpBodyGetMass(self.body)
 
-    cpdef void set_region(self, RegionBase region):
+    cpdef void set_region(self, PhysicsSpace region):
         if region == self.region:
             return
 
@@ -174,7 +174,7 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
         ent.Position._update()
 
 
-cdef class TestMember(RegionMember):
+cdef class TestMember(SpaceMember):
     def setup(self):
         self.body = cpBodyNew(75, cpMomentForCircle(75, 0, 0.333, cpv(0,0)))
         setup_entity_body(self.entity, self.body)
@@ -190,7 +190,7 @@ cdef void updateVelocityLandFriction(cpBody *body, cpVect gravity, cpFloat dampi
     cpBodyUpdateVelocity(body, gravity, damping, dt)
 
 
-cdef class RaftTestMember(RegionMember):
+cdef class RaftTestMember(SpaceMember):
     def setup(self):
         cdef cpVect points_array[5]
         points_array[0].x = -1
