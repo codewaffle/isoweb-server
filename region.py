@@ -7,7 +7,6 @@ import component
 from config import DB_DIR
 from entity import Entity
 from entitydef import definition_from_key, EntityDef
-from mathx.quadtree import Quadtree
 from phys.space import PhysicsSpace
 from scheduler import Scheduler
 
@@ -22,7 +21,6 @@ class Region(PhysicsSpace):
         self.region_id = region_id
         self.scheduler = Scheduler()
         self.entities = set()
-        self.quadtree = Quadtree()
         self._dirty_set = set()
         self.log = logbook.Logger('Island({})'.format(region_id))
 
