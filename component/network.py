@@ -14,7 +14,7 @@ class NetworkViewer(BaseComponent):
     Responsible for most of the work of figuring out what the client can see.
     """
     _socket = None
-    visibility_radius = 20
+    visibility_radius = 30
 
     _current = None
     _cache = None
