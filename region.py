@@ -8,7 +8,7 @@ from config import DB_DIR
 from entity import Entity
 from entitydef import definition_from_key, EntityDef
 from mathx.quadtree import Quadtree
-from phys.core import PhysicsSpace
+from phys.space import PhysicsSpace
 from scheduler import Scheduler
 
 

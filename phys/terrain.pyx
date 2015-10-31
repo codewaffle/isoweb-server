@@ -1,5 +1,6 @@
 from phys.const import EntityCategory
 from phys.core cimport *
+from phys.space cimport SpaceMember
 from phys.cm cimport *
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 
