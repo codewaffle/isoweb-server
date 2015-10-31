@@ -41,10 +41,11 @@ class Position(BaseComponent):
         self.entity.ob.remove()
 
     def initialize(self):
-        print("INSERT", self.entity.parent)
         self._parent = self.entity.parent
 
         assert self.entity.region_member, ':('
+        self.entity.region_member.set_position_components(self.x, self.y)
+        self.entity.region_member.set_velocity_components(self.vx, self.vy)
 
         self.entity.snapshots[self.position_snapshot] = 0
         self.entity.snapshots[self.parent_snapshot] = 0

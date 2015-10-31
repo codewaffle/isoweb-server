@@ -144,6 +144,10 @@ cdef class RegionMember:
         cpBodySetVelocity(self.body, cpv(x, y))
         cpBodyActivate(self.body)
 
+    def set_velocity_components(self, float x, float y):
+        cpBodySetVelocity(self.body, cpv(x, y))
+        cpBodyActivate(self.body)
+
     def set_angle(self, float angle):
         cpBodySetAngle(self.body, angle)
         cpBodyActivate(self.body)
