@@ -47,6 +47,9 @@ extensions = [
         library_dirs=['vendor/chipmunk/lib'],
         define_macros=define_macros,
     ),
+    Extension(
+        'server.*', ['**/*.pyx'],
+    )
 ]
 
 setup(
