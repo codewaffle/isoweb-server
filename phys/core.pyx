@@ -33,24 +33,24 @@ cdef class TestMember(SpaceMember):
 
 
 cdef void updateVelocityLandFriction(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt):
-    damping = 1.0
+    damping = 0.9
     cpBodyUpdateVelocity(body, gravity, damping, dt)
 
 
 cdef class RaftTestMember(SpaceMember):
     def setup(self):
         cdef cpVect points_array[5]
-        points_array[0].x = -1
-        points_array[0].y = -1
+        points_array[0].x = -0.843
+        points_array[0].y = -0.945
 
-        points_array[1].x = 1
-        points_array[1].y = -1
+        points_array[1].x = 0.843
+        points_array[1].y = -0.945
 
-        points_array[2].x = 1
-        points_array[2].y = 1
+        points_array[2].x = 0.843
+        points_array[2].y = 0.945
 
-        points_array[3].x = -1
-        points_array[3].y = 1
+        points_array[3].x = -0.843
+        points_array[3].y = 0.945
 
         points_array[4] = points_array[0]
 
