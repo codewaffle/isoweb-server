@@ -134,7 +134,33 @@ cdef extern from "chipmunk/chipmunk_private.h":
         cpDataPointer userData
 
     cdef struct cpContactPointSet
-    cdef struct cpArbiter
+    
+    cdef struct cpArbiter:
+        cpFloat e
+        cpFloat u
+        cpVect surface_vr
+    
+        cpDataPointer data
+    
+        const cpShape *a
+        const cpShape *b
+        cpBody *body_a
+        cpBody *body_b
+        # struct cpArbiterThread thread_a, thread_b
+    
+        int count
+        # struct cpContact *contacts
+        cpVect n
+    
+        cpCollisionHandler *handler
+        cpCollisionHandler *handlerA
+        cpCollisionHandler *handlerB
+
+        cpBool swapped
+    
+        cpTimestamp stamp
+        # int cpArbiterState state
+    
     struct cpSpaceDebugColor
     
     cdef struct cpSpace:
@@ -176,13 +202,13 @@ cdef extern from "chipmunk/chipmunk_private.h":
 
         cpBool usesWildcards
         cpHashSet *collisionHandlers
-        # cpCollisionHandler defaultHandler
+        cpCollisionHandler defaultHandler
 
         cpBool skipPostStep
         cpArray *postStepCallbacks
 
         cpBody *staticBody
-        # cpBody _staticBody
+        cpBody _staticBody
 
     ctypedef void (*cpSpaceBBQueryFunc)(cpShape *shape, void *data)
     ctypedef void (*cpBodyVelocityFunc)(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
