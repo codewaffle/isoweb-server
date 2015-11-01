@@ -4,7 +4,7 @@ from isoweb_time import clock
 from component import BaseComponent
 from network.util import PacketBuilder
 import packet_types
-from phys.const import EntityCategory
+from phys.const import *
 
 packet_builder = PacketBuilder()
 
@@ -37,7 +37,7 @@ class NetworkViewer(BaseComponent):
         current = self._current
         cache = self._cache
 
-        visible = self.entity.Position.find_nearby(self.visibility_radius, mask=EntityCategory.REPLICATE)
+        visible = self.entity.Position.find_nearby(self.visibility_radius, mask=CATEGORY_REPLICATE)
 
         for ref in (current - visible):
             if ref.valid is False:  # destroyed/invalidated

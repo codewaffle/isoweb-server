@@ -1,9 +1,8 @@
 from mathx.vector2 import Vector2
 from phys.cm cimport *
-from phys import const
 from cpython.ref cimport PyObject
-from phys.const import EntityCategory, CollisionType
 from math import pi, atan2
+from phys.const cimport *
 
 
 cdef void find_results(cpShape *shape, void *data):
@@ -15,7 +14,8 @@ cdef class PhysicsSpace:
 
     def __cinit__(self):
         self.space = cpSpaceNew()
-        cpdef cpCollisionHandler* handler = cpSpaceAddCollisionHandler(self.space, CollisionType.BOUNDARY, CollisionType.ENTITY)
+
+        cpdef cpCollisionHandler* handler = cpSpaceAddCollisionHandler(self.space, COLLISION_BOUNDARY, COLLISION_ENTITY)
         self.space.damping = 0.8
         self.space.idleSpeedThreshold = 0.1
         self.space.sleepTimeThreshold = 0.5
@@ -42,7 +42,7 @@ cdef class PhysicsSpace:
         cdef cpVect bp0
         cdef cpVect bp1
 
-        filt.categories = EntityCategory.BOUNDARY
+        filt.categories = CATEGORY_BOUNDARY
         filt.mask = <int>-1
 
         for i in range(len(boundary_points)-1):
@@ -50,7 +50,7 @@ cdef class PhysicsSpace:
             bp1 = cpv(boundary_points[i+1][0], boundary_points[i+1][1])
             seg = cpSegmentShapeNew(body, bp0, bp1, 0.1)
             cpShapeSetFilter(seg, filt)
-            cpShapeSetCollisionType(seg, CollisionType.BOUNDARY)
+            cpShapeSetCollisionType(seg, COLLISION_BOUNDARY)
             cpSpaceAddShape(self.space, seg)
 
         cpSpaceAddBody(self.space, body)

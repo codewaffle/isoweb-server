@@ -1,7 +1,7 @@
 from mathx.vector2 import Vector2
 from phys.cm cimport *
 from cpython.ref cimport PyObject
-from phys.const import EntityCategory
+from phys.const cimport *
 from phys.space cimport PhysicsSpace, SpaceMember
 from math import pi, atan2
 
@@ -28,8 +28,8 @@ cdef class TestMember(SpaceMember):
 
         self.shape = cpCircleShapeNew(self.body, 0.333, cpv(0,0))
         setup_entity_shape(self.entity, self.shape)
-        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
-        self.shape.filter.mask = EntityCategory.COLLIDER
+        self.shape.filter.categories = CATEGORY_ANY | CATEGORY_COLLIDER | CATEGORY_REPLICATE
+        self.shape.filter.mask = CATEGORY_COLLIDER
 
 
 cdef void updateVelocityLandFriction(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt):
@@ -63,8 +63,8 @@ cdef class RaftTestMember(SpaceMember):
         self.shape = cpPolyShapeNewRaw(self.body, 4, points_array, 0)
         setup_entity_shape(self.entity, self.shape)
 
-        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.COLLIDER | EntityCategory.REPLICATE
-        self.shape.filter.mask = EntityCategory.COLLIDER
+        self.shape.filter.categories = CATEGORY_ANY | CATEGORY_COLLIDER | CATEGORY_REPLICATE
+        self.shape.filter.mask = CATEGORY_COLLIDER
 
 
 cdef setup_entity_body(entity, cpBody *body):

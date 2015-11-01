@@ -1,4 +1,4 @@
-from phys.const import EntityCategory
+from phys.const cimport *
 from phys.core cimport *
 from phys.space cimport SpaceMember
 from phys.cm cimport *
@@ -22,7 +22,7 @@ cdef class TerrainMember(SpaceMember):
         print(points)
         self.shape = cpPolyShapeNewRaw(self.body, len(points), points_array, 0)
         setup_entity_shape(self.entity, self.shape)
-        self.shape.filter.categories = EntityCategory.ANY | EntityCategory.TERRAIN | EntityCategory.REPLICATE
+        self.shape.filter.categories = CATEGORY_ANY | CATEGORY_TERRAIN | CATEGORY_REPLICATE
         self.shape.filter.mask = 1 # must be non-zero to show up in range queries
 
         PyMem_Free(points_array)
