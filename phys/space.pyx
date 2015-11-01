@@ -40,12 +40,6 @@ cdef class PhysicsSpace:
         handler.preSolveFunc = boundary_collision_pre
         handler.beginFunc = boundary_collision_begin
 
-
-
-        #cdef cpShape* ground = cpSegmentShapeNew(self.space.staticBody, cpv(-20, 5), cpv(20, -5), 0)
-        #cpShapeSetFriction(ground, 1)
-        #cpSpaceAddShape(self.space, ground)
-
     def __dealloc__(self):
         cpSpaceFree(self.space)
 

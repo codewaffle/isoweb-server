@@ -7,8 +7,6 @@ from phys.space cimport PhysicsSpace, SpaceMember, MemberData
 from math import pi, atan2
 
 
-
-
 cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
     cdef cpVect p = body.p
     cdef cpFloat a = body.a
@@ -23,7 +21,7 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
             ent = md.get_entity()
         except:
             print("Failed to get_entity()")
-            
+
         ent.Position._update()
 
 
@@ -39,24 +37,24 @@ cdef class TestMember(SpaceMember):
 
 
 cdef void updateVelocityLandFriction(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt):
-    damping = 0.9
+    damping = 0.99
     cpBodyUpdateVelocity(body, gravity, damping, dt)
 
 
 cdef class RaftTestMember(SpaceMember):
     def setup(self):
         cdef cpVect points_array[5]
-        points_array[0].x = -0.843
-        points_array[0].y = -0.945
+        points_array[0].x = -0.793
+        points_array[0].y = -0.895
 
-        points_array[1].x = 0.843
-        points_array[1].y = -0.945
+        points_array[1].x = 0.793
+        points_array[1].y = -0.895
 
-        points_array[2].x = 0.843
-        points_array[2].y = 0.945
+        points_array[2].x = 0.793
+        points_array[2].y = 0.895
 
-        points_array[3].x = -0.843
-        points_array[3].y = 0.945
+        points_array[3].x = -0.793
+        points_array[3].y = 0.895
 
         points_array[4] = points_array[0]
 
@@ -83,3 +81,4 @@ cdef setup_entity_body(entity, cpBody *body):
 cdef setup_entity_shape(entity, cpShape *shape):
     shape.userData = <PyObject*>entity
     cpShapeSetCollisionType(shape, COLLISION_ENTITY)
+    cpShapeSetFriction(shape, 0.7)
