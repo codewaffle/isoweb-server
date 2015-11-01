@@ -48,6 +48,7 @@ class Island(BaseComponent):
         )
 
         member = TerrainMember(self.entity, points)
+        self.entity.region.set_boundary(points)
         self.entity.Position._update()
 
         self.entity.set_dirty()

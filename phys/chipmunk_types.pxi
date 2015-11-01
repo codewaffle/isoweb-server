@@ -7,6 +7,13 @@ cdef extern from "chipmunk/chipmunk_private.h":
     ctypedef int cpCollisionID
     ctypedef int cpBitmask
     ctypedef int cpGroup
+    ctypedef int cpCollisionType
+
+
+    ctypedef cpBool (*cpCollisionBeginFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+    ctypedef cpBool (*cpCollisionPreSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+    ctypedef void (*cpCollisionPostSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+    ctypedef void (*cpCollisionSeparateFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
 
 
     cdef struct cpVect:
@@ -23,7 +30,6 @@ cdef extern from "chipmunk/chipmunk_private.h":
     cdef struct cpPolylineSet
     cdef struct cpPointQueryInfo
     cdef struct cpSegmentQueryInfo
-    cdef struct cpCollisionType
 
     cdef struct cpShapeFilter:
         cpGroup group
@@ -117,7 +123,16 @@ cdef extern from "chipmunk/chipmunk_private.h":
     cdef struct cpRatchetJoint
     cdef struct cpGearJoint
     cdef struct cpSimpleMotorJoint
-    cdef struct cpCollisionHandler
+
+    cdef struct cpCollisionHandler:
+        const cpCollisionType typeA
+        const cpCollisionType typeB
+        cpCollisionBeginFunc beginFunc
+        cpCollisionPreSolveFunc preSolveFunc
+        cpCollisionPostSolveFunc postSolveFunc
+        cpCollisionSeparateFunc separateFunc
+        cpDataPointer userData
+
     cdef struct cpContactPointSet
     cdef struct cpArbiter
     struct cpSpaceDebugColor
