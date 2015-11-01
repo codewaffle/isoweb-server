@@ -105,7 +105,7 @@ cdef class SpaceMember:
 
         self.setup()
 
-        entity.region_member = self
+        entity.space_member = self
 
         if entity.parent and entity.parent.has_component('Space'):
             self.set_space(entity.parent.Space.space)

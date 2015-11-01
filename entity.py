@@ -29,7 +29,7 @@ class Entity:
     _name = None
     _controller = None
     _menu_providers = None
-    region_member = None
+    space_member = None
 
     def __init__(self, ent_id):
         self._registry[ent_id] = self

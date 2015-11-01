@@ -154,17 +154,17 @@ class MeatbagController(ControllerComponent):
             print('ff')
             return False
 
-        if not self.entity.region_member:
+        if not self.entity.space_member:
             return dt * -1
 
         move_diff = dest - self.entity.pos
         dist = move_diff.magnitude
         move_dir = move_diff / dist
-        curVel = self.entity.region_member.velocity
+        curVel = self.entity.space_member.velocity
 
         if dist < 0.05:  # we're here
-            self.entity.region_member.set_force(0, 0)
-            self.entity.region_member.set_velocity(0, 0)
+            self.entity.space_member.set_force(0, 0)
+            self.entity.space_member.set_velocity(0, 0)
             self.entity.Position._update()
             return None
         if dist < 3.0:  # arrive
@@ -177,9 +177,9 @@ class MeatbagController(ControllerComponent):
         velDist = velDiff.magnitude
         velNorm = velDiff/velDist
 
-        force = velDiff * 5.0 * self.entity.region_member.get_mass()
+        force = velDiff * 5.0 * self.entity.space_member.get_mass()
 
-        self.entity.region_member.set_angle(atan2(move_dir.y, move_dir.x) + pi/2)
-        self.entity.region_member.set_force(force.x, force.y)
+        self.entity.space_member.set_angle(atan2(move_dir.y, move_dir.x) + pi/2)
+        self.entity.space_member.set_force(force.x, force.y)
 
         return dt * -1

@@ -24,9 +24,9 @@ class Position(BaseComponent):
     persists = ['x', 'y', 'vx', 'vy', 'w', 'h', 'r']
 
     def _update(self):
-        if self.entity.region_member:
-            self.x, self.y, self.r = self.entity.region_member.get_position_components()
-            self.vx, self.vy = self.entity.region_member.get_velocity_components()
+        if self.entity.space_member:
+            self.x, self.y, self.r = self.entity.space_member.get_position_components()
+            self.vx, self.vy = self.entity.space_member.get_velocity_components()
 
         # update snapshot
         self.entity.snapshots[self.position_snapshot] = clock()
@@ -44,9 +44,9 @@ class Position(BaseComponent):
     def initialize(self):
         self._parent = self.entity.parent
 
-        assert self.entity.region_member, ':('
-        self.entity.region_member.set_position_components(self.x, self.y)
-        self.entity.region_member.set_velocity_components(self.vx, self.vy)
+        assert self.entity.space_member, ':('
+        self.entity.space_member.set_position_components(self.x, self.y)
+        self.entity.space_member.set_velocity_components(self.vx, self.vy)
 
         self.entity.snapshots[self.position_snapshot] = 0
         self.entity.snapshots[self.parent_snapshot] = 0
@@ -75,15 +75,15 @@ class Position(BaseComponent):
             y = x.y
             x = x.x
 
-        if self.entity.region_member:
-            self.entity.region_member.set_position_components(x, y)
+        if self.entity.space_member:
+            self.entity.space_member.set_position_components(x, y)
         else:
             self.x, self.y = x, y
 
         self._update()
 
     def find_nearby(self, radius, exclude=None, mask=0, components=None):
-        ret = self.entity.region_member.find_nearby(radius, mask)
+        ret = self.entity.space_member.find_nearby(radius, mask)
 
         if exclude is True:
             ret.difference_update({self.entity})
