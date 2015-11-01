@@ -11,18 +11,20 @@ cdef void find_results(cpShape *shape, void *data):
     ent = <object>shape.userData
     results.add(ent)
 
+
 # ctypedef cpBool (*cpCollisionBeginFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
 # ctypedef cpBool (*cpCollisionPreSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
 # ctypedef void (*cpCollisionPostSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
 # ctypedef void (*cpCollisionSeparateFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
-
 cdef cpBool boundary_collision_pre(cpArbiter *arb, cpSpace *space, cpDataPointer userData):
     print("DOINK", arb.e, arb.u, arb.count, arb.stamp)
     return False
     pass
 
+
 cdef cpBool boundary_collision_begin(cpArbiter *arb, cpSpace *space, cpDataPointer userData):
     return False
+
 
 cdef class PhysicsSpace:
 
@@ -68,6 +70,31 @@ cdef class PhysicsSpace:
 
         cpSpaceAddBody(self.space, body)
 
+    cpdef void add_member(self, SpaceMember member):
+        cpSpaceAddShape(self.space, member.shape)
+        cpSpaceAddBody(self.space, member.body)
+
+    cpdef void remove_member(self, SpaceMember member):
+        cpSpaceRemoveShape(self.space, member.shape)
+        cpSpaceRemoveBody(self.space, member.body)
+
+    def query_box(self, cpBB bounding_box, unsigned int mask):
+        cdef cpShapeFilter filt
+        filt.categories = 0xffffffff
+        filt.mask = mask
+
+        results = set()
+
+        cpSpaceBBQuery(
+            self.space,
+            bounding_box,
+            filt,
+            find_results,
+            <PyObject*>results
+        )
+
+        return results
+
 
 cdef class SpaceMember:
     def __init__(self, entity, data=None):
@@ -80,39 +107,38 @@ cdef class SpaceMember:
 
         entity.region_member = self
 
-        self.set_region(self.entity.region)
+        self.set_space(self.entity.region.space)
 
     property data:
         def __get__(self):
             return <object>self.data_ptr
 
     def setup(self):
-        pass
+        cpBodySetMass(self.body, self.mass)
 
     cpdef cpFloat get_mass(self):
         return cpBodyGetMass(self.body)
 
-    cpdef void set_region(self, PhysicsSpace region):
-        if region == self.region:
+    cpdef void set_space(self, PhysicsSpace space):
+        if space == self.space:
             return
 
-        self.clear_region()
-        self.region = region
+        self.clear_space()
+        self.space = space
 
-        if region:
+        if space:
             assert self.shape
             assert self.body
-            cpSpaceAddShape(region.space, self.shape)
-            cpSpaceAddBody(region.space, self.body)
+            space.add_member(self)
+
         cpBodyActivate(self.body)
 
-    cpdef void clear_region(self):
-        if self.region is None:
+    cpdef void clear_space(self):
+        if self.space is None:
             return
 
-        cpSpaceRemoveShape(self.region.space, self.shape)
-        cpSpaceRemoveBody(self.region.space, self.body)
-        self.region = None
+        self.space.remove_member(self)
+        self.space = None
 
     cpdef void set_position(self, cpVect pos):
         cpBodySetPosition(self.body, pos)
@@ -142,7 +168,7 @@ cdef class SpaceMember:
 
 
     cpdef find_nearby(self, float radius, unsigned int mask):
-        if not self.region:
+        if not self.space:
             return set()
 
         cdef cpBB bb
@@ -152,24 +178,13 @@ cdef class SpaceMember:
         bb.b = self.get_position().y - radius
         bb.t = self.get_position().y + radius
 
-        cdef cpShapeFilter filt
-        filt.categories = 0xffffffff
-        filt.mask = mask
-
-        results = set()
-
-        cpSpaceBBQuery(
-            self.region.space,
+        return self.space.query_box(
             bb,
-            filt,
-            find_results,
-            <PyObject*>results
+            mask
         )
 
-        return results
-
     def __dealloc__(self):
-        self.clear_region()
+        self.clear_space()
 
         if self.shape:
             cpShapeFree(self.shape)

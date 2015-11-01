@@ -6,14 +6,18 @@ from cpython.ref cimport PyObject
 cdef class PhysicsSpace:
     cdef cpSpace *space
 
+    cpdef void add_member(self, SpaceMember member)
+    cpdef void remove_member(self, SpaceMember member)
+
 
 cdef class SpaceMember:
-    cdef PhysicsSpace region
+    cdef PhysicsSpace space
     cdef cpShape* shape
     cdef cpBody* body
+    cdef cpFloat mass
 
-    cpdef void set_region(self, PhysicsSpace)
-    cpdef void clear_region(self)
+    cpdef void set_space(self, PhysicsSpace)
+    cpdef void clear_space(self)
 
     cpdef void set_position(self, cpVect)
     cpdef void set_position_components(self, cpFloat, cpFloat)
@@ -28,6 +32,7 @@ cdef class SpaceMember:
 
 cdef class MemberData:
     cdef PyObject *entity_ptr
+
     cdef PhysicsSpace space
     cdef PhysicsSpace outer_space
 

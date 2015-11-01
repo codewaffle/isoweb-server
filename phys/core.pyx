@@ -83,7 +83,6 @@ cdef setup_entity_body(entity, cpBody *body):
     cdef MemberData md = MemberData(entity)
     body.userData = <PyObject*>entity.member_data
     cpBodySetPositionUpdateFunc(body, wrapUpdatePosition)
-    # self.body.position_func = wrapUpdatePosition
 
 
 cdef setup_entity_shape(entity, cpShape *shape):

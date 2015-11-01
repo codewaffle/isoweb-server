@@ -15,8 +15,9 @@ def component_dict(*args):
     return defaultdict(dict, *args)
 
 
-class Region(PhysicsSpace):
+class Region:
     def __init__(self, region_id, load=True):
+        self.space = PhysicsSpace()
         self._delete_set = set()
         self.region_id = region_id
         self.scheduler = Scheduler()
@@ -62,7 +63,7 @@ class Region(PhysicsSpace):
         self.scheduler.start()
 
     def simulate(self):
-        self.step(1/20.0)
+        self.space.step(1/20.0)
         return -1/20.0
 
     def next_entity_id(self):
