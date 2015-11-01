@@ -102,6 +102,11 @@ class Space(BaseComponent):
 
     def initialize(self):
         self.space = self.entity.space = PhysicsSpace()
+        self.entity.scheduler.schedule(func=self.simulate)
+
+    def simulate(self):
+        self.space.step(1/20.0)
+        return -1/20.0
 
 
 class TestPhysics(BaseComponent):

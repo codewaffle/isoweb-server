@@ -107,7 +107,10 @@ cdef class SpaceMember:
 
         entity.region_member = self
 
-        self.set_space(self.entity.region.space)
+        if entity.parent and entity.parent.has_component('Space'):
+            self.set_space(entity.parent.Space.space)
+        else:
+            self.set_space(self.entity.region.space)
 
     property data:
         def __get__(self):

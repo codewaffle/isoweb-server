@@ -50,6 +50,7 @@ island:
 - Island
 - Interactive:
     include_position: true
+- Space
 
 
 raft:
@@ -57,6 +58,7 @@ raft:
 - Boat
 - RaftPhysics:
     Mass: 750
+
 
 raft_sail:
 - Sprite: sprites/raft_sail.png

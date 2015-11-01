@@ -70,7 +70,15 @@ class Region:
         self.max_entity_id += 1
         return self.max_entity_id
 
-    def spawn(self, entdef, spawn_components=None, pos=None, rot=None, replicate=True, ent_id=None):
+    def spawn(self,
+              entdef,
+              parent=None,
+              spawn_components
+              =None,
+              pos=None,
+              rot=None,
+              replicate=True,
+              ent_id=None):
         if isinstance(entdef, (str, bytes)):
             entdef = definition_from_key(entdef)
 
@@ -81,6 +89,7 @@ class Region:
 
         ent = Entity(ent_id)
         ent.entity_def = entdef
+        ent.parent = parent
         ent.set_region(self)
 
         entdef_components = {k.__name__: v for k, v in entdef.component_data.items()}

@@ -5,7 +5,8 @@ import logbook
 from logbook.handlers import StderrHandler
 from mathx.vector2 import Vector2
 from twisted.internet.defer import inlineCallbacks
-from util import sleep
+import util
+sleep = util.sleep
 
 StderrHandler(level=logbook.DEBUG).push_application()
 import logging
@@ -53,15 +54,25 @@ def spawn_all():
     #island.Position.r = math.pi
     print(island.Position)
     factory.region._island_hax = island
-    raft = factory.region.spawn('raft', pos=Vector2(0, 0))
-
-    raft.parent = island
-
     island.Position._update()
 
-    raft.Position._update()
+    NUM = 4
 
-
+    for x in range(NUM):
+        for y in range(NUM):
+            raft = factory.region.spawn(
+                'raft',
+                parent=island,
+                spawn_components={
+                    'Position': dict(
+                        x=(x - NUM/2)*4,
+                        y=(y - NUM/2)*4,
+                        vx=(random.random() - 0.5) * 10.0,
+                        vy=(random.random() - 0.5) * 10.0
+                    )
+            })
+            raft.parent = island
+            raft.Position._update()
 
     #spawn_crap('acorn', 5, rot=True)
     #spawn_crap('chicken', 5, rot=True)

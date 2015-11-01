@@ -151,10 +151,13 @@ class PlayerWebsocket(WebSocketServerProtocol):
 
         # assign player to island, send initial bla bla bla
 
-        self.entity = self.region.spawn('meatbag', {
-            'NetworkViewer': {'_socket': self},
-            'MeatbagController': {'_socket': self}
-        }, pos=Vector2.random_inside(5.0))
+        self.entity = self.region.spawn(
+            'meatbag',
+            self.region._island_hax,
+            spawn_components={
+                'NetworkViewer': {'_socket': self},
+                'MeatbagController': {'_socket': self}
+            }, pos=Vector2.random_inside(5.0))
 
         self.entity.parent = self.region._island_hax
         self.entity.Position._update()
