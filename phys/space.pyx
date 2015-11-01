@@ -11,18 +11,36 @@ cdef void find_results(cpShape *shape, void *data):
     ent = <object>shape.userData
     results.add(ent)
 
+# ctypedef cpBool (*cpCollisionBeginFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+# ctypedef cpBool (*cpCollisionPreSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+# ctypedef void (*cpCollisionPostSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+# ctypedef void (*cpCollisionSeparateFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
+
+cdef cpBool boundary_collision_pre(cpArbiter *arb, cpSpace *space, cpDataPointer userData):
+    print("DOINK", arb.e, arb.u, arb.count, arb.stamp)
+    return False
+    pass
+
+cdef cpBool boundary_collision_begin(cpArbiter *arb, cpSpace *space, cpDataPointer userData):
+    return False
+
 cdef class PhysicsSpace:
 
     def __cinit__(self):
         self.space = cpSpaceNew()
 
-        cpdef cpCollisionHandler* handler = cpSpaceAddCollisionHandler(self.space, COLLISION_BOUNDARY, COLLISION_ENTITY)
         self.space.damping = 0.8
         self.space.idleSpeedThreshold = 0.1
         self.space.sleepTimeThreshold = 0.5
 
         cpSpaceSetIterations(self.space, 5)
         cpSpaceSetGravity(self.space, cpv(0,0))
+
+        cpdef cpCollisionHandler* handler = cpSpaceAddCollisionHandler(self.space, COLLISION_BOUNDARY, COLLISION_ENTITY)
+        handler.preSolveFunc = boundary_collision_pre
+        handler.beginFunc = boundary_collision_begin
+
+
 
         #cdef cpShape* ground = cpSegmentShapeNew(self.space.staticBody, cpv(-20, 5), cpv(20, -5), 0)
         #cpShapeSetFriction(ground, 1)
@@ -43,13 +61,13 @@ cdef class PhysicsSpace:
         cdef cpVect bp0
         cdef cpVect bp1
 
-        filt.categories = CATEGORY_BOUNDARY
+        filt.categories = CATEGORY_BOUNDARY | CATEGORY_COLLIDER
         filt.mask = <int>-1
 
         for i in range(len(boundary_points)-1):
             bp0 = cpv(boundary_points[i][0], boundary_points[i][1])
             bp1 = cpv(boundary_points[i+1][0], boundary_points[i+1][1])
-            seg = cpSegmentShapeNew(body, bp0, bp1, 0.1)
+            seg = cpSegmentShapeNew(body, bp0, bp1, 0.05)
             cpShapeSetFilter(seg, filt)
             cpShapeSetCollisionType(seg, COLLISION_BOUNDARY)
             cpSpaceAddShape(self.space, seg)
@@ -186,3 +204,11 @@ cdef class SpaceMember:
     property velocity:
         def __get__(self):
             return Vector2(self.body.v.x, self.body.v.y)
+
+cdef class MemberData:
+    def __init__(self, entity):
+        entity.member_data = self
+        self.entity_ptr = <PyObject*>entity
+
+    def get_entity(self):
+        return <object>self.entity_ptr

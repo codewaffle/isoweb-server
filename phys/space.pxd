@@ -25,3 +25,9 @@ cdef class SpaceMember:
     cpdef find_nearby(self, float radius, unsigned int mask)
 
     cdef PyObject *data_ptr
+
+cdef class MemberData:
+    cdef PyObject *entity_ptr
+    cdef PhysicsSpace space
+    cdef PhysicsSpace outer_space
+

@@ -2,7 +2,8 @@ from mathx.vector2 import Vector2
 from phys.cm cimport *
 from cpython.ref cimport PyObject
 from phys.const import CATEGORY_ANY, CATEGORY_COLLIDER, CATEGORY_REPLICATE, COLLISION_ENTITY
-from phys.space cimport PhysicsSpace, SpaceMember
+from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
+from phys.space cimport PhysicsSpace, SpaceMember, MemberData
 from math import pi, atan2
 
 
@@ -17,7 +18,12 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
     cpBodyUpdatePosition(body, dt)
 
     if p.x != body.p.x or p.y != body.p.y or a != body.a:
-        ent = <object>body.userData
+        md = <object>body.userData
+        try:
+            ent = md.get_entity()
+        except:
+            print("Failed to get_entity()")
+            
         ent.Position._update()
 
 
@@ -54,13 +60,13 @@ cdef class RaftTestMember(SpaceMember):
 
         points_array[4] = points_array[0]
 
-        cdef cpFloat moment = cpMomentForPoly(750, 4, points_array, cpv(0,0), 0)
+        cdef cpFloat moment = cpMomentForPoly(750, 4, points_array, cpv(0,0), 0.05)
 
         self.body = cpBodyNew(750, moment)
         cpBodySetVelocityUpdateFunc(self.body, updateVelocityLandFriction)
         setup_entity_body(self.entity, self.body)
 
-        self.shape = cpPolyShapeNewRaw(self.body, 4, points_array, 0)
+        self.shape = cpPolyShapeNewRaw(self.body, 4, points_array, 0.05)
         setup_entity_shape(self.entity, self.shape)
 
         self.shape.filter.categories = CATEGORY_ANY | CATEGORY_COLLIDER | CATEGORY_REPLICATE
@@ -68,7 +74,8 @@ cdef class RaftTestMember(SpaceMember):
 
 
 cdef setup_entity_body(entity, cpBody *body):
-    body.userData = <PyObject*>entity
+    cdef MemberData md = MemberData(entity)
+    body.userData = <PyObject*>entity.member_data
     cpBodySetPositionUpdateFunc(body, wrapUpdatePosition)
     # self.body.position_func = wrapUpdatePosition
 
