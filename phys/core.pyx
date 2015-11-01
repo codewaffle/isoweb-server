@@ -1,7 +1,7 @@
 from mathx.vector2 import Vector2
 from phys.cm cimport *
 from cpython.ref cimport PyObject
-from phys.const cimport *
+from phys.const import CATEGORY_ANY, CATEGORY_COLLIDER, CATEGORY_REPLICATE, COLLISION_ENTITY
 from phys.space cimport PhysicsSpace, SpaceMember
 from math import pi, atan2
 
@@ -75,3 +75,4 @@ cdef setup_entity_body(entity, cpBody *body):
 
 cdef setup_entity_shape(entity, cpShape *shape):
     shape.userData = <PyObject*>entity
+    cpShapeSetCollisionType(shape, COLLISION_ENTITY)

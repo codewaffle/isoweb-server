@@ -35,7 +35,7 @@ extensions = [
     Extension(
         'server.phys.*', ['phys/**/*.pyx'],
         libraries=['chipmunk'],
-        include_dirs=['vendor/chipmunk/include'],
+        include_dirs=['vendor/chipmunk/include', 'phys/include'],
         library_dirs=['vendor/chipmunk/lib'],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args,

@@ -1,8 +1,8 @@
-from phys.const cimport *
 from phys.core cimport *
 from phys.space cimport SpaceMember
 from phys.cm cimport *
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
+from phys.const import *
 
 cdef class TerrainMember(SpaceMember):
     def setup(self):

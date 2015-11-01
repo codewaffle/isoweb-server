@@ -4,6 +4,8 @@ from isoweb_time import clock
 from component import BaseComponent
 from network.util import PacketBuilder
 import packet_types
+
+import phys.const as c
 from phys.const import *
 
 packet_builder = PacketBuilder()

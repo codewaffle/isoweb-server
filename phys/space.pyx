@@ -2,7 +2,8 @@ from mathx.vector2 import Vector2
 from phys.cm cimport *
 from cpython.ref cimport PyObject
 from math import pi, atan2
-from phys.const cimport *
+
+from phys.const import *
 
 
 cdef void find_results(cpShape *shape, void *data):
