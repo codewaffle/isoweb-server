@@ -138,7 +138,7 @@ class Entity:
             self.tracked_components[comp_name] = comp
             # and then hook the component's tracker up to update the timestamp (but keep the reference)
             # dirty but fancy.. just the way I like it.
-            comp._tracking._tracked_parent = (comp_name, self.tracked_components)
+            comp._tracking.set_parent((comp_name, self.tracked_components))
 
         object.__setattr__(self, comp_class.__name__, comp)
         self.components.append(comp)
@@ -186,7 +186,7 @@ class Entity:
         for ss in sorted((x for x in self.snapshots.items() if x[1] >= ts), key=ss_ts):
             yield ss[0]()
 
-        if self.tracked_components.modified > ts:
+        if self.tracked_components.modified_after(ts):
             mods = {comp_name: comp.get_exports(ts) for comp_name, comp in self.tracked_components.get_modified_after(ts).items()}
             mods = {k: v for k, v in mods.items() if v}
 
