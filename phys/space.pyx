@@ -27,6 +27,9 @@ cdef cpBool boundary_collision_begin(cpArbiter *arb, cpSpace *space, cpDataPoint
 
 
 cdef class PhysicsSpace:
+    def __init__(self, PhysicsSpace parent_space):
+        self.parent_space = parent_space
+        print(parent_space)
 
     def __cinit__(self):
         self.space = cpSpaceNew()
@@ -161,14 +164,12 @@ cdef class SpaceMember:
         cdef cpVect rot = cpBodyGetRotation(self.body)
         return atan2(rot.y, rot.x)
 
-
     def get_position_components(self):
         cdef cpVect pos = self.get_position()
         return pos.x, pos.y, self.get_rotation()
 
     def get_velocity_components(self):
         return self.body.v.x, self.body.v.y
-
 
     cpdef find_nearby(self, float radius, unsigned int mask):
         if not self.space:

@@ -17,7 +17,7 @@ def component_dict(*args):
 
 class Region:
     def __init__(self, region_id, load=True):
-        self.space = PhysicsSpace()
+        self.space = PhysicsSpace(None)
         self._delete_set = set()
         self.region_id = region_id
         self.scheduler = Scheduler()

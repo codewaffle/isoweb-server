@@ -5,6 +5,7 @@ from cpython.ref cimport PyObject
 
 cdef class PhysicsSpace:
     cdef cpSpace *space
+    cdef PhysicsSpace parent_space
 
     cpdef void add_member(self, SpaceMember member)
     cpdef void remove_member(self, SpaceMember member)

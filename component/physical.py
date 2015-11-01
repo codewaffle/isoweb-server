@@ -101,7 +101,12 @@ class Space(BaseComponent):
     boundary = None
 
     def initialize(self):
-        self.space = self.entity.space = PhysicsSpace()
+        if self.entity.parent and self.entity.parent.space:
+            space = PhysicsSpace(self.entity.parent.space)
+        else:
+            space = PhysicsSpace(self.entity.region.space)
+        self.entity.space = self.space = space
+
         self.entity.scheduler.schedule(func=self.simulate)
 
     def simulate(self):
