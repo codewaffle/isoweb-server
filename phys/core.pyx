@@ -37,7 +37,15 @@ cdef class TestMember(SpaceMember):
 
 
 cdef void updateVelocityLandFriction(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt):
-    damping = 0.99
+    cdef float sqr_vel = body.v.x*body.v.x + body.v.y*body.v.y
+
+    if sqr_vel < 0.1:
+        damping = 0.4
+    else:
+        damping = 0.95
+
+    body.w *= .9
+
     cpBodyUpdateVelocity(body, gravity, damping, dt)
 
 
