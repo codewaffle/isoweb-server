@@ -180,9 +180,11 @@ class Entity:
             comp_name.initialize()
 
     def changes_after(self, ts):
-        for ss_func, ss_time in self.snapshots.items():
-            if ss_time >= ts:
-                yield ss_func()
+        def ss_ts(i):
+            return i[1]
+
+        for ss in sorted((x for x in self.snapshots.items() if x[1] >= ts), key=ss_ts):
+            yield ss[0]()
 
         if self.tracked_components.modified > ts:
             mods = {comp_name: comp.get_exports(ts) for comp_name, comp in self.tracked_components.get_modified_after(ts).items()}
