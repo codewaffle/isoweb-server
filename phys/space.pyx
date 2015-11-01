@@ -182,10 +182,20 @@ cdef class SpaceMember:
         bb.b = self.get_position().y - radius
         bb.t = self.get_position().y + radius
 
-        return self.space.query_box(
+        ret = self.space.query_box(
             bb,
             mask
         )
+
+        if self.space.parent_space:
+            # TODO : transform bbox into outer space
+            ret.update(
+                self.space.parent_space.query_box(
+                    bb, mask
+                )
+            )
+
+        return ret
 
     def __dealloc__(self):
         self.clear_space()
