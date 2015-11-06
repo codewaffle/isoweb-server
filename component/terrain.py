@@ -8,7 +8,8 @@ from phys.terrain import TerrainMember
 
 class Island(BaseComponent):
     seed = None
-
+    init_order = 10
+    
     persists = ['seed']
 
     def initialize(self):

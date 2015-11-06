@@ -49,6 +49,7 @@ class BaseComponent(metaclass=BaseMeta):
     persists = []
 
     active = True
+    init_order = 0
 
     def __init__(self, ent, entdef=None):
         self.name = self.__class__.__name__

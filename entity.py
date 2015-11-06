@@ -21,6 +21,10 @@ class SnapshotContainer(dict):
         self._ent.set_dirty()
 
 
+def component_order(c):
+    return c.init_order
+
+
 class Entity:
     """
     an Entity is a bag of component data that points to an EntityDef.
@@ -107,7 +111,7 @@ class Entity:
             yield x
 
     def initialize(self):
-        for c in self.components:
+        for c in sorted(self.components, key=component_order):
             c.initialize()
 
     @property
