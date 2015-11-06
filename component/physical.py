@@ -99,6 +99,7 @@ class Position(BaseComponent):
 class Space(BaseComponent):
     space = None
     boundary = None
+    init_order = -100
 
     def initialize(self):
         if self.entity.parent and self.entity.parent.space:
@@ -115,10 +116,14 @@ class Space(BaseComponent):
 
 
 class TestPhysics(BaseComponent):
+    init_order = -10
+
     def initialize(self):
         TestMember(self.entity)
 
 
 class RaftPhysics(BaseComponent):
+    init_order = -10
+
     def initialize(self):
         RaftTestMember(self.entity)
