@@ -1,21 +1,17 @@
-import asyncio
-from binascii import hexlify
 from queue import Queue
-import random
 import struct
 from isoweb_time import clock
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from entity import Entity
 
 import logbook
-import time
-import component
 from mathx.vector2 import Vector2
 
 import packet_types
-from twisted.internet import task, reactor
 from twisted.internet.defer import inlineCallbacks
 from util import sleep, to_bytes
+import component
+import ujson
 
 packet_header = struct.Struct('>B')
 move_to = struct.Struct('>ff')
@@ -63,8 +59,6 @@ class PlayerWebsocket(WebSocketServerProtocol):
     #@inlineCallbacks
     def onMessage(self, payload, isBinary):
         # self.log.debug('onMessage({})', hexlify(payload))
-
-
         now = clock()
         if payload is None:
             return
@@ -150,6 +144,15 @@ class PlayerWebsocket(WebSocketServerProtocol):
         # token = struct.unpack_from('>16s', payload, 0)
 
         # assign player to island, send initial bla bla bla
+
+        meta_json = ujson.dumps({
+            'asset_base': 'https://s3.amazonaws.com/demiverse-assets/'
+        })
+
+        self.send(struct.pack(
+            '>BfH{}s'.format(len(meta_json)),
+            packet_types.META, clock(), len(meta_json), to_bytes(meta_json)
+        ))
 
         self.entity = self.region.spawn(
             'meatbag',
