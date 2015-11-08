@@ -179,7 +179,7 @@ class MeatbagController(ControllerComponent):
 
         force = velDiff * 5.0 * self.entity.space_member.get_mass()
 
-        self.entity.space_member.set_angle(atan2(move_dir.y, move_dir.x) + pi/2)
+        self.entity.space_member.set_angle(atan2(move_dir.y, move_dir.x) - pi/2)
         self.entity.space_member.set_force(force.x, force.y)
 
         return dt * -1
