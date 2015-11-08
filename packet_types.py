@@ -1,6 +1,7 @@
 PING = 1
 PONG = 2
 MESSAGE = 3
+META = 4
 
 # commands from the client
 CMD_CONTEXTUAL_ENTITY = 10
