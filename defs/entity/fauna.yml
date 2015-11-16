@@ -1,0 +1,7 @@
+chicken:
+- Mass: 2
+- Volume: 1
+- component: Spine
+  character: spine/chicken/chicken.json
+  atlas: spine/chicken/chicken.atlas
+- Interactive

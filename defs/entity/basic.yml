@@ -9,42 +9,11 @@ meatbag:
 - EquipmentUser
 - TestPhysics
 
-rock:
-- component: Sprite
-  sprite: sprites/assets_td/rock2.png
-- component: Melee
-  damage: 1
-- component: Hammer
-  tier: 1
-- Containable
 
-tree:
-- Choppable
-- component: Sprite
-  sprite: sprites/assets_td/tree1.png
-- Interactive
 
-log:
-- Draggable
-- Containable
-- Interactive
-- Mass: 160
-- Volume: 200
-- component: Sprite
-  sprite: sprites/log.png
-- component: Choppable
-  label: Chop into firewood x16
-  output_def: firewood
-  output_count: 16
 
-firewood:
-- Volume: 12.5
-- Mass: 10
-- component: Sprite
-  sprite: sprites/log.png
-  scale: 0.35
-- Interactive
-- Containable
+
+
 
 crate:
 - Volume: 1000
@@ -69,10 +38,4 @@ backpack:
 - component: Equippable
   slot: backpack
 
-chicken:
-- Mass: 2
-- Volume: 1
-- component: Spine
-  character: spine/chicken/chicken.json
-  atlas: spine/chicken/chicken.atlas
-- Interactive
+
