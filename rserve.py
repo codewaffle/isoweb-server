@@ -56,7 +56,7 @@ def spawn_all():
     factory.region._island_hax = island
     island.Position._update()
 
-    NUM = 4
+    NUM = 1
 
     for x in range(NUM):
         for y in range(NUM):
@@ -74,16 +74,16 @@ def spawn_all():
             raft.parent = island
             raft.Position._update()
 
-    #spawn_crap('acorn', 5, rot=True)
-    #spawn_crap('chicken', 5, rot=True)
-    #spawn_crap('oak_sapling', 5, rot=True)
+    # spawn_crap('crate', 1, rot=True)
+    for x in range(15):
+        tree = factory.region.spawn('tree', pos=Vector2(random.uniform(-12.8, 12.8),
+                                                        random.uniform(-12.8, 12.8)))
+        tree.Position.r = 2. * math.pi * random.random()
+        tree.parent = island
+        tree.Position._update()
     return
-    spawn_crap('crate', 1, rot=True)
     spawn_crap('backpack', 1, rot=True)
 
-    for x in range(500):
-        factory.region.spawn('tree', pos=Vector2(random.uniform(-128, 128),
-                                                 random.uniform(-128, 128))).Position.r = 2. * math.pi * random.random()
 
     for x in range(500):
         factory.region.spawn('chicken', pos=Vector2(random.uniform(-256, 256), random.uniform(-256,

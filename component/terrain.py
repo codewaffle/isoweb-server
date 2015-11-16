@@ -22,17 +22,19 @@ class Island(BaseComponent):
 
         random.seed(self.seed)
 
-        points = [(random.uniform(-15.0, 15.0), random.uniform(-15.0, 15.0)) for _ in range(15)]
+        MAG = 15.0
+
+        #self.entity.Position.x = 0
+        #0self.entity.Position.y = 0
+
+        points = [(random.uniform(-MAG, MAG) + self.entity.Position.x, random.uniform(-MAG, MAG) + self.entity.Position.y) for _ in range(15)]
 
         # extract convex hull
         hull = MultiPoint(points).convex_hull
         points = list(hull.boundary.coords)
 
-        #self.entity.Position.x = (hull.bounds[0] + hull.bounds[2]) / 2
-        #self.entity.Position.y = (hull.bounds[1] + hull.bounds[3]) / 2
-
-        self.entity.Position.x = 0
-        self.entity.Position.y = 0
+        self.entity.Position.x = (hull.bounds[0] + hull.bounds[2]) / 2
+        self.entity.Position.y = (hull.bounds[1] + hull.bounds[3]) / 2
 
         self.entity.Position.w = hull.bounds[2] - hull.bounds[0]
         self.entity.Position.h = hull.bounds[3] - hull.bounds[1]
@@ -50,7 +52,7 @@ class Island(BaseComponent):
 
         member = TerrainMember(self.entity, points)
         # TODO : replace region.space with .space
-        self.entity.region.space.set_boundary(points)
+        self.entity.Space.space.set_boundary(points)
         self.entity.Position._update()
 
         self.entity.set_dirty()

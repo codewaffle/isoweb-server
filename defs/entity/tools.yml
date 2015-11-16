@@ -1,9 +1,5 @@
 stone_hammer:
-- Mass
-- Volume
 - Equippable
-- component: MeleeWeapon
-  damage: 3
 - component: Craftable
   recipe:
     - consume: stone
@@ -11,7 +7,23 @@ stone_hammer:
     - consume: rope
 - component: Tool
   implements:
-    - hammer: 2
+    - hammer
+- component: Sprite
+  sprite: sprites/stone_axe.png
+- Containable
+- Interactive
+
+stone_axe:
+- Equippable
+- component: Craftable
+  recipe:
+    - consume: stone
+    - consume: handle
+    - consume: rope
+    - tool: hammer
+- component: Tool
+  implements:
+    - chop
 - component: Sprite
   sprite: sprites/stone_axe.png
 - Containable

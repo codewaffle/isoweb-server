@@ -9,7 +9,8 @@ cdef class TerrainMember(SpaceMember):
         points = self.data
         assert points
 
-        self.body = cpBodyNewStatic()
+        #self.body = cpBodyNewStatic()
+        self.body = cpBodyNew(500, 1.0)
         setup_entity_body(self.entity, self.body)
 
         cdef cpVect* points_array = <cpVect*>PyMem_Malloc(len(points) * sizeof(cpVect))
@@ -26,3 +27,6 @@ cdef class TerrainMember(SpaceMember):
         self.shape.filter.mask = 1 # must be non-zero to show up in range queries
 
         PyMem_Free(points_array)
+
+        #self.body.v.x = -1.0
+        #self.body.w = 2

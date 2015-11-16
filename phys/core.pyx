@@ -1,3 +1,5 @@
+from random import random
+
 from mathx.vector2 import Vector2
 from phys.cm cimport *
 from cpython.ref cimport PyObject
@@ -24,6 +26,16 @@ cdef void wrapUpdatePosition(cpBody *body, cpFloat dt):
 
         ent.Position._update()
 
+
+cdef class BaseMember(SpaceMember):
+    def setup(self):
+        self.body = cpBodyNewStatic()
+        setup_entity_body(self.entity, self.body)
+
+        self.shape = cpCircleShapeNew(self.body, 0.1, cpv(0,0))
+        setup_entity_shape(self.entity, self.shape)
+        self.shape.filter.categories = CATEGORY_ANY | CATEGORY_REPLICATE
+        self.shape.filter.mask = 1
 
 cdef class TestMember(SpaceMember):
     def setup(self):

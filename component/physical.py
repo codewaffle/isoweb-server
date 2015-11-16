@@ -3,7 +3,7 @@ from component import BaseComponent
 from mathx.vector2 import Vector2
 import packet_types
 from phys.space import PhysicsSpace
-from phys.core import TestMember, RaftTestMember
+from phys.core import BaseMember, TestMember, RaftTestMember
 
 
 class Position(BaseComponent):
@@ -115,15 +115,16 @@ class Space(BaseComponent):
         return -1/20.0
 
 
-class TestPhysics(BaseComponent):
+class BasePhysics(BaseComponent):
     init_order = -10
+    member_class = BaseMember
 
     def initialize(self):
-        TestMember(self.entity)
+        self.member_class(self.entity)
+
+class TestPhysics(BasePhysics):
+    member_class = TestMember
 
 
-class RaftPhysics(BaseComponent):
-    init_order = -10
-
-    def initialize(self):
-        RaftTestMember(self.entity)
+class RaftPhysics(BasePhysics):
+    member_class = RaftTestMember

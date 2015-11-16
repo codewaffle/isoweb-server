@@ -1,10 +1,9 @@
 rock:
 - component: Sprite
   sprite: sprites/assets_td/rock2.png
-- component: Melee
-  damage: 1
-- component: Hammer
-  tier: 1
+- component: Tool
+  implements:
+    - hammer
 - Containable
 
 tree:
@@ -12,6 +11,7 @@ tree:
 - component: Sprite
   sprite: sprites/assets_td/tree1.png
 - Interactive
+- BasePhysics
 
 log:
 - Draggable

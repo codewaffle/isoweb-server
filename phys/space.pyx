@@ -17,13 +17,11 @@ cdef void find_results(cpShape *shape, void *data):
 # ctypedef void (*cpCollisionPostSolveFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
 # ctypedef void (*cpCollisionSeparateFunc)(cpArbiter *arb, cpSpace *space, cpDataPointer userData)
 cdef cpBool boundary_collision_pre(cpArbiter *arb, cpSpace *space, cpDataPointer userData):
-    print("DOINK", arb.e, arb.u, arb.count, arb.stamp)
-    return False
-    pass
+    return True
 
 
 cdef cpBool boundary_collision_begin(cpArbiter *arb, cpSpace *space, cpDataPointer userData):
-    return False
+    return True
 
 
 cdef class PhysicsSpace:

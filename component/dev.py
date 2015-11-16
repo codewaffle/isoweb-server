@@ -9,10 +9,11 @@ from mathx.vector2 import Vector2
 
 
 class Interactive(BaseComponent):
-    hit_area = 'Circle(0, 0, 100)'
+    shape = 'circle'
+    shape_args = [0, 0, 25]
     include_position = False
 
-    exports = ['hit_area', 'include_position']
+    exports = ['shape', 'shape_args', 'include_position']
 
 
 class Choppable(MenuComponent):
