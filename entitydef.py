@@ -17,13 +17,17 @@ class EntityDef:
     by_digest = {}
     by_key = {}
 
+    @classmethod
+    def get_hash(cls, key):
+        xx.reset()
+        xx.update(key)
+        return xx.intdigest()
+
     def __init__(self, key, data):
         self.key = key
         self.log = Logger('EntityDef({})'.format(repr(self.key)))
 
-        xx.reset()
-        xx.update(key)
-        self.digest = xx.intdigest()
+        self.digest = self.get_hash(key)
 
         assert self.key not in EntityDef.by_key
         EntityDef.by_key[key] = self
@@ -62,7 +66,7 @@ class EntityDef:
                     assert len(c) == 1, repr(c)
                     comp_name, comp_args = list(c.items())[0]
 
-                    if comp_name == 'meta':
+                    if comp_name == 'meta': # wat dis
                         self.__dict__.update(comp_args)
 
                     if not isinstance(comp_args, dict):
@@ -83,7 +87,7 @@ class EntityDef:
             setattr(self, comp_name, comp_class)
             self.component_names.add(comp_name)
             self.component_classes.add(comp_class)
-            self.component_data[comp_class] = comp_args
+            self.component_data[comp_class] = comp_class.process_args(comp_args)
 
     @property
     @memoize  # EntityDefs are static after load so we can cache this

@@ -116,6 +116,16 @@ class BaseComponent(metaclass=BaseMeta):
         if key in self.exports:
             self.entity.set_modified()
 
+    @classmethod
+    def process_args(cls, args):
+        """
+        Classmethod to process data from yaml files and prepare it for use in the game.
+
+        :param args:
+        :return:
+        """
+        return args
+
 
 class MenuComponent(BaseComponent):
     def initialize(self):
