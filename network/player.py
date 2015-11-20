@@ -19,30 +19,6 @@ move_to = struct.Struct('>ff')
 pong = struct.Struct('>BfHd')
 ping = struct.Struct('>H')
 
-_chatters = set()
-
-
-def broadcast(message_from, message):
-    print('[Broadcast] {}: {}'.format(message_from, message))
-    pkt = struct.pack(
-        '>BfBB{}sH{}s'.format(len(message_from), len(message)),
-        *to_bytes([packet_types.MESSAGE, clock(), 1, len(message_from), message_from, len(message), message])
-    )
-
-    for ch in _chatters:
-        ch.send(pkt)
-
-
-def entity_text(ent, message):
-    print('[EntityText] {}: {}'.format(ent, message))
-    pkt = struct.pack(
-        '>BfBIH{}s'.format(len(message)),
-        *to_bytes([packet_types.MESSAGE, clock(), 3, ent.id, len(message), message])
-    )
-
-    for ch in _chatters:
-        ch.send(pkt)
-
 
 class PlayerWebsocket(WebSocketServerProtocol):
     def __init__(self):
@@ -68,21 +44,19 @@ class PlayerWebsocket(WebSocketServerProtocol):
         if self.region is None:
             self.handshake(payload)
 
+        try:
+            # call registered packet handler
+            self.entity.packet_handlers[packet_type](payload)
+            return
+        except KeyError:
+            pass
+
+        # no registered handler, try other types
         if packet_type == packet_types.PING:
             num, = ping.unpack_from(payload, 1)
             # bounce ping back immediately
             self.sendMessage(pong.pack(packet_types.PONG, clock(), num, now) + b'\0', isBinary=True)
             return
-        elif packet_type == packet_types.MESSAGE:
-            message_len, = struct.unpack_from('>H', payload, 1)
-            message, = struct.unpack_from('>{}s'.format(message_len), payload, 3)
-            #broadcast(self.entity.name, message)
-            entity_text(self.entity, message)
-
-        elif packet_type == packet_types.CMD_CONTEXTUAL_POSITION:
-            x, y = struct.unpack_from('>ff', payload, 1)
-            # self.log.debug('Move to {}, {}', x, y)
-            self.entity.controller.handle_context_position(Vector2(x, y))
         elif packet_type == packet_types.CMD_CONTEXTUAL_ENTITY:
             ent_id, = struct.unpack_from('>I', payload, 1)
             ent = Entity.get(ent_id)
@@ -159,7 +133,12 @@ class PlayerWebsocket(WebSocketServerProtocol):
             self.region._island_hax,
             spawn_components={
                 'NetworkViewer': {'_socket': self},
-                'MeatbagController': {'_socket': self}
+                'MeatbagController': {'_socket': self},
+                'SimpleMovementController': {},
+                'MenuController': {},
+                'ContainerController': {},
+                'CraftingController': {},
+                'ChatController': {'_socket': self}
             }, pos=Vector2.random_inside(5.0))
 
         self.entity.parent = self.region._island_hax
@@ -169,12 +148,9 @@ class PlayerWebsocket(WebSocketServerProtocol):
 
         self.send(msg)
 
-        _chatters.add(self)
-
     def onClose(self, wasClean, code, reason):
         self.on_disconnect()
 
     def on_disconnect(self):
-        _chatters.difference_update({self})
         self.log.info('on_disconnect')
         print('{} disconnected'.format(self))

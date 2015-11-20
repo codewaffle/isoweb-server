@@ -3,6 +3,7 @@ import struct
 from isoweb_time import clock
 from component import BaseComponent
 import entitydef
+from mathx.vector2 import Vector2
 from menu import MultipleDefaultMenuItems
 import packet_types
 from util import to_bytes
@@ -16,12 +17,17 @@ class Controller(BaseComponent):
         print("DUMMY!")
 
 
-class PhysicalMovementController(Controller):
+class SimpleMovementController(Controller):
     def initialize(self):
         self.entity.packet_handlers[packet_types.CMD_CONTEXTUAL_POSITION] = self.move_to
 
     def move_to(self, packet):
         x, y = struct.unpack_from('>ff', packet, 1)
+
+        assert isinstance(self.entity.controller, MeatbagController)
+        self.entity.controller.set_queue([
+            (self.entity.controller.do_move_to, (Vector2(x,y),))
+        ])
 
 
 class MenuController(Controller):
@@ -49,6 +55,45 @@ class CraftingController(Controller):
         self.entity.packet_handlers[packet_types.CRAFTING_INDEX] = self.dummy
         self.entity.packet_handlers[packet_types.CRAFTING_DETAIL] = self.dummy
         self.entity.packet_handlers[packet_types.CRAFTING_EXECUTE] = self.dummy
+
+
+class ChatController(Controller):
+    _socket = None
+    _chatters = set()
+
+    def initialize(self):
+        self.entity.packet_handlers[packet_types.MESSAGE] = self.chat
+        self._chatters.add(self)
+
+    def chat(self, payload):
+        message_len, = struct.unpack_from('>H', payload, 1)
+        message, = struct.unpack_from('>{}s'.format(message_len), payload, 3)
+        #broadcast(self.entity.name, message)
+        self.entity_text(self.entity, message)
+
+    def entity_text(self, ent, message):
+        print('[EntityText] {}: {}'.format(ent, message))
+        pkt = struct.pack(
+                '>BfBIH{}s'.format(len(message)),
+                *to_bytes([packet_types.MESSAGE, clock(), 3, ent.id, len(message), message])
+        )
+
+        for ch in self._chatters:
+            ch.send(pkt)
+
+    def send(self, packet):
+        self._socket.send(packet)
+
+    @classmethod
+    def broadcast(cls, message_from, message):
+        print('[Broadcast] {}: {}'.format(message_from, message))
+        pkt = struct.pack(
+                '>BfBB{}sH{}s'.format(len(message_from), len(message)),
+                *to_bytes([packet_types.MESSAGE, clock(), 1, len(message_from), message_from, len(message), message])
+        )
+
+        for ch in cls._chatters:
+            ch.send(pkt)
 
 
 class ControllerComponent(BaseComponent):
@@ -176,15 +221,6 @@ class MeatbagController(ControllerComponent):
     def initialize(self):
         self.entity.controller = self.entity.MeatbagController
         self.controller_initialize()
-
-    def handle_context_position(self, pos):
-        # i don't know if this will ever be something other than 'move here'...
-        # could use this for item actions (e.g. activate a shovel and then intercept context position to dig... dumb?)
-        # but this will probably be handled by the client.. (activate shovel -> ask for target?).. don't know.
-
-        self.set_queue([
-            (self.do_move_to, (pos,))
-        ])
 
     def move_near_task(self, pos, dist=0.5):
         near_pos = pos + (self.entity.pos - pos).normalized * dist
