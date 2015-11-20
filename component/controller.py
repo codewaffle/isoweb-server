@@ -1,5 +1,7 @@
 from math import atan2, pi
 import struct
+
+from entity import Entity
 from isoweb_time import clock
 from component import BaseComponent
 import entitydef
@@ -30,14 +32,68 @@ class SimpleMovementController(Controller):
         ])
 
 
-class MenuController(Controller):
+class ActionController(Controller):
+    _socket = None
+
     def initialize(self):
-        self.entity.packet_handlers[packet_types.CMD_MENU_REQ_ENTITY] = self.dummy
-        self.entity.packet_handlers[packet_types.CMD_CONTEXTUAL_ENTITY] = self.dummy
-        self.entity.packet_handlers[packet_types.CMD_MENU_EXEC_ENTITY] = self.dummy
+        self.entity.packet_handlers[packet_types.CMD_MENU_REQ_ENTITY] = self.req_entity_menu
+        self.entity.packet_handlers[packet_types.CMD_CONTEXTUAL_ENTITY] = self.do_context
+        self.entity.packet_handlers[packet_types.CMD_MENU_EXEC_ENTITY] = self.exec_entity_menu
 
         self.entity.packet_handlers[packet_types.CMD_MENU_REQ_POSITION] = self.dummy
         self.entity.packet_handlers[packet_types.CMD_MENU_EXEC_POSITION] = self.dummy
+
+    def do_context(self, payload):
+        ent_id, = struct.unpack_from('>I', payload, 1)
+        ent = Entity.get(ent_id)
+
+        ctx_menu = ent.get_context_menu(self.entity)
+
+        if not ctx_menu:
+            return
+
+        try:
+            ctx_menu.execute_default()
+        except MultipleDefaultMenuItems:
+            # send the truncated menu
+            fmt = ['>BfIB']
+            data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(ctx_menu)]
+
+            for kw, (desc, func) in ctx_menu:
+                fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
+                data.extend([len(kw), kw, len(desc), desc])
+
+            self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
+            return
+
+    def req_entity_menu(self, payload):
+        ent_id, = struct.unpack_from('>I', payload, 1)
+        ent = Entity.get(ent_id)
+        self.log.info('Requesting menu for {}', ent)
+
+        menu = ent.get_menu(self.entity)
+
+        if not menu:
+            return
+
+        # send menu
+        fmt = ['>BfIB']
+        data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(menu)]
+
+        for kw, (desc, func) in menu:
+            fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
+            data.extend([len(kw), kw, len(desc), desc])
+
+        self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
+
+    def exec_entity_menu(self, payload):
+        ent_id, str_len = struct.unpack_from('>IB', payload, 1)
+        action, = struct.unpack_from('>{}s'.format(str_len), payload, 6)
+        ent = Entity.get(ent_id)
+        self.log.info('Executing action `{}` on {}', action, ent)
+
+        menu = ent.get_menu(self.entity)
+        menu.execute(action)
 
 
 class ContainerController(Controller):
@@ -109,48 +165,8 @@ class ControllerComponent(BaseComponent):
     def handle_menu_req_position(self, pos):
         pass
 
-    def handle_menu_req_entity(self, ent):
-        menu = ent.get_menu(self.entity)
-
-        if not menu:
-            return
-
-        # send menu
-        fmt = ['>BfIB']
-        data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(menu)]
-
-        for kw, (desc, func) in menu:
-            fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
-            data.extend([len(kw), kw, len(desc), desc])
-
-        self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
-
-    def handle_menu_exec_entity(self, ent, action):
-        menu = ent.get_menu(self.entity)
-        menu.execute(action)
-
     def handle_context_position(self, pos):
         raise NotImplemented
-
-    def handle_context_entity(self, ent):
-        ctx_menu = ent.get_context_menu(self.entity)
-
-        if not ctx_menu:
-            return
-
-        try:
-            ctx_menu.execute_default()
-        except MultipleDefaultMenuItems:
-            # send the truncated menu
-            fmt = ['>BfIB']
-            data = [packet_types.CMD_MENU_REQ_ENTITY, clock(), ent.id, len(ctx_menu)]
-
-            for kw, (desc, func) in ctx_menu:
-                fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
-                data.extend([len(kw), kw, len(desc), desc])
-
-            self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
-            return
 
     def update_container(self, container):
 
