@@ -8,6 +8,49 @@ import packet_types
 from util import to_bytes
 
 
+class Controller(BaseComponent):
+    def initialize(self):
+        pass
+
+    def dummy(self, packet):
+        print("DUMMY!")
+
+
+class PhysicalMovementController(Controller):
+    def initialize(self):
+        self.entity.packet_handlers[packet_types.CMD_CONTEXTUAL_POSITION] = self.move_to
+
+    def move_to(self, packet):
+        x, y = struct.unpack_from('>ff', packet, 1)
+
+
+class MenuController(Controller):
+    def initialize(self):
+        self.entity.packet_handlers[packet_types.CMD_MENU_REQ_ENTITY] = self.dummy
+        self.entity.packet_handlers[packet_types.CMD_CONTEXTUAL_ENTITY] = self.dummy
+        self.entity.packet_handlers[packet_types.CMD_MENU_EXEC_ENTITY] = self.dummy
+
+        self.entity.packet_handlers[packet_types.CMD_MENU_REQ_POSITION] = self.dummy
+        self.entity.packet_handlers[packet_types.CMD_MENU_EXEC_POSITION] = self.dummy
+
+
+class ContainerController(Controller):
+    def initialize(self):
+        self.entity.packet_handlers[packet_types.CONTAINER_HIDE] = self.dummy
+        self.entity.packet_handlers[packet_types.CONTAINER_SHOW] = self.dummy
+        self.entity.packet_handlers[packet_types.CONTAINER_INDEX_MENU_REQ] = self.dummy
+        self.entity.packet_handlers[packet_types.CONTAINER_UPDATE] = self.dummy
+
+
+class CraftingController(Controller):
+    def initialize(self):
+        self.entity.packet_handlers[packet_types.CRAFTING_SHOW] = self.dummy
+        self.entity.packet_handlers[packet_types.CRAFTING_HIDE] = self.dummy
+        self.entity.packet_handlers[packet_types.CRAFTING_INDEX] = self.dummy
+        self.entity.packet_handlers[packet_types.CRAFTING_DETAIL] = self.dummy
+        self.entity.packet_handlers[packet_types.CRAFTING_EXECUTE] = self.dummy
+
+
 class ControllerComponent(BaseComponent):
     _socket = None
     _queue = None

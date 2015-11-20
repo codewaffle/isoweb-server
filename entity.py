@@ -32,9 +32,12 @@ class Entity:
     _registry = {}
     _name = None
     _controller = None
+    _packet_handlers = None
     _menu_providers = None
     space_member = None
 
+    # ugh there's so many members.. this was supposed to be light weight.
+    # whatever, optimize later
     def __init__(self, ent_id):
         self._registry[ent_id] = self
 
@@ -55,6 +58,13 @@ class Entity:
         self.flags = 0
 
         self.tracked_components = TrackedDictionary()
+
+    @property
+    def packet_handlers(self):
+        if self._packet_handlers is None:
+            self._packet_handlers = {}
+
+        return self._packet_handlers
 
     @classmethod
     def get(cls, ent_id):
