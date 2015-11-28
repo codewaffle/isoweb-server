@@ -26,11 +26,11 @@ class Sprite(BaseComponent):
         'scale', 'sprite', 'anchor'
     ]
     
-    def __init__(self, ent, entdef):
-        if 'value' in entdef:
-            entdef['sprite'] = entdef['value']
-            del entdef['value']
-        super(Sprite, self).__init__(ent, entdef)
+    def __init__(self, ent, entity_def):
+        if 'value' in entity_def:
+            entity_def['sprite'] = entity_def['value']
+            del entity_def['value']
+        super(Sprite, self).__init__(ent, entity_def)
 
     @property
     def value(self):

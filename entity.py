@@ -140,10 +140,10 @@ class Entity:
     def __contains__(self, item):
         return self.has_component(item)
 
-    def add_component(self, comp_name, initialize=True, entdef=None, **data):
+    def add_component(self, comp_name, initialize=True, entity_def=None, **data):
         comp_class = component.get(comp_name)
-        if entdef is not None:
-            comp = comp_class(self, entdef.component_data[comp_class])
+        if entity_def is not None:
+            comp = comp_class(self, entity_def.component_data[comp_class])
         else:
             comp = comp_class(self)
 
@@ -164,13 +164,13 @@ class Entity:
 
         return comp
 
-    def add_components(self, components, initialize=True, entdef=None):
+    def add_components(self, components, initialize=True, entity_def=None):
         if isinstance(components, (list, tuple, set)):
             for comp_name in components:
-                self.add_component(comp_name, initialize=initialize, entdef=entdef)
+                self.add_component(comp_name, initialize=initialize, entity_def=entity_def)
         elif isinstance(components, dict):
             for comp_name, data in components.items():
-                self.add_component(comp_name, initialize=initialize, entdef=entdef, **data)
+                self.add_component(comp_name, initialize=initialize, entity_def=entity_def, **data)
         else:
             raise ValueError('Components is not valid')
 

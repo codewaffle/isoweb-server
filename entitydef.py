@@ -2,7 +2,7 @@ import os
 import fnmatch
 import xxhash
 import ujson
-from component.base import DataProxy
+from component.base import DataProxy, DefinitionComponent
 import component
 from logbook import Logger
 from util import memoize
@@ -59,19 +59,14 @@ class EntityDef:
     def load_components(self, data):
         for c in data:
             if isinstance(c, dict):
-                try:
-                    comp_name = c.pop('component')
-                    comp_args = c.copy()
-                except KeyError:
-                    # look for short-form component (Mass: 10) - must only be one entry!
-                    assert len(c) == 1, repr(c)
-                    comp_name, comp_args = list(c.items())[0]
+                assert len(c) == 1, repr(c)
+                comp_name, comp_args = list(c.items())[0]
 
-                    if comp_name == 'meta': # wat dis
-                        self.__dict__.update(comp_args)
+                if comp_name == 'meta':  # wat dis
+                    self.__dict__.update(comp_args)
 
-                    if not isinstance(comp_args, dict):
-                        comp_args = {'value': comp_args}
+                if not isinstance(comp_args, dict):
+                    comp_args = {'value': comp_args}
             elif isinstance(c, str):
                 comp_name = c
                 comp_args = {}
@@ -88,7 +83,12 @@ class EntityDef:
             setattr(self, comp_name, comp_class)
             self.component_names.add(comp_name)
             self.component_classes.add(comp_class)
-            self.component_data[comp_class] = comp_class.process_args(comp_args)
+
+            # DefinitionComponents get instantiated on the definition here
+            if issubclass(comp_class, DefinitionComponent):
+                comp_class(self).initialize(comp_args)
+            else:
+                self.component_data[comp_class] = comp_args
 
     @property
     @memoize  # EntityDefs are static after load so we can cache this

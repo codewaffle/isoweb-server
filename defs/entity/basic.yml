@@ -1,10 +1,9 @@
 meatbag:
 - MeatbagController
-- component: Sprite
-  sprite: characters/meatbag.png
+- Sprite: characters/meatbag.png
 - Dragger
-- component: Container
-  capacity: 950
+- Container:
+    capacity: 950
 - Interactive
 - EquipmentUser
 - TestPhysics
@@ -12,24 +11,19 @@ meatbag:
 crate:
 - Volume: 1000
 - Mass: 5
-- component: Sprite
-  sprite: sprites/assets_td/crate1.png
-- component: Container
-  capacity: 950
+- Sprite: sprites/assets_td/crate1.png
+- Container:
+    capacity: 950
 - Interactive
 - Draggable
 
 backpack:
 - Mass
 - Volume
-- component: Sprite
-  sprite: sprites/backpack.png
-- component: Container
-  capacity: 80
-  expandable: true # expandable - volume of container will expand up to initial size + capacity
+- Sprite: sprites/backpack.png
+- Container:
+    capacity: 80
+    expandable: true # expandable - volume of container will expand up to initial size + capacity
 - Interactive
 - Draggable
-- component: Equippable
-  slot: backpack
-
-
+- Equippable: backpack

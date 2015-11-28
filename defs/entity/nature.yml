@@ -1,15 +1,11 @@
 rock:
-- component: Sprite
-  sprite: sprites/assets_td/rock2.png
-- component: Tool
-  implements:
-    - hammer
+- Sprite: sprites/assets_td/rock2.png
+- Tool: hammer
 - Containable
 
 tree:
 - Choppable
-- component: Sprite
-  sprite: sprites/assets_td/tree1.png
+- Sprite: sprites/assets_td/tree1.png
 - Interactive
 - BasePhysics
 
@@ -19,18 +15,17 @@ log:
 - Interactive
 - Mass: 160
 - Volume: 200
-- component: Sprite
-  sprite: sprites/log.png
-- component: Choppable
-  label: Chop into firewood x16
-  output_def: firewood
-  output_count: 16
+- Sprite: sprites/log.png
+- Choppable:
+    label: Chop into firewood x16
+    output_def: firewood
+    output_count: 16
 
 firewood:
 - Volume: 12.5
 - Mass: 10
-- component: Sprite
-  sprite: sprites/log.png
-  scale: 0.35
+- Sprite:
+    sprite: sprites/log.png
+    scale: 0.35
 - Interactive
 - Containable

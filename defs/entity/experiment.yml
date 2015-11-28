@@ -1,12 +1,11 @@
 testhouse:
-- component: Structure
-  tileset: default
-  size: [5,5]
-  data: [0,1,1,1,1,1,1,2,2,1,1,2,2,2,1,1,2,2,2,1,1,1,2,1,1]
+- Structure:
+    tileset: default
+    size: [5,5]
+    data: [0,1,1,1,1,1,1,2,2,1,1,2,2,2,1,1,2,2,2,1,1,1,2,1,1]
 
 land_vehicle:
-- component: TileMap
-
+- TileMap
 
 acorn:
 - Seed: oak_sapling

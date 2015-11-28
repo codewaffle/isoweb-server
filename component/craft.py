@@ -1,20 +1,18 @@
 import packet_types
-from component.base import BaseComponent
+from component.base import BaseComponent, DefinitionComponent
 from component.controller import Controller
 from network.rpc import rpc_json
 
-_craftable_registry = {}
+_recipe_registry = {}
 
 
-class Craftable(BaseComponent):
-    recipe = None
+class CraftRecipe(DefinitionComponent):
+    consume = None
+    tool = None
 
-    def initialize(self):
-        pass
-
-    @classmethod
-    def process_args(cls, args):
-        return super().process_args(args)
+    def initialize(self, def_args):
+        print("JESS")
+        _recipe_registry[self.entity_def.digest] = self
 
 
 class CraftingController(Controller):

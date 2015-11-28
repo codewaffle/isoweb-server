@@ -1,30 +1,25 @@
 stone_hammer:
 - Equippable
-- component: Craftable
-  recipe:
-    - consume: stone
-    - consume: handle
-    - consume: rope
-- component: Tool
-  implements:
-    - hammer
-- component: Sprite
-  sprite: sprites/stone_axe.png
+- CraftRecipe:
+    consume:
+      - stone
+      - handle
+      - rope
+- Tool: hammer
+- Sprite: sprites/stone_axe.png
 - Containable
 - Interactive
 
 stone_axe:
 - Equippable
-- component: Craftable
-  recipe:
-    - consume: stone
-    - consume: handle
-    - consume: rope
-    - tool: hammer
-- component: Tool
-  implements:
-    - chop
-- component: Sprite
-  sprite: sprites/stone_axe.png
+- CraftRecipe:
+    consume:
+      - stone
+      - handle
+      - rope
+    tool:
+      - hammer
+- Tool: chop
+- Sprite: sprites/stone_axe.png
 - Containable
 - Interactive

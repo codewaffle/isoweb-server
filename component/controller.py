@@ -167,18 +167,18 @@ class ControllerComponent(BaseComponent):
         dat = [packet_types.CONTAINER_UPDATE, clock(), container.id, len(container.Container.contents)]
 
         for idx, c in container.Container.contents.items():
-            entdef = entitydef.definition_from_key(c[0][0])
-            fmt.append('HIffB{}sB{}s'.format(len(entdef.name), len(entdef.component_data['Sprite'].sprite)))
+            entity_def = entitydef.definition_from_key(c[0][0])
+            fmt.append('HIffB{}sB{}s'.format(len(entity_def.name), len(entity_def.component_data['Sprite'].sprite)))
 
             dat.extend([
                 idx,
                 c[1],
                 1,
                 1,
-                len(entdef.name),
-                entdef.name,
-                len(entdef.component_data['Sprite'].sprite),
-                entdef.component_data['Sprite'].sprite
+                len(entity_def.name),
+                entity_def.name,
+                len(entity_def.component_data['Sprite'].sprite),
+                entity_def.component_data['Sprite'].sprite
             ])
 
         packed = struct.pack(''.join(fmt), *to_bytes(dat))

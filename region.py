@@ -71,7 +71,7 @@ class Region:
         return self.max_entity_id
 
     def spawn(self,
-              entdef,
+              entity_def,
               parent=None,
               spawn_components
               =None,
@@ -79,22 +79,22 @@ class Region:
               rot=None,
               replicate=True,
               ent_id=None):
-        if isinstance(entdef, (str, bytes)):
-            entdef = definition_from_key(entdef)
+        if isinstance(entity_def, (str, bytes)):
+            entity_def = definition_from_key(entity_def)
 
-        assert isinstance(entdef, EntityDef)
+        assert isinstance(entity_def, EntityDef)
 
         if ent_id is None:
             ent_id = self.next_entity_id()
 
         ent = Entity(ent_id)
-        ent.entity_def = entdef
+        ent.entity_def = entity_def
         ent.parent = parent
         ent.set_region(self)
 
-        entdef_components = {k.__name__: v for k, v in entdef.component_data.items()}
-        if entdef_components:
-            ent.add_components(entdef_components, initialize=False, entdef=entdef)
+        entity_def_components = {k.__name__: v for k, v in entity_def.component_data.items()}
+        if entity_def_components:
+            ent.add_components(entity_def_components, initialize=False, entity_def=entity_def)
 
         # gather up components from various sources
         components = component_dict()

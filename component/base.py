@@ -51,10 +51,10 @@ class BaseComponent(metaclass=BaseMeta):
     active = True
     init_order = 0
 
-    def __init__(self, ent, entdef=None):
+    def __init__(self, ent, entity_def=None):
         self.name = self.__class__.__name__
         self.entity = ent
-        self.entdef = entdef
+        self.entity_def = entity_def
         super(BaseComponent, self).__init__()
 
     def initialize(self):
@@ -88,8 +88,8 @@ class BaseComponent(metaclass=BaseMeta):
         pass
 
     def get_original_value(self, key):
-        if self.entdef is not None:
-            return self.entdef.get(key, getattr(self.__class__, key))
+        if self.entity_def is not None:
+            return self.entity_def.get(key, getattr(self.__class__, key))
 
         return INVALID_VALUE
 
@@ -116,15 +116,13 @@ class BaseComponent(metaclass=BaseMeta):
         if key in self.exports:
             self.entity.set_modified()
 
-    @classmethod
-    def process_args(cls, args):
-        """
-        Classmethod to process data from yaml files and prepare it for use in the game.
 
-        :param args:
-        :return:
-        """
-        return args
+class DefinitionComponent(BaseComponent):
+    def __init__(self, entity_def):
+        super(DefinitionComponent, self).__init__(None, entity_def)
+
+    def initialize(self, def_args):
+        raise NotImplemented
 
 
 class MenuComponent(BaseComponent):
