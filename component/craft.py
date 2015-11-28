@@ -1,3 +1,6 @@
+import struct
+from binascii import hexlify
+
 import packet_types
 from component.base import BaseComponent, DefinitionComponent
 from component.controller import Controller
@@ -13,6 +16,15 @@ class CraftRecipe(DefinitionComponent):
     def initialize(self, def_args):
         _recipe_registry[self.entity_def.hex_digest] = self
 
+    def get_view(self):
+        return {
+            'hash': self.entity_def.hex_digest,
+            'name': self.entity_def.name,
+            'description': self.entity_def.description,
+            'consumes': [],
+            'tools': []
+        }
+
 
 class CraftingController(Controller):
     def initialize(self):
@@ -26,8 +38,10 @@ class CraftingController(Controller):
             (k, v.entity_def.name) for k, v in _recipe_registry.items()
         ]
 
+    @rpc_json
     def do_view(self, payload):
-        pass
+        recipe = _recipe_registry.get(hexlify(payload[1:]))
+        return packet_types.CRAFT_VIEW, recipe.get_view()
 
     def do_exec(self, payload):
         pass

@@ -32,7 +32,8 @@ class EntityDef:
         self.log = Logger('EntityDef({})'.format(repr(self.key)))
 
         self.digest = self.get_hash(key)
-        self.hex_digest = hexlify(struct.pack('Q', self.digest))
+        self.byte_digest = struct.pack('>Q', self.digest)
+        self.hex_digest = hexlify(self.byte_digest)
 
         assert self.key not in EntityDef.by_key
         EntityDef.by_key[key] = self
@@ -41,6 +42,7 @@ class EntityDef:
         EntityDef.by_digest[self.digest] = self
 
         self.name = key.replace('_', ' ')
+        self.description = '. '.join([self.name for _ in range(10)])
         self.component_data = {}
         self.component_names = set()
         self.component_classes = set()
