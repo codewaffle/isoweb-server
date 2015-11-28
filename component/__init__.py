@@ -5,7 +5,8 @@ import sys
 from inspect import isclass, getmembers
 from component.base import BaseComponent
 from util import AttributeDict
-
+import logging
+log = logging.getLogger(__name__)
 # this is a silly place
 
 
@@ -29,6 +30,13 @@ def load_components():
     g = globals()
     for mod in __all__:
         for clsname, cls in getmembers(getattr(sys.modules[__name__], mod), component_filter):
+            # ignore things imported into the module (TODO : find a better way)
+            if not cls.__module__.endswith(mod):
+                continue
+
+            if clsname in registry:
+                log.fatal('Duplicate Component: %s', clsname)
+                raise RuntimeError('Duplicate Component', clsname, cls, mod)
             registry[clsname] = cls
 
 

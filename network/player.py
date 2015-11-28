@@ -98,7 +98,7 @@ class PlayerWebsocket(WebSocketServerProtocol):
 
         meta_json = ujson.dumps({
             'asset_base': 'https://s3.amazonaws.com/demiverse-assets/'
-        })
+        }, double_precision=3)
 
         self.send(struct.pack(
             '>BfH{}s'.format(len(meta_json)),
@@ -109,15 +109,16 @@ class PlayerWebsocket(WebSocketServerProtocol):
             'meatbag',
             self.region._island_hax,
             spawn_components={
-                'NetworkViewer': {'_socket': self},
-                'MeatbagController': {'_socket': self},
+                'NetworkViewer': {},
+                'MeatbagController': {},
                 'SimpleMovementController': {},
-                'ActionController': {'_socket': self},
+                'ActionController': {},
                 'ContainerController': {},
                 'CraftingController': {},
-                'ChatController': {'_socket': self}
+                'ChatController': {}
             }, pos=Vector2.random_inside(5.0))
 
+        self.entity.socket = self
         self.entity.parent = self.region._island_hax
         self.entity.Position._update()
 

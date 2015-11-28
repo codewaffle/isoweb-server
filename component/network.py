@@ -29,7 +29,7 @@ class NetworkViewer(BaseComponent):
         self.entity.scheduler.schedule(func=self.update)
 
     def update(self):
-        if not self._socket:
+        if not self.entity.socket:
             self.destroy()
             return
 
@@ -98,7 +98,7 @@ class NetworkViewer(BaseComponent):
         current.update(enter)
 
         if packet_builder.values:
-            self._socket.send(packet_builder.build())
+            self.entity.socket.send(packet_builder.build())
 
         # update @ 20hz
         return -1 / 20.

@@ -9,12 +9,6 @@ meatbag:
 - EquipmentUser
 - TestPhysics
 
-
-
-
-
-
-
 crate:
 - Volume: 1000
 - Mass: 5

@@ -6,7 +6,8 @@ from component.base import DataProxy
 import component
 from logbook import Logger
 from util import memoize
-
+import logging
+log = logging.getLogger(__name__)
 xx = xxhash.xxh64()
 
 
@@ -121,7 +122,11 @@ def load_defs():
     for root, dirs, files in os.walk('defs/entity'):
         for fn in files:
             if fnmatch.fnmatch(fn, '*.yml'):
+                print(fn)
                 for def_key, data in load(os.path.join(root, fn)).items():
+                    if def_key in _defs:
+                        log.fatal('Duplicate def_key: %s', def_key)
+                        raise RuntimeError('Duplicate def_key', def_key, fn)
                     _defs[def_key] = EntityDef(def_key, data)
 
 

@@ -12,6 +12,8 @@ from util import to_bytes
 
 
 class Controller(BaseComponent):
+    init_order = 100
+
     def initialize(self):
         pass
 
@@ -63,7 +65,7 @@ class ActionController(Controller):
                 fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
                 data.extend([len(kw), kw, len(desc), desc])
 
-            self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
+            self.entity.socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
             return
 
     def req_entity_menu(self, payload):
@@ -84,7 +86,7 @@ class ActionController(Controller):
             fmt.append('B{}sB{}s'.format(len(kw), len(desc)))
             data.extend([len(kw), kw, len(desc), desc])
 
-        self._socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
+        self.entity.socket.send(struct.pack(''.join(fmt), *to_bytes(data)))
 
     def exec_entity_menu(self, payload):
         ent_id, str_len = struct.unpack_from('>IB', payload, 1)
@@ -102,15 +104,6 @@ class ContainerController(Controller):
         self.entity.packet_handlers[packet_types.CONTAINER_SHOW] = self.dummy
         self.entity.packet_handlers[packet_types.CONTAINER_INDEX_MENU_REQ] = self.dummy
         self.entity.packet_handlers[packet_types.CONTAINER_UPDATE] = self.dummy
-
-
-class CraftingController(Controller):
-    def initialize(self):
-        self.entity.packet_handlers[packet_types.CRAFTING_SHOW] = self.dummy
-        self.entity.packet_handlers[packet_types.CRAFTING_HIDE] = self.dummy
-        self.entity.packet_handlers[packet_types.CRAFTING_INDEX] = self.dummy
-        self.entity.packet_handlers[packet_types.CRAFTING_DETAIL] = self.dummy
-        self.entity.packet_handlers[packet_types.CRAFTING_EXECUTE] = self.dummy
 
 
 class ChatController(Controller):
@@ -138,7 +131,7 @@ class ChatController(Controller):
             ch.send(pkt)
 
     def send(self, packet):
-        self._socket.send(packet)
+        self.entity.socket.send(packet)
 
     @classmethod
     def broadcast(cls, message_from, message):
@@ -189,13 +182,13 @@ class ControllerComponent(BaseComponent):
             ])
 
         packed = struct.pack(''.join(fmt), *to_bytes(dat))
-        self._socket.send(packed)
+        self.entity.socket.send(packed)
 
     def show_container(self, container):
-        self._socket.send(struct.pack('>BfI', packet_types.CONTAINER_SHOW, clock(), container.id))
+        self.entity.socket.send(struct.pack('>BfI', packet_types.CONTAINER_SHOW, clock(), container.id))
 
     def hide_container(self, container):
-        self._socket.send(struct.pack('>BfI', packet_types.CONTAINER_HIDE, clock(), container.id))
+        self.entity.socket.send(struct.pack('>BfI', packet_types.CONTAINER_HIDE, clock(), container.id))
 
     def handle_hide_container(self, container):
         print('player requested that we hide container:', container)
