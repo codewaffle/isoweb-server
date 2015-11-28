@@ -1,5 +1,8 @@
 import os
 import fnmatch
+import struct
+from binascii import hexlify
+
 import xxhash
 import ujson
 from component.base import DataProxy, DefinitionComponent
@@ -29,6 +32,7 @@ class EntityDef:
         self.log = Logger('EntityDef({})'.format(repr(self.key)))
 
         self.digest = self.get_hash(key)
+        self.hex_digest = hexlify(struct.pack('Q', self.digest))
 
         assert self.key not in EntityDef.by_key
         EntityDef.by_key[key] = self

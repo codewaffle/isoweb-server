@@ -11,8 +11,7 @@ class CraftRecipe(DefinitionComponent):
     tool = None
 
     def initialize(self, def_args):
-        print("JESS")
-        _recipe_registry[self.entity_def.digest] = self
+        _recipe_registry[self.entity_def.hex_digest] = self
 
 
 class CraftingController(Controller):
@@ -24,7 +23,7 @@ class CraftingController(Controller):
     @rpc_json
     def do_list(self, payload):
         return packet_types.CRAFT_LIST, [
-            # list of things the player can craft, somehow..
+            (k, v.entity_def.name) for k, v in _recipe_registry.items()
         ]
 
     def do_view(self, payload):

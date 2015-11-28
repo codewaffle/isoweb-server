@@ -92,7 +92,9 @@ class Region:
         ent.parent = parent
         ent.set_region(self)
 
+        # this excludes DefinitionComponents (as they do not register component_data on the def)
         entity_def_components = {k.__name__: v for k, v in entity_def.component_data.items()}
+
         if entity_def_components:
             ent.add_components(entity_def_components, initialize=False, entity_def=entity_def)
 
