@@ -6,11 +6,15 @@ island:
 
 
 raft:
+- Meta:
+    name: Raft
+    description: Floats, most of the time.
 - Sprite: sprites/raft.png
-- Boat
 - RaftPhysics:
     Mass: 750
-
+- CraftRecipe:
+    consume:
+      - log: 4
 
 raft_sail:
 - Sprite: sprites/raft_sail.png

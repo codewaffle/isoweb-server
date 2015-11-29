@@ -68,8 +68,10 @@ class EntityDef:
                 assert len(c) == 1, repr(c)
                 comp_name, comp_args = list(c.items())[0]
 
-                if comp_name == 'meta':  # wat dis
-                    self.__dict__.update(comp_args)
+                if comp_name == 'Meta':  # meta applies directly to the def. should probably filter fields here at some point..
+                    for attr, val in comp_args.items():
+                        setattr(self, attr, val)
+                    continue
 
                 if not isinstance(comp_args, dict):
                     comp_args = {'value': comp_args}

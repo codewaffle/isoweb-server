@@ -44,4 +44,19 @@ class CraftingController(Controller):
         return packet_types.CRAFT_VIEW, recipe.get_view()
 
     def do_exec(self, payload):
-        pass
+        recipe = _recipe_registry.get(hexlify(payload[1:]))
+        ent = self.entity.region.spawn(
+            recipe.entity_def,
+            parent=self.entity.parent,
+            spawn_components={
+                'Position': dict(
+                    x=self.entity.Position.x,
+                    y=self.entity.Position.y,
+                    vx=self.entity.Position.vx,
+                    vy=self.entity.Position.vy
+                )
+            }
+        )
+
+        ent.Position._update()
+
